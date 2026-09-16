@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#173f72">
+<meta name="description" content="기계설비 유지관리 및 성능점검 현장 공개 조회 서비스">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>기계설비 현장 검색</title>
+<link rel="stylesheet" href="styles.css">
+<script defer src="data.js"></script>
+<script defer src="app.js"></script>
+</head>
+<body>
+<header class="hero">
+  <div class="heroInner">
+    <div class="brand"><span>MECHANICAL FACILITY</span><h1>현장 검색</h1><p>기계설비 유지관리 및 성능점검 · 공개 조회 서비스</p></div>
+    <button id="installBtn" class="installBtn" hidden>앱처럼 설치</button>
+  </div>
+</header>
+<main class="shell">
+  <section class="searchPanel">
+    <div class="sectionHead"><div><h2>현장명 검색</h2><p>현장명 일부만 입력해도 검색됩니다. 지역·S/N·보고서 등급도 함께 검색할 수 있습니다.</p></div><span id="dataStamp" class="dataStamp"></span></div>
+    <div class="searchBox"><input id="search" type="search" placeholder="예: 푸르지오, 청주, 2652" autocomplete="off" enterkeyhint="search"><button id="clearBtn" aria-label="검색 초기화">×</button><span class="searchIcon">⌕</span></div>
+    <div class="filterbar" id="filterbar">
+      <button class="pill active" data-filter="registered">전체</button><button class="pill" data-filter="all">전체 진행 중</button><button class="pill" data-filter="target">점검대상</button><button class="pill" data-filter="inspecting">점검 진행 중</button><button class="pill" data-filter="inspected">점검 완료</button><button class="pill" data-filter="reportMissing">보고서 미작성</button><button class="pill" data-filter="reportDone">보고서 완료</button>
+    </div>
+    <div class="resultHead"><b>현장 검색 결과</b><div class="resultTools"><button id="fieldBtn" class="fieldBtn">⚙ 표시 항목</button><span id="resultCount">0건</span></div></div>
+    <section id="cards" class="cards"></section><div id="moreResults" class="moreResults"></div>
+  </section>
+  <aside class="publicNotice"><b>공개용 조회 서비스</b><span>개인 담당자·연락처·금액·내부 중요메모는 공개 데이터에 포함하지 않았습니다. 조회 기능만 제공하며 원본 자료는 수정되지 않습니다.</span></aside>
+</main>
+
+<dialog id="detailDialog" class="dialog detailDialog"><div class="dialogHead"><div><span class="eyebrow">SITE DETAIL</span><h3 id="detailTitle">현장 상세 조회</h3><p id="detailSub"></p></div><button class="closeBtn" data-close="detailDialog">닫기</button></div><div class="detailTabs" id="detailTabs"><button class="active" data-tab="basic">기본정보</button><button data-tab="work">진행·문서</button><button data-tab="maint">유지관리 수량</button><button data-tab="target">성능점검 대상</button><button data-tab="final">성능점검 확정</button><button data-tab="compare">수량 비교</button></div><div id="detailBody" class="dialogBody"></div></dialog>
+
+<dialog id="fieldDialog" class="dialog"><div class="dialogHead"><div><span class="eyebrow">DISPLAY FIELDS</span><h3>검색 결과 표시 항목</h3><p>현장명은 항상 표시됩니다. 선택 내용은 현재 기기에 저장됩니다.</p></div><button class="closeBtn" data-close="fieldDialog">닫기</button></div><div class="dialogBody"><div class="fieldActions"><button id="recommendedBtn">추천 기본값</button><button id="allFieldsBtn">전체 선택</button><button id="noFieldsBtn">전체 해제</button></div><div id="fieldChecks" class="fieldChecks"></div></div><div class="dialogFoot"><button data-close="fieldDialog">취소</button><button id="saveFieldsBtn" class="primaryBtn">적용</button></div></dialog>
+
+<div id="toast" class="toast" role="status"></div>
+<footer><span>기계설비 유지관리 및 성능점검 현장 조회</span><small>PC · Android · iPhone 반응형</small></footer>
+</body></html>
