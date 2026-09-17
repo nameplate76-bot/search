@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1335-v9">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1432-v10">
 <script>
 (function(){
-  const BUILD='20260917-1335-v9';
+  const BUILD='20260917-1432-v10';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,7 +34,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V9</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V10</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -48,7 +48,7 @@
 </header>
 <main>
 <section id="page-search" class="page active">
-  <div class="pageTitle"><div><h2>현장 검색</h2><p>첨부 엑셀 전체 DB에서 현장명·지역·S/N·담당자 기준으로 검색합니다.</p></div><div class="actions"><button id="dbImportBtn" class="ghost hidden">전체 DB 엑셀 갱신</button><input id="dbFile" type="file" accept=".xlsx,.xls" class="hidden"><button id="fieldBtn" class="ghost">표시 항목 설정</button></div></div>
+  <div class="pageTitle"><div><h2>현장 검색</h2><p>첨부 엑셀 전체 DB와 직접 등록 현장에서 현장명·지역·S/N·담당자 기준으로 검색합니다.</p></div><div class="actions"><button id="siteCreateBtn" class="primary hidden">+ 현장 직접등록</button><button id="dbImportBtn" class="ghost hidden">전체 DB 엑셀 갱신</button><input id="dbFile" type="file" accept=".xlsx,.xls" class="hidden"><button id="fieldBtn" class="ghost">표시 항목 설정</button></div></div>
   <div id="dbStatus" class="statusBanner"></div>
   <div class="toolbar"><input id="siteQuery" placeholder="현장명, 지역, S/N, 문서담당, 점검원 검색"><button id="searchBtn" class="primary">검색</button></div>
   <div class="filterRow statusFilters">
@@ -73,7 +73,7 @@
 </section>
 <section id="page-users" class="page">
   <div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자가 직접 사원명·ID·PW·전화번호를 등록하고 사내포털 권한을 부여합니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div>
-  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>매출조회</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
+  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>매출조회</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
   <p class="hint">관리자로 지정하면 사내포털 권한은 모두 자동 부여됩니다. 일반 사용자는 필요한 권한만 선택할 수 있습니다.</p>
 </section>
 </main></div>
@@ -82,9 +82,20 @@
 <dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button class="iconBtn" id="userClose">×</button></div><form id="userForm" class="formGrid">
 <label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자 3자 이상"></label><label>비밀번호<input id="empPw" type="password" required minlength="8" placeholder="8자 이상"></label><label>전화번호<input id="empPhone" required placeholder="010-0000-0000"></label>
 <label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
-<fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
+<fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSiteCreate" type="checkbox"> 현장 직접등록</label><label class="inline"><input id="permSiteEdit" type="checkbox"> 현장 수정</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
 
+<dialog id="siteEditDlg" class="siteEditDlg"><div class="dlgHead"><div><h3 id="siteEditTitle">현장 직접등록</h3><small id="siteEditHint">권한이 있는 사용자만 등록·수정할 수 있습니다.</small></div><button class="iconBtn" id="siteEditClose">×</button></div>
+<form id="siteEditForm" class="siteEditForm">
+  <input id="siteEditSourceId" type="hidden">
+  <div id="siteEditTabs" class="filterRow siteEditTabs"></div>
+  <div id="siteEditFields" class="siteEditFields"></div>
+  <section class="siteContactSection"><h4>관리주체 연락처·주소</h4>
+    <div class="siteContactGrid"><label>전화번호<input id="siteFormPhone" inputmode="tel" autocomplete="tel" placeholder="예: 010-1234-5678"></label><label>이메일<input id="siteFormEmail" type="email" autocomplete="email" placeholder="예: manager@example.com"></label></div>
+    <div class="siteAddressBox"><label>주소 검색어<div class="addressSearchRow"><input id="siteAddressQuery" autocomplete="off" placeholder="도로명·건물명·지번"><button type="button" id="siteAddressSearchBtn" class="primary">주소 검색</button></div></label><p id="siteAddressMsg" class="addressHelp">검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.</p><label>주소<input id="siteFormAddress" readonly placeholder="검색 결과에서 주소를 선택하세요"></label><label id="siteAddressDetailLabel">상세주소<input id="siteFormAddressDetail" placeholder="동·층·호 등 상세주소(선택)"></label><div class="addressModeButtons"><button type="button" id="siteManualAddressBtn" class="ghost">직접입력</button><button type="button" id="siteSearchAddressModeBtn" class="ghost hidden">주소검색으로 전환</button></div></div>
+  </section>
+  <div class="dlgFoot siteEditFoot"><button type="button" id="siteEditCancel">취소</button><button class="primary" id="siteEditSave" type="submit">저장</button></div><div id="siteEditMsg" class="msg siteEditMsg"></div>
+</form></dialog>
 <dialog id="contactEditDlg"><div class="dlgHead"><h3>관리주체 연락처·주소 수정</h3><button class="iconBtn" id="contactEditClose">×</button></div><form id="contactEditForm" class="formGrid">
 <label>현장명<input id="contactSiteName" disabled></label>
 <label>관리주체 전화번호<input id="contactPhone" inputmode="tel" autocomplete="tel" placeholder="예: 010-1234-5678"></label>
@@ -102,4 +113,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260917-1335-v9"></script><script src="fields.js?v=20260917-1335-v9"></script><script src="app.js?v=20260917-1335-v9"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260917-1432-v10"></script><script src="fields.js?v=20260917-1432-v10"></script><script src="app.js?v=20260917-1432-v10"></script></body></html>
