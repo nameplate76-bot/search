@@ -6,3 +6,81 @@
 @media(max-width:800px){.salesPageHead{display:block}.salesActions{justify-content:flex-start;margin-top:10px}.salesPanel{padding:11px}.salesFilters{grid-template-columns:1fr}.standaloneNotice{align-items:flex-start;flex-wrap:wrap;justify-content:flex-start}}
 
 .contactCard{background:#f8fafc;border:1px solid #dfe5ee;border-radius:12px;padding:12px}.contactCard span{display:block;color:#667085;font-size:12px;margin-bottom:5px}.contactValueRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.contactLink{font-weight:800;color:#1d4ed8;text-decoration:none;word-break:break-all}.contactLink:hover{text-decoration:underline}.contactEmpty{color:#98a2b3;font-weight:700}.smallBtn{padding:6px 9px;font-size:12px;border-radius:8px}.routeBody{padding:18px 20px 22px}.routeAddress{font-weight:800;background:#f8fafc;border:1px solid #dfe5ee;border-radius:10px;padding:12px;word-break:keep-all}.routeGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.routeGrid button{padding:14px;font-weight:800}.detailContactGroup{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.adminEditBar{grid-column:1/-1;display:flex;justify-content:flex-end;margin-bottom:2px}@media(max-width:800px){.detailContactGroup{grid-template-columns:1fr}.routeGrid{grid-template-columns:1fr}}
+
+
+/* V8 - 모바일 전체폭/상단 헤더 최적화 */
+html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;max-width:100%;overflow-x:hidden}
+.appShell,main,.page,.pageTitle,.toolbar,.statusBanner,.cards,.siteCard{min-width:0;max-width:100%}
+.menuRow{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.brandText{min-width:0}.creator{font-size:10px!important;letter-spacing:.02em;color:#8993a4!important}.brandMeta{display:flex;align-items:center;gap:7px;min-height:14px}.buildBadge{opacity:.55}.logoutBtn{flex:0 0 auto}
+.siteTop>div{min-width:0}.siteTop h3{overflow-wrap:anywhere;word-break:break-word}.statusBanner,.pageTitle p,.meta{overflow-wrap:anywhere;word-break:keep-all}.toolbar input{min-width:0;max-width:100%}.actions,.filterRow,.statusFilters,.salesWrap,.tableWrap{max-width:100%}.salesWrap,.tableWrap{overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+
+@media(max-width:800px){
+  body{font-size:14px}
+  .topbar{position:sticky;top:0;display:flex;flex-direction:column;align-items:stretch;gap:7px;width:100%;max-width:100%;padding:8px max(10px,env(safe-area-inset-right)) 7px max(10px,env(safe-area-inset-left));overflow:hidden}
+  .brand{width:100%;min-width:0;display:flex;justify-content:center;align-items:center;text-align:center;gap:0}
+  .miniLogo{display:none}
+  .brandText{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.15}
+  .brand strong{font-size:18px;line-height:1.25;white-space:normal;word-break:keep-all}
+  .brand .creator{display:block;margin-top:3px;font-size:10px!important;color:#8b95a7!important;font-weight:500}
+  .brandMeta{justify-content:center;margin-top:2px;min-height:12px}
+  .brandMeta #userBadge{font-size:10px;margin:0;color:#98a2b3}
+  .brandMeta .buildBadge{font-size:9px;margin:0;color:#a3acba}
+  .menuRow{order:2;width:100%;display:flex;align-items:center;gap:4px;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
+  .menuRow::-webkit-scrollbar{display:none}
+  .topbar nav{order:initial;width:auto;flex:1 0 auto;display:flex;gap:4px;min-width:max-content;overflow:visible}
+  .topbar nav button,.logoutBtn{flex:0 0 auto;white-space:nowrap;font-size:12px;padding:7px 9px;border-radius:8px;min-height:34px}
+  .logoutBtn{margin-left:auto}
+
+  main{width:100%;max-width:100%;overflow-x:hidden}
+  .page{width:100%;max-width:100%;padding:12px 10px 18px;margin:0;overflow-x:hidden}
+  .pageTitle{width:100%;max-width:100%;display:block;margin-bottom:12px}
+  .pageTitle h2{font-size:22px;line-height:1.25;margin:0}
+  .pageTitle p{font-size:13px;line-height:1.45;margin-top:5px}
+  .pageTitle .actions{display:flex;width:100%;gap:7px;margin-top:10px;min-width:0}
+  .pageTitle .actions button{flex:1 1 0;min-width:0;padding:9px 7px;font-size:13px;white-space:normal;line-height:1.25}
+
+  .statusBanner{width:100%;padding:10px 11px;font-size:13px;line-height:1.45}
+  .toolbar{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:9px;overflow:hidden}
+  .toolbar input{width:100%;min-width:0!important;max-width:100%;padding:11px 10px;font-size:14px}
+  .toolbar .primary{padding:10px 13px;white-space:nowrap}
+
+  .statusFilters{width:100%;max-width:100%;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:7px;margin:10px 0 8px;padding:1px 1px 5px;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
+  .statusFilters::-webkit-scrollbar{display:none}
+  .statusFilters .chip{flex:0 0 auto;white-space:nowrap;padding:7px 11px;font-size:13px}
+  .meta{font-size:13px;margin:8px 2px 10px}
+
+  .cards{width:100%;grid-template-columns:minmax(0,1fr);gap:10px}
+  .siteCard{width:100%;max-width:100%;min-width:0;padding:12px;border-radius:13px;overflow:hidden}
+  .siteTop{width:100%;min-width:0;gap:8px;align-items:flex-start}
+  .siteTop>div:first-child{flex:1;min-width:0}
+  .siteTop h3{font-size:17px;line-height:1.35;max-width:100%;margin-right:0}
+  .tag{font-size:11px;padding:3px 7px;margin-top:2px}
+  .miniGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
+  .miniGrid div,.detailItem{min-width:0;padding:8px}
+  .miniGrid span,.detailItem span{font-size:11px}.miniGrid b,.detailItem b{font-size:13px;overflow-wrap:anywhere}
+  .stepRow{width:100%;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .step{min-width:0;padding:6px 3px;font-size:11px;overflow-wrap:anywhere}
+  .siteActions button{font-size:12px;padding:8px 10px}
+
+  dialog{width:calc(100vw - 16px);max-width:calc(100vw - 16px);max-height:90dvh;margin:auto}
+  .dlgHead{padding:12px 14px}.dlgHead h3{font-size:17px}
+  .detailGrid{grid-template-columns:minmax(0,1fr);padding:0 12px 14px}
+  .checkGrid{grid-template-columns:minmax(0,1fr);padding:12px}
+  .formGrid{padding:14px}.detailContactGroup{grid-template-columns:minmax(0,1fr)}
+  .routeBody{padding:14px}.routeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.routeGrid button{padding:12px 6px;font-size:13px}
+
+  .salesPage{width:100%;max-width:100%}.salesPanel{max-width:100%;overflow:hidden}.salesWrap{width:100%;max-width:100%;overflow-x:auto}
+  .salesReportTable{min-width:820px}
+  .tableWrap{width:100%;max-width:100%;overflow-x:auto}
+}
+
+@media(max-width:380px){
+  .brand strong{font-size:17px}
+  .page{padding-left:8px;padding-right:8px}
+  .pageTitle .actions{gap:5px}.pageTitle .actions button{font-size:12px;padding:8px 5px}
+  .toolbar{grid-template-columns:minmax(0,1fr) auto}.toolbar input{font-size:13px}.toolbar .primary{padding-left:10px;padding-right:10px}
+  .miniGrid{grid-template-columns:1fr}
+  .routeGrid{grid-template-columns:1fr 1fr}
+}

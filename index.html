@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1304-v7">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1315-v8">
 <script>
 (function(){
-  const BUILD='20260917-1304-v7';
+  const BUILD='20260917-1315-v8';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -29,13 +29,22 @@
 </div>
 <div id="appView" class="hidden appShell">
 <header class="topbar">
-  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V7</small></div></div>
-  <nav id="mainNav">
-    <button data-page="search" class="active">현장 검색</button>
-    <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
-    <button data-page="users" id="usersNav" class="hidden">사용자 관리</button>
-  </nav>
-  <button id="logoutBtn" class="ghost">로그아웃</button>
+  <div class="brand">
+    <div class="miniLogo">KM</div>
+    <div class="brandText">
+      <strong>사내 현장정보 업무포털</strong>
+      <small class="creator">Created by M.C.Kim</small>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V8</small></div>
+    </div>
+  </div>
+  <div class="menuRow">
+    <nav id="mainNav">
+      <button data-page="search" class="active">현장 검색</button>
+      <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
+      <button data-page="users" id="usersNav" class="hidden">사용자 관리</button>
+    </nav>
+    <button id="logoutBtn" class="ghost logoutBtn">로그아웃</button>
+  </div>
 </header>
 <main>
 <section id="page-search" class="page active">
@@ -85,4 +94,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">앱이 설치되어 있으면 앱 실행을 시도하고, 지원되지 않는 경우 웹 지도/검색 화면으로 연결합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1304-v7"></script><script src="fields.js?v=20260917-1304-v7"></script><script src="app.js?v=20260917-1304-v7"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1315-v8"></script><script src="fields.js?v=20260917-1315-v8"></script><script src="app.js?v=20260917-1315-v8"></script></body></html>
