@@ -19,7 +19,36 @@ async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').
 async function boot(){const{data:{session}}=await sb.auth.getSession();if(!session)return showLogin();const p=await profileFor(session.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();showLogin();notify($('loginMsg'),'사용이 승인되지 않은 계정입니다. 관리자에게 문의하세요.');return}me=p;showApp()}
 function showLogin(){$('loginView').classList.remove('hidden');$('appView').classList.add('hidden')}
 function showApp(){$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('userBadge').textContent=`${me.name||me.user_id||''} · ${isAdmin()?'관리자':'일반 사용자'}`;$('salesNav').classList.toggle('hidden',!(isAdmin()&&can('can_view_staff_sales')));$('usersNav').classList.toggle('hidden',!(isAdmin()&&can('can_manage_staff_users')));showPage(can('can_view_staff_sites')?'search':can('can_view_staff_sales')?'sales':'users');refreshDbStatus();if(can('can_view_staff_sites'))searchSites()}
-async function login(){const raw=$('loginId').value.trim(),pw=$('loginPw').value;if(!raw||!pw)return notify($('loginMsg'),'ID와 비밀번호를 입력하세요.');notify($('loginMsg'),'로그인 확인 중...',true);const email=raw.includes('@')?raw:`${raw.toLowerCase()}@staff.internal`;const{data,error}=await sb.auth.signInWithPassword({email,password:pw});if(error)return notify($('loginMsg'),'로그인에 실패했습니다. ID와 비밀번호를 확인하세요.');const p=await profileFor(data.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();return notify($('loginMsg'),'회사 직원 승인 또는 사내포털 사용권한이 없습니다.');}me=p;showApp()}
+async function login(){
+  const raw=$('loginId').value.trim(),pw=$('loginPw').value;
+  if(!raw||!pw)return notify($('loginMsg'),'ID와 비밀번호를 입력하세요.');
+  notify($('loginMsg'),'로그인 확인 중...',true);
+  try{
+    let user=null;
+    if(raw.includes('@')){
+      const{data,error}=await sb.auth.signInWithPassword({email:raw,password:pw});
+      if(error)throw new Error('ID 또는 비밀번호가 올바르지 않습니다.');
+      user=data.user;
+    }else{
+      const res=await fetch(`${cfg.supabaseUrl}/functions/v1/${cfg.loginFunction||'staff-id-login'}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':cfg.supabaseKey},
+        body:JSON.stringify({employee_id:raw,password:pw})
+      });
+      const out=await res.json().catch(()=>({}));
+      if(!res.ok||!out?.access_token||!out?.refresh_token)throw new Error(out?.error||'ID 또는 비밀번호가 올바르지 않습니다.');
+      const{data,error}=await sb.auth.setSession({access_token:out.access_token,refresh_token:out.refresh_token});
+      if(error||!data?.user)throw new Error('로그인 세션을 만들지 못했습니다.');
+      user=data.user;
+    }
+    const p=await profileFor(user);
+    if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();return notify($('loginMsg'),'회사 직원 승인 또는 사내포털 사용권한이 없습니다.');}
+    me=p;showApp();
+  }catch(error){
+    await sb.auth.signOut().catch(()=>{});
+    notify($('loginMsg'),error?.message||'로그인에 실패했습니다. ID와 비밀번호를 확인하세요.');
+  }
+}
 function showPage(name){if(name==='search'&&!can('can_view_staff_sites'))return alert('현장 검색 권한이 없습니다.');if(name==='sales'&&!(isAdmin()&&can('can_view_staff_sales')))return alert('매출 관리는 관리자만 사용할 수 있습니다.');if(name==='users'&&!(isAdmin()&&can('can_manage_staff_users')))return alert('사용자 관리는 관리자만 사용할 수 있습니다.');document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#mainNav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('page-'+name).classList.add('active');if(name==='sales')loadSales();if(name==='users')loadUsers()}
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [매출 관리 → 엑셀 가져오기]로 확정수량.xlsx를 1회 등록하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
