@@ -72,11 +72,12 @@ function salesRemark(r){
 function salesContractType(r){return String(salesRaw(r,25)||r.report_grade||'-').trim()||'-'}
 function salesContractAmount(r){const v=salesNumber(r.contract_amount);return v||salesNumber(r.performance_amount)+salesNumber(r.maintenance_amount)+salesNumber(r.manager_amount)}
 function salesAmount(r){return salesNumber(r.sales_amount)||salesContractAmount(r)}
+function salesReportCompleted(r){return String(r?.report_complete_date??'').trim()!==''}
 async function loadSales(){
  if(!(isAdmin()&&can('can_view_staff_sales')))return;
  try{
   salesRows=await fetchPaged('staff_site_source','id,site_name,report_grade,document_owner_raw,document_owner,sales_year,sales_month,contract_amount,performance_amount,maintenance_amount,manager_amount,sales_amount,field_inspector,report_complete_date,full_values',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false}));
-  salesRows=salesRows.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim());
+  salesRows=salesRows.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));
   salesImported=false;fillSalesFilters();renderSales();
  }catch(e){alert('매출 자료 조회 오류: '+e.message)}
 }
@@ -97,7 +98,7 @@ function fillSalesFilters(){
 function filteredSales(){
  const y=$('salesYear').value,m=$('salesMonth').value,o=$('salesOwner').value;
  $('salesMonth').dataset.last=m;
- return salesRows.filter(r=>String(r.sales_year)===String(y)&&(m==='all'||Number(r.sales_month)===Number(m))&&(o==='all'||String(r.document_owner||'')===o));
+ return salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year)===String(y)&&(m==='all'||Number(r.sales_month)===Number(m))&&(o==='all'||String(r.document_owner||'')===o));
 }
 function renderSales(){
  salesImported=false;
