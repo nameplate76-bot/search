@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1315-v8">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1335-v9">
 <script>
 (function(){
-  const BUILD='20260917-1315-v8';
+  const BUILD='20260917-1335-v9';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,7 +34,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V8</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V9</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -87,11 +87,19 @@
 
 <dialog id="contactEditDlg"><div class="dlgHead"><h3>관리주체 연락처·주소 수정</h3><button class="iconBtn" id="contactEditClose">×</button></div><form id="contactEditForm" class="formGrid">
 <label>현장명<input id="contactSiteName" disabled></label>
-<label>관리주체 전화번호<input id="contactPhone" inputmode="tel" placeholder="예: 010-1234-5678"></label>
-<label>관리주체 이메일<input id="contactEmail" type="email" placeholder="예: manager@example.com"></label>
-<label>주소<input id="contactAddress" placeholder="도로명 주소 또는 지번 주소"></label>
+<label>관리주체 전화번호<input id="contactPhone" inputmode="tel" autocomplete="tel" placeholder="예: 010-1234-5678"></label>
+<label>관리주체 이메일<input id="contactEmail" type="email" autocomplete="email" placeholder="예: manager@example.com"></label>
+<div class="addressEditor" id="addressEditor">
+  <div class="addressSearchBox" id="addressSearchBox">
+    <label>주소 검색어<div class="addressSearchRow"><input id="addressQuery" autocomplete="off" placeholder="예: 판교역로 166 또는 백현동 532"><button type="button" id="addressSearchBtn" class="primary">주소 검색</button></div></label>
+    <p id="addressSearchMsg" class="addressHelp">도로명·건물명·지번을 입력하고 검색한 뒤 결과에서 주소를 선택하세요.</p>
+  </div>
+  <label>선택된 주소<input id="contactAddress" readonly placeholder="주소 검색 결과를 선택하세요"></label>
+  <label id="addressDetailLabel">상세주소<input id="contactAddressDetail" placeholder="동·층·호 등 상세주소(선택)"></label>
+  <div class="addressModeButtons"><button type="button" id="manualAddressBtn" class="ghost">직접입력</button><button type="button" id="searchAddressModeBtn" class="ghost hidden">주소검색으로 전환</button></div>
+</div>
 <input id="contactSourceId" type="hidden">
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
-<dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">앱이 설치되어 있으면 앱 실행을 시도하고, 지원되지 않는 경우 웹 지도/검색 화면으로 연결합니다.</p></div></dialog>
+<dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1315-v8"></script><script src="fields.js?v=20260917-1315-v8"></script><script src="app.js?v=20260917-1315-v8"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260917-1335-v9"></script><script src="fields.js?v=20260917-1335-v9"></script><script src="app.js?v=20260917-1335-v9"></script></body></html>

@@ -25,40 +25,106 @@ function splitContact(raw){
  return{phone,email};
 }
 function cleanPhone(v){return String(v||'').replace(/[^0-9+]/g,'')}
+function formatPhone(v){
+ const n=cleanPhone(v).replace(/^\+82/,'0');
+ if(/^02\d{7,8}$/.test(n))return n.replace(/^(02)(\d{3,4})(\d{4})$/,'$1-$2-$3');
+ if(/^0\d{9,10}$/.test(n))return n.replace(/^(0\d{1,2})(\d{3,4})(\d{4})$/,'$1-$2-$3');
+ return String(v||'').trim();
+}
+function callPhone(phone){
+ const n=cleanPhone(phone);if(!n)return alert('등록된 전화번호가 없습니다.');
+ // 사용자 클릭 이벤트 안에서 직접 tel: 스킴을 호출해야 iOS/Android 전화 앱이 가장 안정적으로 실행됩니다.
+ window.location.href=`tel:${n}`;
+}
 function contactCards(r){
  const phone=String(r.client_phone||'').trim(),email=String(r.client_email||'').trim(),address=String(r.site_address||'').trim();
- const phoneHtml=phone?`<a class="contactLink" href="tel:${esc(cleanPhone(phone))}">${esc(phone)}</a>`:'<span class="contactEmpty">미등록</span>';
+ const phoneHtml=phone?`<a class="contactLink phoneLink" href="tel:${esc(cleanPhone(phone))}" data-call-phone="${esc(phone)}" aria-label="${esc(phone)} 전화걸기">📞 ${esc(formatPhone(phone))}</a>`:'<span class="contactEmpty">미등록</span>';
  const emailHtml=email?`<a class="contactLink" href="mailto:${esc(email)}">${esc(email)}</a>`:'<span class="contactEmpty">미등록</span>';
- const addrHtml=address?`<a href="#" class="contactLink" data-route-address="${esc(address)}">${esc(address)}</a>`:'<span class="contactEmpty">미등록</span>';
- return `<div class="detailContactGroup"><div class="contactCard"><span>관리주체 전화번호</span><div class="contactValueRow">${phoneHtml}</div></div><div class="contactCard"><span>관리주체 이메일</span><div class="contactValueRow">${emailHtml}</div></div><div class="contactCard"><span>주소</span><div class="contactValueRow">${addrHtml}${address?'<button class="smallBtn" data-route-address="'+esc(address)+'">길찾기</button>':''}</div></div></div>${isAdmin()?'<div class="adminEditBar"><button class="smallBtn" data-edit-contact="'+Number(r.source_id)+'">전화·이메일·주소 수정</button></div>':''}`;
+ const addrHtml=address?`<a href="#" class="contactLink addressLink" data-route-address="${esc(address)}" data-route-name="${esc(r.site_name||'현장')}">📍 ${esc(address)}</a>`:'<span class="contactEmpty">미등록</span>';
+ return `<div class="detailContactGroup"><div class="contactCard"><span>관리주체 전화번호</span><div class="contactValueRow">${phoneHtml}</div></div><div class="contactCard"><span>관리주체 이메일</span><div class="contactValueRow">${emailHtml}</div></div><div class="contactCard"><span>주소</span><div class="contactValueRow">${addrHtml}${address?'<button class="smallBtn" data-route-address="'+esc(address)+'" data-route-name="'+esc(r.site_name||'현장')+'">길찾기</button>':''}</div></div></div>${isAdmin()?'<div class="adminEditBar"><button class="smallBtn" data-edit-contact="'+Number(r.source_id)+'">전화·이메일·주소 수정</button></div>':''}`;
 }
 function bindContactActions(r){
- document.querySelectorAll('[data-route-address]').forEach(el=>el.onclick=e=>{e.preventDefault();openRouteChooser(el.dataset.routeAddress)});
+ document.querySelectorAll('[data-call-phone]').forEach(el=>el.onclick=e=>{e.preventDefault();e.stopPropagation();callPhone(el.dataset.callPhone)});
+ document.querySelectorAll('[data-route-address]').forEach(el=>el.onclick=e=>{e.preventDefault();openRouteChooser(el.dataset.routeAddress,el.dataset.routeName||r.site_name||'현장')});
  const edit=document.querySelector('[data-edit-contact]');if(edit)edit.onclick=()=>openContactEditor(r);
+}
+let addressInputMode='search';
+function setAddressMode(mode){
+ addressInputMode=mode==='manual'?'manual':'search';
+ const manual=addressInputMode==='manual',addr=$('contactAddress');
+ addr.readOnly=!manual;
+ $('addressSearchBox')?.classList.toggle('hidden',manual);
+ $('addressDetailLabel')?.classList.toggle('hidden',manual);
+ $('manualAddressBtn')?.classList.toggle('hidden',manual);
+ $('searchAddressModeBtn')?.classList.toggle('hidden',!manual);
+ addr.placeholder=manual?'주소를 직접 입력하세요':'주소 검색 결과를 선택하세요';
+ if(manual){$('contactAddressDetail').value='';addr.focus();notify($('addressSearchMsg'),'');}
 }
 function openContactEditor(r){
  if(!isAdmin())return alert('연락처와 주소 수정은 관리자만 가능합니다.');
- $('contactSourceId').value=r.source_id;$('contactSiteName').value=r.site_name||'';$('contactPhone').value=r.client_phone||'';$('contactEmail').value=r.client_email||'';$('contactAddress').value=r.site_address||'';notify($('contactEditMsg'),'');$('contactEditDlg').showModal();
+ $('contactSourceId').value=r.source_id;$('contactSiteName').value=r.site_name||'';$('contactPhone').value=formatPhone(r.client_phone||'');$('contactEmail').value=r.client_email||'';$('contactAddress').value=r.site_address||'';$('contactAddressDetail').value='';$('addressQuery').value=r.site_address||'';setAddressMode('search');
+ $('contactAddress').dataset.zonecode='';notify($('addressSearchMsg'),'주소를 검색해 선택하거나, 검색되지 않을 경우 직접입력을 선택하세요.',true);notify($('contactEditMsg'),'');$('contactEditDlg').showModal();
+}
+function searchAddress(){
+ if(!isAdmin())return alert('주소 수정은 관리자만 가능합니다.');
+ const q=String($('addressQuery').value||'').trim();
+ if(!(window.kakao&&window.kakao.Postcode)){
+   setAddressMode('manual');notify($('addressSearchMsg'),'주소 검색 서비스를 불러오지 못했습니다. 직접입력으로 전환했습니다.');return;
+ }
+ let hadResult=true;
+ const pc=new window.kakao.Postcode({
+   onsearch:data=>{
+     hadResult=Number(data?.count||0)>0;
+     if(!hadResult){notify($('addressSearchMsg'),'검색 결과가 없습니다. 검색어를 바꾸거나 아래의 직접입력을 선택하세요.');$('manualAddressBtn')?.classList.add('needsAttention');}
+     else {notify($('addressSearchMsg'),`검색 결과 ${Number(data.count).toLocaleString()}건입니다. 정확한 주소를 선택하세요.`,true);$('manualAddressBtn')?.classList.remove('needsAttention');}
+   },
+   oncomplete:data=>{
+     const addr=(data.userSelectedType==='R'?data.roadAddress:data.jibunAddress)||data.roadAddress||data.jibunAddress||data.address||'';
+     $('contactAddress').value=addr;$('contactAddress').dataset.zonecode=data.zonecode||'';$('addressQuery').value=addr;$('contactAddressDetail').value='';
+     notify($('addressSearchMsg'),`${data.zonecode?'['+data.zonecode+'] ':''}주소가 선택되었습니다. 필요한 경우 상세주소를 입력하세요.`,true);$('contactAddressDetail').focus();
+   },
+   onclose:state=>{if(!hadResult&&state!=='COMPLETE_CLOSE')notify($('addressSearchMsg'),'검색 결과가 없었습니다. 직접입력을 선택해 주소를 입력할 수 있습니다.');},
+   width:'100%',height:'100%',maxSuggestItems:5
+ });
+ pc.open({q, popupTitle:'현장 주소 검색', popupKey:'staff-address-search'});
 }
 async function saveContact(e){
  e.preventDefault();if(!isAdmin())return notify($('contactEditMsg'),'관리자만 수정할 수 있습니다.');
- const id=Number($('contactSourceId').value),patch={client_phone:$('contactPhone').value.trim(),client_email:$('contactEmail').value.trim(),site_address:$('contactAddress').value.trim()};
+ const base=String($('contactAddress').value||'').trim(),detail=addressInputMode==='manual'?'':String($('contactAddressDetail').value||'').trim();
+ const fullAddress=[base,detail].filter(Boolean).join(' ').trim();
+ if(!fullAddress)return notify($('contactEditMsg'),'주소를 검색해 선택하거나 직접입력해 주세요.');
+ const id=Number($('contactSourceId').value),patch={client_phone:formatPhone($('contactPhone').value.trim()),client_email:$('contactEmail').value.trim(),site_address:fullAddress};
  notify($('contactEditMsg'),'저장 중...',true);
  const{error}=await sb.from('staff_site_source').update(patch).eq('id',id);if(error)return notify($('contactEditMsg'),'저장 실패: '+error.message);
  const row=lastSites.find(x=>Number(x.source_id)===id);if(row)Object.assign(row,patch);
  notify($('contactEditMsg'),'저장했습니다.',true);setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
 }
-let currentRouteAddress='';
-function openRouteChooser(address){address=String(address||'').trim();if(!address)return alert('등록된 주소가 없습니다. 관리자에게 주소 입력을 요청하세요.');currentRouteAddress=address;$('routeAddress').textContent=address;$('routeDlg').showModal()}
+let currentRouteAddress='',currentRouteName='현장';
+function openRouteChooser(address,name){address=String(address||'').trim();if(!address)return alert('등록된 주소가 없습니다. 관리자에게 주소 입력을 요청하세요.');currentRouteAddress=address;currentRouteName=String(name||'현장').trim()||'현장';$('routeAddress').textContent=address;$('routeDlg').showModal()}
+function openWithFallback(appUrl,fallback){
+ const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+ if(!mobile){window.open(fallback,'_blank','noopener');return;}
+ let hidden=false;const onVis=()=>{if(document.hidden)hidden=true};document.addEventListener('visibilitychange',onVis,{once:true});
+ window.location.href=appUrl;
+ setTimeout(()=>{if(!hidden)window.location.href=fallback},1400);
+}
 function launchRoute(app){
- const a=currentRouteAddress,q=encodeURIComponent(a),now=Date.now();let appUrl='',fallback='';
- if(app==='naver'){appUrl=`nmap://search?query=${q}&appname=staff.portal`;fallback=`https://map.naver.com/p/search/${q}`}
- else if(app==='kakao'){appUrl=`kakaomap://search?q=${q}`;fallback=`https://m.map.kakao.com/scheme/search?q=${q}`}
- else if(app==='tmap'){appUrl=`tmap://search?name=${q}`;fallback=`https://www.tmap.co.kr/my_tmap/my_map_tip/map_tip.do?searchKeyword=${q}`}
- else {fallback=`https://map.kakao.com/link/search/${q}`}
+ const a=currentRouteAddress,q=encodeURIComponent(a),name=encodeURIComponent(currentRouteName||a);let appUrl='',fallback='';
  $('routeDlg').close();
- if(app==='kakaonavi'){alert('카카오내비는 웹에서 주소만으로 직접 목적지를 넘기는 공식 URL Scheme을 제공하지 않습니다. 카카오맵 검색 화면에서 목적지를 확인한 뒤 카카오내비로 연결해 주세요.');window.open(fallback,'_blank','noopener');return}
- if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){window.location.href=appUrl;setTimeout(()=>{if(Date.now()-now<2200)window.open(fallback,'_blank','noopener')},1200)}else window.open(fallback,'_blank','noopener');
+ if(app==='naver'){
+   // 주소만 보유한 경우 네이버지도에서 주소를 자동 검색합니다. 검색 결과에서 바로 길찾기를 누를 수 있습니다.
+   appUrl=`nmap://search?query=${q}&appname=nameplate76-bot.search`;fallback=`https://map.naver.com/p/search/${q}`;
+ }else if(app==='kakao'){
+   appUrl=`kakaomap://search?q=${q}`;fallback=`https://m.map.kakao.com/scheme/search?q=${q}`;
+ }else if(app==='tmap'){
+   appUrl=`tmap://search?name=${q}`;fallback=`https://www.tmap.co.kr/search?q=${q}`;
+ }else{
+   // 카카오내비는 웹 URL Scheme을 공식 제공하지 않아 주소만으로 직접 길안내를 시작할 수 없습니다.
+   // 카카오맵에서 동일 주소를 검색해 목적지를 확인한 뒤 내비게이션으로 이어가도록 합니다.
+   appUrl=`kakaomap://search?q=${q}`;fallback=`https://map.kakao.com/link/search/${q}`;
+   alert('카카오내비는 웹페이지에서 주소만 넘겨 바로 길안내를 시작하는 공식 URL Scheme을 제공하지 않습니다. 같은 주소를 카카오 지도 검색으로 열어 목적지를 확인한 뒤 내비게이션을 선택해 주세요.');
+ }
+ openWithFallback(appUrl,fallback);
 }
 
 async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').select('*').eq('id',user.id).maybeSingle();if(error)throw error;return data}
@@ -193,5 +259,5 @@ async function deleteUser(id){if(!confirm('이 직원 계정을 삭제할까요?
 function syncRoleForm(){const admin=$('empRole').value==='admin';['permPortal','permSites'].forEach(id=>{$(id).disabled=false;if(admin)$(id).checked=true});['permSales','permSalesExport','permSalesPrint','permImport','permUsers'].forEach(id=>{$(id).checked=admin;$(id).disabled=!admin||admin})}
 const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
 if(isStandalone()){const n=$('standaloneNotice');n?.classList.remove('hidden');$('standaloneHelp')?.addEventListener('click',()=>alert('현재 Chrome에 설치된 웹앱으로 실행 중입니다.\n\n일반 Chrome 탭으로 사용하려면:\n1. 이 앱 창 오른쪽 위 ⋮ 메뉴를 누릅니다.\n2. 앱 제거/삭제를 선택합니다.\n3. 또는 Chrome 주소창에 chrome://apps 를 입력한 뒤 현장 검색 앱을 제거합니다.\n4. 이후 https://nameplate76-bot.github.io/search/ 를 Chrome 일반 탭에서 다시 여세요.'));}
-$('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('logoutBtn').onclick=async()=>{await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('searchBtn').onclick=searchSites;$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites()};document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{currentFilter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));searchSites()});$('fieldBtn').onclick=setupFields;$('fieldsSave').onclick=saveFields;$('detailClose').onclick=()=>$('detailDlg').close();$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));['salesYear','salesMonth','salesOwner'].forEach(id=>$(id).onchange=renderSales);$('salesPrint').onclick=printSalesReport;$('salesExport').onclick=exportSales;$('salesImport').onclick=()=>isAdmin()?$('salesFile').click():alert('매출 관리는 관리자만 사용할 수 있습니다.');$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;await importSalesExcel(f);e.target.value=''};$('dbImportBtn').onclick=()=>isAdmin()&&can('can_import_staff_sites')?$('dbFile').click():alert('전체 DB 엑셀 갱신은 관리자만 사용할 수 있습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{$('userDlg').showModal();syncRoleForm()};$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;sb.auth.onAuthStateChange(()=>setTimeout(()=>boot().catch(console.error),0));boot().catch(e=>{console.error(e);showLogin();notify($('loginMsg'),e.message)});
+$('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('logoutBtn').onclick=async()=>{await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));$('searchBtn').onclick=searchSites;$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites()};document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{currentFilter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));searchSites()});$('fieldBtn').onclick=setupFields;$('fieldsSave').onclick=saveFields;$('detailClose').onclick=()=>$('detailDlg').close();$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').oninput=e=>{const pos=e.target.selectionStart;e.target.value=formatPhone(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));['salesYear','salesMonth','salesOwner'].forEach(id=>$(id).onchange=renderSales);$('salesPrint').onclick=printSalesReport;$('salesExport').onclick=exportSales;$('salesImport').onclick=()=>isAdmin()?$('salesFile').click():alert('매출 관리는 관리자만 사용할 수 있습니다.');$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;await importSalesExcel(f);e.target.value=''};$('dbImportBtn').onclick=()=>isAdmin()&&can('can_import_staff_sites')?$('dbFile').click():alert('전체 DB 엑셀 갱신은 관리자만 사용할 수 있습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{$('userDlg').showModal();syncRoleForm()};$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;sb.auth.onAuthStateChange(()=>setTimeout(()=>boot().catch(console.error),0));boot().catch(e=>{console.error(e);showLogin();notify($('loginMsg'),e.message)});
 })();

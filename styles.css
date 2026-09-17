@@ -84,3 +84,8 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   .miniGrid{grid-template-columns:1fr}
   .routeGrid{grid-template-columns:1fr 1fr}
 }
+
+/* V9 - 전화 앱 연결 / 주소검색 / 직접입력 */
+.phoneLink{display:inline-flex;align-items:center;gap:5px;font-size:15px}.addressLink{display:inline-flex;align-items:flex-start;gap:4px;line-height:1.45}.addressEditor{border:1px solid var(--line);border-radius:13px;padding:13px;margin:4px 0 16px;background:#fbfcfe}.addressEditor label{margin-bottom:10px}.addressSearchRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.addressSearchRow button{white-space:nowrap}.addressHelp{font-size:12px;color:var(--muted);margin:-2px 0 10px;line-height:1.45}.addressModeButtons{display:flex;gap:8px;justify-content:flex-end}.needsAttention{border-color:#f59e0b!important;background:#fff7e6!important;color:#92400e!important;font-weight:800}.routeGrid button{min-height:50px}.routeGrid button::after{content:' 열기';font-size:11px;color:var(--muted);margin-left:4px}.routeGrid button:hover::after{color:inherit}
+@media(max-width:800px){.addressSearchRow{grid-template-columns:1fr}.addressSearchRow button{width:100%}.addressModeButtons{justify-content:stretch}.addressModeButtons button{flex:1}.phoneLink{font-size:16px;min-height:42px;align-items:center}.routeGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.routeGrid button{min-width:0;padding:12px 7px}}
+@media(max-width:380px){.routeGrid{grid-template-columns:1fr}}
