@@ -1,12 +1,55 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css"></head><body>
-<div id="loginView" class="centerView"><section class="loginCard"><div class="brandMark">KM</div><h1>사내 현장정보 업무포털</h1><p>등록·승인된 회사 직원만 사용할 수 있습니다.</p><label>ID 또는 이메일<input id="loginId" autocomplete="username" placeholder="사원 ID"></label><label>비밀번호<input id="loginPw" type="password" autocomplete="current-password" placeholder="비밀번호"></label><button id="loginBtn" class="primary">로그인</button><div id="loginMsg" class="msg"></div></section></div>
-<div id="appView" class="hidden"><header><div><b>사내 현장정보 업무포털</b><small id="userBadge"></small></div><nav><button data-page="search" class="active">현장 검색</button><button data-page="sales" id="salesNav" class="hidden">매출 관리</button><button data-page="users" id="usersNav" class="hidden">사용자 관리</button></nav><button id="logoutBtn" class="ghost">로그아웃</button></header>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<div id="loginView" class="loginShell">
+  <section class="loginCard">
+    <div class="logo">KM</div>
+    <h1>사내 현장정보 업무포털</h1>
+    <p>관리자가 등록·승인한 회사 직원만 사용할 수 있습니다.</p>
+    <label>사원 ID<input id="loginId" autocomplete="username" placeholder="예: kmc01"></label>
+    <label>비밀번호<input id="loginPw" type="password" autocomplete="current-password" placeholder="비밀번호"></label>
+    <button id="loginBtn" class="primary wide">로그인</button>
+    <div id="loginMsg" class="msg"></div>
+  </section>
+</div>
+<div id="appView" class="hidden appShell">
+<header class="topbar">
+  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small></div></div>
+  <nav id="mainNav">
+    <button data-page="search" class="active">현장 검색</button>
+    <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
+    <button data-page="users" id="usersNav" class="hidden">사용자 관리</button>
+  </nav>
+  <button id="logoutBtn" class="ghost">로그아웃</button>
+</header>
 <main>
-<section id="page-search" class="page active"><div class="pageTitle"><div><h2>현장 검색</h2><p>엑셀 원본 기반 현장정보를 검색·조회합니다.</p></div><button id="fieldBtn" class="ghost">표시 항목</button></div><div class="toolbar"><input id="siteQuery" placeholder="현장명, 지역, S/N, 담당자 검색"><button id="searchBtn" class="primary">검색</button></div><div class="filterRow"><button data-filter="all" class="chip active">전체</button><button data-filter="inprogress" class="chip">전체 진행 중</button><button data-filter="target" class="chip">점검대상</button><button data-filter="checking" class="chip">점검 진행 중</button><button data-filter="checked" class="chip">점검 완료</button><button data-filter="unwritten" class="chip">보고서 미작성</button><button data-filter="complete" class="chip">보고서 완료</button></div><div id="searchMeta" class="meta"></div><div id="siteResults" class="cards"></div></section>
-<section id="page-sales" class="page"><div class="pageTitle"><div><h2>매출 관리</h2><p>관리자 전용 · VAT 미포함 금액 기준</p></div><div class="actions"><button id="salesPrint">출력</button><button id="salesImport">엑셀 가져오기</button><button id="salesExport" class="primary">엑셀 내보내기</button><input id="salesFile" type="file" accept=".xlsx,.xls" class="hidden"></div></div><div class="toolbar salesFilters"><select id="salesYear"><option value="">전체 연도</option></select><select id="salesMonth"><option value="">전체 월</option></select><select id="salesOwner"><option value="">전체 담당자</option></select><input id="salesQuery" placeholder="현장명 검색"><button id="salesRefresh">조회</button></div><div class="kpis"><div><span>건수</span><b id="kpiCount">0</b></div><div><span>매출액(VAT 미포함)</span><b id="kpiAmount">0원</b></div><div><span>제본비</span><b id="kpiBinding">0원</b></div></div><div class="tableWrap"><table id="salesTable"><thead><tr><th>연도</th><th>월</th><th>문서담당</th><th>현장명</th><th>매출액</th><th>제본비</th><th>완료일</th><th>비고</th></tr></thead><tbody></tbody></table></div></section>
-<section id="page-users" class="page"><div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자만 계정을 등록하고 권한을 변경할 수 있습니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div><div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>현장조회</th><th>영업</th><th>점검</th><th>경영·회계</th><th>관리</th></tr></thead><tbody></tbody></table></div></section>
+<section id="page-search" class="page active">
+  <div class="pageTitle"><div><h2>현장 검색</h2><p>첨부 엑셀 전체 DB에서 현장명·지역·S/N·담당자 기준으로 검색합니다.</p></div><button id="fieldBtn" class="ghost">표시 항목 설정</button></div>
+  <div id="dbStatus" class="statusBanner"></div>
+  <div class="toolbar"><input id="siteQuery" placeholder="현장명, 지역, S/N, 문서담당, 점검원 검색"><button id="searchBtn" class="primary">검색</button></div>
+  <div class="filterRow statusFilters">
+    <button data-filter="all" class="chip active">전체</button><button data-filter="inprogress" class="chip">전체 진행 중</button><button data-filter="target" class="chip">점검대상</button><button data-filter="checking" class="chip">점검 진행 중</button><button data-filter="checked" class="chip">점검 완료</button><button data-filter="unwritten" class="chip">보고서 미작성</button><button data-filter="complete" class="chip">보고서 완료</button>
+  </div>
+  <div id="searchMeta" class="meta"></div><div id="siteResults" class="cards"></div>
+</section>
+<section id="page-sales" class="page">
+  <div class="pageTitle"><div><h2>매출 관리</h2><p>관리자 전용 · 기존 보고서 관리와 동일한 기준으로 조회/출력/엑셀 입출력합니다.</p></div><div class="actions"><button id="salesPrint">출력</button><button id="salesImport">엑셀 가져오기</button><button id="salesExport" class="primary">엑셀 내보내기</button><input id="salesFile" type="file" accept=".xlsx,.xls" class="hidden"></div></div>
+  <div class="toolbar salesFilters"><select id="salesYear"><option value="">전체 연도</option></select><select id="salesMonth"><option value="">전체 월</option></select><select id="salesOwner"><option value="">전체 담당자</option></select><input id="salesQuery" placeholder="현장명 검색"><button id="salesRefresh">조회</button></div>
+  <div class="kpis"><div><span>매출 건수</span><b id="kpiCount">0</b></div><div><span>매출액(VAT 미포함)</span><b id="kpiAmount">0원</b></div><div><span>제본비 합계</span><b id="kpiBinding">0원</b></div><div><span>보고서 완료</span><b id="kpiComplete">0</b></div></div>
+  <div class="tableWrap"><table id="salesTable"><thead><tr><th>연도</th><th>월</th><th>문서담당</th><th>현장명</th><th>매출액(VAT 미포함)</th><th>제본비</th><th>완료일</th><th>비고</th></tr></thead><tbody></tbody></table></div>
+</section>
+<section id="page-users" class="page">
+  <div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자가 직접 사원명·ID·PW·전화번호를 등록하고 사내포털 권한을 부여합니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div>
+  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>매출조회</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
+  <p class="hint">관리자로 지정하면 사내포털 권한은 모두 자동 부여됩니다. 일반 사용자는 필요한 권한만 선택할 수 있습니다.</p>
+</section>
 </main></div>
-<dialog id="detailDlg"><div class="dlgHead"><h3 id="detailTitle">현장 상세</h3><button onclick="detailDlg.close()">×</button></div><div id="detailTabs" class="filterRow"></div><div id="detailBody" class="detailGrid"></div></dialog>
-<dialog id="fieldsDlg"><div class="dlgHead"><h3>검색 결과 표시 항목</h3><button onclick="fieldsDlg.close()">×</button></div><div id="fieldList" class="checkGrid"></div><div class="dlgFoot"><button id="fieldsSave" class="primary">저장</button></div></dialog>
-<dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button onclick="userDlg.close()">×</button></div><form id="userForm" class="formGrid"><label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자"></label><label>비밀번호<input id="empPw" type="password" required minlength="8"></label><label>전화번호<input id="empPhone" required></label><label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label><fieldset><legend>업무 권한</legend><label class="inline"><input id="permReport" type="checkbox" checked> 현장/보고서 조회</label><label class="inline"><input id="permSalesWork" type="checkbox"> 영업 조회</label><label class="inline"><input id="permInspection" type="checkbox"> 점검 조회</label><label class="inline"><input id="permManagement" type="checkbox"> 경영·회계 조회</label></fieldset><button class="primary" type="submit">등록</button><div id="userMsg" class="msg"></div></form></dialog>
+<dialog id="detailDlg"><div class="dlgHead"><h3 id="detailTitle">현장 상세</h3><button class="iconBtn" id="detailClose">×</button></div><div id="detailTabs" class="filterRow"></div><div id="detailBody" class="detailGrid"></div></dialog>
+<dialog id="fieldsDlg"><div class="dlgHead"><h3>검색 결과 표시 항목</h3><button class="iconBtn" id="fieldsClose">×</button></div><div id="fieldList" class="checkGrid"></div><div class="dlgFoot"><button id="fieldsSave" class="primary">저장</button></div></dialog>
+<dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button class="iconBtn" id="userClose">×</button></div><form id="userForm" class="formGrid">
+<label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자 3자 이상"></label><label>비밀번호<input id="empPw" type="password" required minlength="8" placeholder="8자 이상"></label><label>전화번호<input id="empPhone" required placeholder="010-0000-0000"></label>
+<label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
+<fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
+<button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
+<div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js"></script><script src="fields.js"></script><script src="app.js"></script></body></html>
