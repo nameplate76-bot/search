@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1100-v5">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1304-v7">
 <script>
 (function(){
-  const BUILD='20260917-1100-v5';
+  const BUILD='20260917-1304-v7';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -29,7 +29,7 @@
 </div>
 <div id="appView" class="hidden appShell">
 <header class="topbar">
-  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V5</small></div></div>
+  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V7</small></div></div>
   <nav id="mainNav">
     <button data-page="search" class="active">현장 검색</button>
     <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
@@ -75,5 +75,14 @@
 <label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
 <fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
+
+<dialog id="contactEditDlg"><div class="dlgHead"><h3>관리주체 연락처·주소 수정</h3><button class="iconBtn" id="contactEditClose">×</button></div><form id="contactEditForm" class="formGrid">
+<label>현장명<input id="contactSiteName" disabled></label>
+<label>관리주체 전화번호<input id="contactPhone" inputmode="tel" placeholder="예: 010-1234-5678"></label>
+<label>관리주체 이메일<input id="contactEmail" type="email" placeholder="예: manager@example.com"></label>
+<label>주소<input id="contactAddress" placeholder="도로명 주소 또는 지번 주소"></label>
+<input id="contactSourceId" type="hidden">
+<button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
+<dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">앱이 설치되어 있으면 앱 실행을 시도하고, 지원되지 않는 경우 웹 지도/검색 화면으로 연결합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1100-v5"></script><script src="fields.js?v=20260917-1100-v5"></script><script src="app.js?v=20260917-1100-v5"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1304-v7"></script><script src="fields.js?v=20260917-1304-v7"></script><script src="app.js?v=20260917-1304-v7"></script></body></html>
