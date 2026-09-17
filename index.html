@@ -1,22 +1,21 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1000">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1100-v5">
 <script>
 (function(){
-  const BUILD='20260917-1000-v4';
+  const BUILD='20260917-1100-v5';
   try{
-    const prev=localStorage.getItem('staffPortalBuild');
-    if(prev!==BUILD){
-      localStorage.setItem('staffPortalBuild',BUILD);
-      if('caches' in window){caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});}
-      if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).catch(()=>{});}
-    }
+    localStorage.setItem('staffPortalBuild',BUILD);
+    // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
+    if('caches' in window){caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});}
+    if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).catch(()=>{});}
   }catch(e){}
   window.STAFF_PORTAL_BUILD=BUILD;
 })();
 </script></head>
 <body>
+<div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
 <div id="loginView" class="loginShell">
   <section class="loginCard">
     <div class="logo">KM</div>
@@ -30,7 +29,7 @@
 </div>
 <div id="appView" class="hidden appShell">
 <header class="topbar">
-  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V4</small></div></div>
+  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V5</small></div></div>
   <nav id="mainNav">
     <button data-page="search" class="active">현장 검색</button>
     <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
@@ -40,7 +39,7 @@
 </header>
 <main>
 <section id="page-search" class="page active">
-  <div class="pageTitle"><div><h2>현장 검색</h2><p>첨부 엑셀 전체 DB에서 현장명·지역·S/N·담당자 기준으로 검색합니다.</p></div><button id="fieldBtn" class="ghost">표시 항목 설정</button></div>
+  <div class="pageTitle"><div><h2>현장 검색</h2><p>첨부 엑셀 전체 DB에서 현장명·지역·S/N·담당자 기준으로 검색합니다.</p></div><div class="actions"><button id="dbImportBtn" class="ghost hidden">전체 DB 엑셀 갱신</button><input id="dbFile" type="file" accept=".xlsx,.xls" class="hidden"><button id="fieldBtn" class="ghost">표시 항목 설정</button></div></div>
   <div id="dbStatus" class="statusBanner"></div>
   <div class="toolbar"><input id="siteQuery" placeholder="현장명, 지역, S/N, 문서담당, 점검원 검색"><button id="searchBtn" class="primary">검색</button></div>
   <div class="filterRow statusFilters">
@@ -48,11 +47,20 @@
   </div>
   <div id="searchMeta" class="meta"></div><div id="siteResults" class="cards"></div>
 </section>
-<section id="page-sales" class="page">
-  <div class="pageTitle"><div><h2>매출 관리</h2><p>관리자 전용 · 기존 보고서 관리와 동일한 기준으로 조회/출력/엑셀 입출력합니다.</p></div><div class="actions"><button id="salesPrint">출력</button><button id="salesImport">엑셀 가져오기</button><button id="salesExport" class="primary">엑셀 내보내기</button><input id="salesFile" type="file" accept=".xlsx,.xls" class="hidden"></div></div>
-  <div class="toolbar salesFilters"><select id="salesYear"><option value="">전체 연도</option></select><select id="salesMonth"><option value="">전체 월</option></select><select id="salesOwner"><option value="">전체 담당자</option></select><input id="salesQuery" placeholder="현장명 검색"><button id="salesRefresh">조회</button></div>
-  <div class="kpis"><div><span>매출 건수</span><b id="kpiCount">0</b></div><div><span>매출액(VAT 미포함)</span><b id="kpiAmount">0원</b></div><div><span>제본비 합계</span><b id="kpiBinding">0원</b></div><div><span>보고서 완료</span><b id="kpiComplete">0</b></div></div>
-  <div class="tableWrap"><table id="salesTable"><thead><tr><th>연도</th><th>월</th><th>문서담당</th><th>현장명</th><th>매출액(VAT 미포함)</th><th>제본비</th><th>완료일</th><th>비고</th></tr></thead><tbody></tbody></table></div>
+<section id="page-sales" class="page salesPage">
+  <div class="pageTitle salesPageHead">
+    <div><h2 id="salesTitle">보고서 작성 완료 매출 관리</h2><p>문서작성 담당의 앞 연도와 완료월을 기준으로 조회하며, 매출액은 금액(VAT 미포함)을 적용합니다.</p></div>
+    <div class="salesActions"><button id="salesImport">⇩ 엑셀 가져오기</button><button id="salesExport">⇧ 엑셀 내보내기</button><button id="salesPrint" class="primary">🖨 출력</button><input id="salesFile" type="file" accept=".xlsx,.xls,.csv" class="hidden"></div>
+  </div>
+  <div class="salesPanel">
+    <div class="salesFilters"><select id="salesYear"></select><select id="salesMonth"></select><select id="salesOwner"></select></div>
+    <div class="salesNotice">완료월이 선택한 연도·월에 해당하는 보고서를 표시합니다. 매출 관리는 관리자만 사용할 수 있습니다.</div>
+    <div class="salesWrap"><table class="salesReportTable" id="salesTable">
+      <colgroup><col style="width:4%"><col style="width:31%"><col style="width:14%"><col style="width:14%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:7%"></colgroup>
+      <thead><tr><th>No.</th><th>현장명</th><th>계약 구분<br>(유지/성능/유지선임)</th><th>점검참여자</th><th>계약 금액<br>(VAT 별도)</th><th>유지관리자<br>선임비(VAT 별도)</th><th>매출액<br>(VAT 별도)</th><th>비고</th></tr></thead>
+      <tbody id="salesBody"></tbody><tfoot id="salesFoot"></tfoot>
+    </table></div>
+  </div>
 </section>
 <section id="page-users" class="page">
   <div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자가 직접 사원명·ID·PW·전화번호를 등록하고 사내포털 권한을 부여합니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div>
@@ -68,4 +76,4 @@
 <fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1000"></script><script src="fields.js?v=20260917-1000"></script><script src="app.js?v=20260917-1000"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1100-v5"></script><script src="fields.js?v=20260917-1100-v5"></script><script src="app.js?v=20260917-1100-v5"></script></body></html>
