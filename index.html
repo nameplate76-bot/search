@@ -1,5 +1,21 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css"></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260917-1000">
+<script>
+(function(){
+  const BUILD='20260917-1000-v4';
+  try{
+    const prev=localStorage.getItem('staffPortalBuild');
+    if(prev!==BUILD){
+      localStorage.setItem('staffPortalBuild',BUILD);
+      if('caches' in window){caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});}
+      if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).catch(()=>{});}
+    }
+  }catch(e){}
+  window.STAFF_PORTAL_BUILD=BUILD;
+})();
+</script></head>
 <body>
 <div id="loginView" class="loginShell">
   <section class="loginCard">
@@ -14,7 +30,7 @@
 </div>
 <div id="appView" class="hidden appShell">
 <header class="topbar">
-  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small></div></div>
+  <div class="brand"><div class="miniLogo">KM</div><div><strong>사내 현장정보 업무포털</strong><small id="userBadge"></small><small style="opacity:.65;margin-left:8px">V4</small></div></div>
   <nav id="mainNav">
     <button data-page="search" class="active">현장 검색</button>
     <button data-page="sales" id="salesNav" class="hidden">매출 관리</button>
@@ -52,4 +68,4 @@
 <fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js"></script><script src="fields.js"></script><script src="app.js"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="config.js?v=20260917-1000"></script><script src="fields.js?v=20260917-1000"></script><script src="app.js?v=20260917-1000"></script></body></html>
