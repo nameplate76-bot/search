@@ -534,17 +534,121 @@ async function loadUnwrittenDashboard(){
   renderUnwrittenList();
  }catch(e){summary.innerHTML=`<div class="statusBanner warn">미작성 대시보드 조회 오류: ${esc(e.message)}</div>`}
 }
+
+const UNWRITTEN_LIST_COLUMNS={
+ no:{key:'no',label:'No.',sortable:false},
+ site_name:{key:'site_name',label:'현장명',sortable:true},
+ important:{key:'important',label:'중요사항',sortable:true},
+ expiry:{key:'expiry',label:'계약만료일',sortable:true},
+ elapsed:{key:'elapsed',label:'파일접수 후 경과일수',sortable:true},
+ corporation:{key:'corporation',label:'법인',sortable:true},
+ inspection_type:{key:'inspection_type',label:'점검 구분',sortable:true},
+ receipt:{key:'receipt',label:'파일접수일자',sortable:true},
+ field_end:{key:'field_end',label:'점검종료일자',sortable:true},
+ field_inspector:{key:'field_inspector',label:'현장점검원',sortable:true},
+ actions:{key:'actions',label:'관리',sortable:false}
+};
+const UNWRITTEN_DEFAULT_ORDER=['no','site_name','important','expiry','elapsed','corporation','inspection_type','receipt','field_end','field_inspector','actions'];
+let unwrittenColumnOrder=[];
+let unwrittenSort={key:null,dir:'asc'};
+let suppressUnwrittenSortClick=false;
+function unwrittenOrderStorageKey(){return `staff_unwritten_column_order:${me?.id||'guest'}`}
+function unwrittenSortStorageKey(){return `staff_unwritten_sort:${me?.id||'guest'}`}
+function ensureUnwrittenColumnOrder(){
+ const valid=[...UNWRITTEN_DEFAULT_ORDER];
+ if(!unwrittenColumnOrder.length){
+  try{const saved=JSON.parse(localStorage.getItem(unwrittenOrderStorageKey())||'null');if(Array.isArray(saved))unwrittenColumnOrder=saved.filter(k=>valid.includes(k))}catch(e){}
+ }
+ let next=unwrittenColumnOrder.filter(k=>valid.includes(k));
+ valid.forEach(k=>{if(!next.includes(k))next.push(k)});
+ unwrittenColumnOrder=next;
+ if(!unwrittenSort.key){
+  try{const s=JSON.parse(localStorage.getItem(unwrittenSortStorageKey())||'null');if(s&&UNWRITTEN_LIST_COLUMNS[s.key]?.sortable&&['asc','desc'].includes(s.dir))unwrittenSort=s}catch(e){}
+ }
+ if(unwrittenSort.key&&!UNWRITTEN_LIST_COLUMNS[unwrittenSort.key]?.sortable)unwrittenSort={key:null,dir:'asc'};
+ return unwrittenColumnOrder;
+}
+function unwrittenSortValue(r,key){
+ if(key==='site_name')return r.site_name||'';
+ if(key==='important')return reportValue(r,16)||'';
+ if(key==='expiry')return reportValue(r,18)||'';
+ if(key==='elapsed')return elapsedFromReceipt(r)??-1;
+ if(key==='corporation')return reportValue(r,24)||'';
+ if(key==='inspection_type')return reportValue(r,25)||'';
+ if(key==='receipt')return reportValue(r,27)||'';
+ if(key==='field_end')return String(r.field_end||reportValue(r,30)||'');
+ if(key==='field_inspector')return String(r.field_inspector||reportValue(r,31)||'');
+ return '';
+}
+function sortedUnwrittenRows(rows){
+ if(!unwrittenSort.key)return rows;
+ const key=unwrittenSort.key,dir=unwrittenSort.dir==='desc'?-1:1;
+ return [...rows].sort((a,b)=>{
+  const cmp=compareSiteListValues(unwrittenSortValue(a,key),unwrittenSortValue(b,key));
+  if(cmp)return cmp*dir;
+  return (Number(a.excel_row||0)-Number(b.excel_row||0))||Number(a.source_id||0)-Number(b.source_id||0);
+ });
+}
+function toggleUnwrittenSort(key){
+ const c=UNWRITTEN_LIST_COLUMNS[key];if(!c?.sortable)return;
+ if(unwrittenSort.key===key)unwrittenSort.dir=unwrittenSort.dir==='asc'?'desc':'asc';else unwrittenSort={key,dir:'asc'};
+ try{localStorage.setItem(unwrittenSortStorageKey(),JSON.stringify(unwrittenSort))}catch(e){}
+ renderUnwrittenList();
+}
+function moveUnwrittenColumn(dragKey,targetKey,placeAfter=false){
+ ensureUnwrittenColumnOrder();
+ if(!dragKey||!targetKey||dragKey===targetKey)return;
+ const next=unwrittenColumnOrder.filter(k=>k!==dragKey),idx=next.indexOf(targetKey);if(idx<0)return;
+ next.splice(idx+(placeAfter?1:0),0,dragKey);unwrittenColumnOrder=next;
+ try{localStorage.setItem(unwrittenOrderStorageKey(),JSON.stringify(unwrittenColumnOrder))}catch(e){}
+ renderUnwrittenList();
+}
+function unwrittenHeaderHtml(key){
+ const c=UNWRITTEN_LIST_COLUMNS[key],active=unwrittenSort.key===key,arrow=active?(unwrittenSort.dir==='asc'?' ▲':' ▼'):'';
+ return `<th class="uw-col-${key} ${c.sortable?'sortableHeader':''} ${active?'sortActive':''}" data-uw-col-key="${key}" data-sortable="${c.sortable?'1':'0'}" draggable="true" title="${c.sortable?'클릭: 오름/내림차순 정렬 · ':''}드래그: 열 이동"><span>${esc(c.label)}${arrow}</span></th>`;
+}
+function unwrittenCellHtml(r,key,index){
+ const days=elapsedFromReceipt(r);
+ if(key==='no')return `<td class="center uw-col-no">${index+1}</td>`;
+ if(key==='site_name')return `<td class="unwrittenSite uw-col-site_name"><strong>${esc(r.site_name||'-')}</strong></td>`;
+ if(key==='important')return `<td class="importantCell uw-col-important">${esc(reportValue(r,16)||'-')}</td>`;
+ if(key==='expiry')return `<td class="uw-col-expiry">${esc(reportValue(r,18)||'-')}</td>`;
+ if(key==='elapsed')return `<td class="center uw-col-elapsed ${elapsedClass(days)}">${days===null?'-':days+'일'}</td>`;
+ if(key==='corporation')return `<td class="uw-col-corporation">${esc(reportValue(r,24)||'-')}</td>`;
+ if(key==='inspection_type')return `<td class="uw-col-inspection_type">${esc(reportValue(r,25)||'-')}</td>`;
+ if(key==='receipt')return `<td class="uw-col-receipt">${esc(reportValue(r,27)||'-')}</td>`;
+ if(key==='field_end')return `<td class="uw-col-field_end">${esc(String(r.field_end||reportValue(r,30)||'-'))}</td>`;
+ if(key==='field_inspector')return `<td class="uw-col-field_inspector">${esc(r.field_inspector||reportValue(r,31)||'-')}</td>`;
+ if(key==='actions')return `<td class="center reportActions uw-col-actions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button><button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button></td>`;
+ return '<td></td>';
+}
+function bindUnwrittenHeaderInteractions(root){
+ let dragKey=null;
+ const clearMarks=()=>root.querySelectorAll('.unwrittenTable th').forEach(x=>x.classList.remove('dragging','dragBefore','dragAfter'));
+ root.querySelectorAll('.unwrittenTable th[data-uw-col-key]').forEach(th=>{
+  th.addEventListener('click',()=>{if(suppressUnwrittenSortClick)return;toggleUnwrittenSort(th.dataset.uwColKey)});
+  th.addEventListener('dragstart',e=>{dragKey=th.dataset.uwColKey;th.classList.add('dragging');suppressUnwrittenSortClick=true;if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragKey)}});
+  th.addEventListener('dragover',e=>{if(!dragKey||dragKey===th.dataset.uwColKey)return;e.preventDefault();clearMarks();const rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;th.classList.add(after?'dragAfter':'dragBefore');if(e.dataTransfer)e.dataTransfer.dropEffect='move'});
+  th.addEventListener('dragleave',()=>th.classList.remove('dragBefore','dragAfter'));
+  th.addEventListener('drop',e=>{e.preventDefault();const target=th.dataset.uwColKey,rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;clearMarks();const from=dragKey;dragKey=null;setTimeout(()=>{suppressUnwrittenSortClick=false},120);moveUnwrittenColumn(from,target,after)});
+  th.addEventListener('dragend',()=>{clearMarks();dragKey=null;setTimeout(()=>{suppressUnwrittenSortClick=false},120)});
+ });
+}
 function renderUnwrittenList(){
  if(!isAdmin())return;
  const filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
  $('unwrittenListTitle').textContent=unwrittenOwnerFilter==='all'?'미작성 현장 전체':`${unwrittenOwnerFilter} · 미작성 현장`;
- $('unwrittenListMeta').textContent=`${filtered.length.toLocaleString()}건 · 현장 행을 클릭하면 상세정보를 확인할 수 있습니다.`;
- const root=$('unwrittenList');if(!filtered.length){root.innerHTML='<div class="emptyDashboard">해당 담당자의 미작성 보고서가 없습니다.</div>';return}
  const desktop=window.matchMedia('(min-width:801px)').matches;
+ $('unwrittenListMeta').textContent=desktop?`${filtered.length.toLocaleString()}건 · 제목 클릭: 오름/내림차순 정렬 · 제목 드래그: 열 이동 · 현장 행 클릭: 상세조회`:`${filtered.length.toLocaleString()}건 · 현장카드에서 상세·수정할 수 있습니다.`;
+ const root=$('unwrittenList');if(!filtered.length){root.innerHTML='<div class="emptyDashboard">해당 담당자의 미작성 보고서가 없습니다.</div>';return}
  if(desktop){
-   const rows=filtered.map((r,i)=>{const days=elapsedFromReceipt(r),receipt=reportValue(r,27),end=String(r.field_end||reportValue(r,30)||''),expiry=reportValue(r,18);return `<tr class="unwrittenRow" data-report-detail="${r.source_id}"><td class="center">${i+1}</td><td class="unwrittenSite"><strong>${esc(r.site_name||'-')}</strong></td><td class="importantCell">${esc(reportValue(r,16)||'-')}</td><td>${esc(expiry||'-')}</td><td class="center ${elapsedClass(days)}">${days===null?'-':days+'일'}</td><td>${esc(reportValue(r,24)||'-')}</td><td>${esc(reportValue(r,25)||'-')}</td><td>${esc(receipt||'-')}</td><td>${esc(end||'-')}</td><td>${esc(r.field_inspector||reportValue(r,31)||'-')}</td><td class="center reportActions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button><button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button></td></tr>`}).join('');
-   root.innerHTML=`<div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr><th>No.</th><th>현장명</th><th>중요사항</th><th>계약만료일</th><th>파일접수 후<br>경과일수</th><th>법인</th><th>점검 구분</th><th>파일접수일자</th><th>점검종료일자</th><th>현장점검원</th><th>관리</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-   root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input'))return;openDetail(Number(tr.dataset.reportDetail))});
+   ensureUnwrittenColumnOrder();
+   const sorted=sortedUnwrittenRows(filtered);
+   const headers=unwrittenColumnOrder.map(unwrittenHeaderHtml).join('');
+   const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}">${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
+   root.innerHTML=`<div class="unwrittenListHint"><strong>정렬:</strong> 열 제목 클릭 · <strong>열 이동:</strong> 제목을 마우스로 잡아 왼쪽/오른쪽으로 드래그하세요. 변경한 열 순서는 자동 저장됩니다.</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
+   bindUnwrittenHeaderInteractions(root);
+   root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;openDetail(Number(tr.dataset.reportDetail))});
  }else{
    root.innerHTML=filtered.map(r=>{const days=elapsedFromReceipt(r);return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${esc(r.site_name||'-')}</h4><span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span></div><dl><div><dt>중요사항</dt><dd>${esc(reportValue(r,16)||'-')}</dd></div><div><dt>계약만료일</dt><dd>${esc(reportValue(r,18)||'-')}</dd></div><div><dt>법인</dt><dd>${esc(reportValue(r,24)||'-')}</dd></div><div><dt>점검 구분</dt><dd>${esc(reportValue(r,25)||'-')}</dd></div><div><dt>파일접수일자</dt><dd>${esc(reportValue(r,27)||'-')}</dd></div><div><dt>점검종료일자</dt><dd>${esc(r.field_end||reportValue(r,30)||'-')}</dd></div><div><dt>현장점검원</dt><dd>${esc(r.field_inspector||reportValue(r,31)||'-')}</dd></div></dl><div class="siteActions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button><button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button></div></article>`}).join('');
  }

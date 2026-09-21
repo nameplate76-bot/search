@@ -223,3 +223,28 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .siteSelectCol{width:48px!important;min-width:48px!important;max-width:48px!important}.siteSelectCol input,.siteRowCheck,.siteCardCheck{width:18px;height:18px;accent-color:#2563eb;cursor:pointer}.mobileSiteSelect{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#475467}.siteSelectionMeta{align-items:center;justify-content:space-between;gap:8px}
 @media(min-width:801px){#page-search .desktopSiteTable th.siteSelectCol,#page-search .desktopSiteTable td.siteSelectCol{width:48px!important;min-width:48px!important;max-width:48px!important;text-align:center;padding-left:5px;padding-right:5px}}
 @media(max-width:800px){.siteSelectionBar{align-items:stretch;flex-direction:column;margin-bottom:10px}.siteSelectionButtons{display:grid;grid-template-columns:1fr 1fr 1fr;width:100%}.siteSelectionButtons button{min-width:0;padding:8px 4px}.siteSelectedCount{text-align:right}.siteSelectionMeta{display:flex}}
+
+
+/* V26 - 보고서 미작성 리스트: 제목 정렬 + 드래그 열 이동 */
+.unwrittenListHint{font-size:13px;color:var(--muted);margin:0 2px 8px}.unwrittenListHint strong{color:#344054}
+@media (min-width:801px){
+  .unwrittenTable{width:max-content;min-width:100%;table-layout:auto}
+  .unwrittenTable th[data-uw-col-key]{user-select:none;-webkit-user-select:none;transition:background .12s ease,box-shadow .12s ease,opacity .12s ease;white-space:normal;line-height:1.25}
+  .unwrittenTable th[data-uw-col-key] span{display:inline-flex;align-items:center;justify-content:center;gap:3px;pointer-events:none}
+  .unwrittenTable th.sortableHeader{cursor:pointer}
+  .unwrittenTable th.sortableHeader:hover{background:#dfeaff;color:#143a75}
+  .unwrittenTable th.sortActive{background:#d8e7ff;color:#174ea6;font-weight:900}
+  .unwrittenTable th.dragging{opacity:.45;background:#dbeafe}
+  .unwrittenTable th.dragBefore{box-shadow:inset 4px 0 0 #2563eb}
+  .unwrittenTable th.dragAfter{box-shadow:inset -4px 0 0 #2563eb}
+  .unwrittenTable th,.unwrittenTable td{width:auto!important;max-width:none}
+  .unwrittenTable .uw-col-no{min-width:58px;width:58px!important}
+  .unwrittenTable .uw-col-site_name{min-width:260px}
+  .unwrittenTable .uw-col-important{min-width:220px;white-space:normal}
+  .unwrittenTable .uw-col-expiry,.unwrittenTable .uw-col-receipt,.unwrittenTable .uw-col-field_end{min-width:125px}
+  .unwrittenTable .uw-col-elapsed{min-width:135px}
+  .unwrittenTable .uw-col-corporation,.unwrittenTable .uw-col-inspection_type{min-width:110px}
+  .unwrittenTable .uw-col-field_inspector{min-width:130px}
+  .unwrittenTable .uw-col-actions{min-width:120px;width:120px!important}
+}
+@media(max-width:800px){.unwrittenListHint{display:none}}
