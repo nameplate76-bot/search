@@ -237,7 +237,20 @@ async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteE
 
 
 function reportValue(r,col){return normalizeCell(r?.safe_values?.[col-1]??'',col)}
-function reportOwnerName(r){return String(r?.document_owner||reportValue(r,19)||'').trim()||'미배정'}
+function normalizeReportOwnerName(raw){
+ let name=String(raw??'').replace(/\u00a0/g,' ').trim();
+ if(!name)return '미배정';
+ // 담당자명 앞에 붙은 연도/회차/순번 숫자는 집계에서 무시합니다.
+ // 예: 24김명철, 2025 김명철, 01-김명철, 1) 김명철 -> 김명철
+ let prev='';
+ while(name!==prev&&/^\s*\d/.test(name)){
+   prev=name;
+   name=name.replace(/^\s*\d+\s*(?:년(?:도)?|기|차|회)?\s*[-._/:()\[\]]*\s*/,'').trim();
+ }
+ name=name.replace(/\s+/g,' ').trim();
+ return name||'미배정';
+}
+function reportOwnerName(r){return normalizeReportOwnerName(r?.document_owner||reportValue(r,19)||'')}
 function parseLocalDate(v,col){v=normalizeCell(v,col);if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);if(m){const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return Number.isNaN(d.getTime())?null:d}if(/^\d+(\.\d+)?$/.test(s)){const x=excelDate(Number(s));if(x!==s)return parseLocalDate(x,col)}return null}
 function elapsedFromReceipt(r){const d=parseLocalDate(reportValue(r,27),27);if(!d)return null;const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(0,Math.floor((today-d)/86400000))}
 function elapsedClass(days){if(days===null)return'';if(days>=30)return'elapsedDanger';if(days>=14)return'elapsedWarn';if(days>=7)return'elapsedWatch';return'elapsedNormal'}
