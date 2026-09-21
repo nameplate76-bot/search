@@ -48,6 +48,8 @@ function statusOf(r){const plan=!!(r.field_plan_start||r.field_plan_end),end=!!r
 function filterOk(r){if(currentFilter==='all')return true;const s=statusOf(r);if(currentFilter==='inprogress')return s!=='complete';if(currentFilter==='checked')return s==='unwritten'||s==='complete';return s===currentFilter}
 function excelDate(serial){const base=Date.UTC(1899,11,30),d=new Date(base+Number(serial)*86400000);return Number.isFinite(d.getTime())?d.toISOString().slice(0,10):serial}
 function normalizeCell(v,col){if(v===null||v===undefined)return'';if(dateCols.has(col)&&typeof v==='number'&&v>20000&&v<80000)return excelDate(v);return v}
+function displayNumber(v,decimals=0){const raw=String(v??'').trim().replace(/,/g,'');if(!raw)return'';const n=Number(raw);if(!Number.isFinite(n))return String(v??'').trim();return n.toLocaleString('ko-KR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals})}
+function formatDisplayCell(v,col){const normalized=normalizeCell(v,col);if(Number(col)===6)return displayNumber(normalized,2);if(Number(col)===7)return displayNumber(normalized,0);return normalized}
 function ownerParts(raw){raw=String(raw||'').trim();const m=raw.match(/^(20\d{2}|\d{2})(.*)$/);if(!m)return{year:null,owner:raw};let y=Number(m[1]);if(y<100)y+=2000;return{year:y,owner:m[2].trim()||raw}}
 function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20]||vals[19])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}
 function splitContact(raw){
@@ -272,7 +274,7 @@ function siteListColumn(key){
 }
 function siteFieldDisplayValue(r,field){
  const raw=r?.safe_values?.[field.col-1]??'';
- return normalizeCell(raw,field.col);
+ return formatDisplayCell(raw,field.col);
 }
 function siteListSortValue(r,key){
  const c=siteListColumn(key);
@@ -408,7 +410,7 @@ function renderSites(){
  }
  const visible=lastSites.slice(0,600);
  root.innerHTML=siteSelectionBarHtml(visible)+visible.map(r=>{
-  const fieldsHtml=displayFields.map(f=>{const meta=schema.fields.find(x=>x.label===f),v=meta?normalizeCell(r.safe_values?.[meta.col-1]??'',meta.col):val(r,f);return `<div><span>${esc(f)}</span><b>${esc(v||'-')}</b></div>`}).join('');
+  const fieldsHtml=displayFields.map(f=>{const meta=schema.fields.find(x=>x.label===f),v=meta?formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col):val(r,f);return `<div><span>${esc(f)}</span><b>${esc(v||'-')}</b></div>`}).join('');
   const p1=r.field_plan_start?'done':'',p2=r.field_end?'done':(r.field_plan_start?'working':''),p3=r.report_complete_date?'done':(r.field_end?'working':'');
   const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';
   const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';
@@ -420,7 +422,7 @@ function renderSites(){
  bindSiteSelectionControls(root,visible);
 }
 const groups=[['기본정보',1,18],['진행·담당·계약',19,45],['유지관리 전체수량',55,82],['성능점검 대상수량',83,110],['성능점검 확정수량',111,137]];
-async function openDetail(id){let r=lastSites.find(x=>Number(x.source_id)===Number(id));if(!r){const{data,error}=await sb.from('staff_site_search').select('*').eq('source_id',Number(id)).maybeSingle();if(error)return alert('현장 정보를 불러오지 못했습니다: '+error.message);r=data;if(r)lastSites.push(r)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const[,a,b]=groups[i];const fields=schema.fields.filter(f=>f.col>=a&&f.col<=b&&!f.financial&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem"><span>${esc(f.label)}</span><b>${esc(normalizeCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
+async function openDetail(id){let r=lastSites.find(x=>Number(x.source_id)===Number(id));if(!r){const{data,error}=await sb.from('staff_site_search').select('*').eq('source_id',Number(id)).maybeSingle();if(error)return alert('현장 정보를 불러오지 못했습니다: '+error.message);r=data;if(r)lastSites.push(r)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const[,a,b]=groups[i];const fields=schema.fields.filter(f=>f.col>=a&&f.col<=b&&!f.financial&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem"><span>${esc(f.label)}</span><b>${esc(formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
 const siteEditGroups=[['기본정보',1,18],['진행·담당·계약',19,45],['금액·문서번호',46,54],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
@@ -499,7 +501,7 @@ function sitePayload(){const base=String($('siteFormAddress').value||'').trim(),
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');const id=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:id,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),searchSites()]);if($('page-unwritten')?.classList.contains('active')&&isAdmin())await loadUnwrittenDashboard();}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
-function reportValue(r,col){return normalizeCell(r?.safe_values?.[col-1]??'',col)}
+function reportValue(r,col){return formatDisplayCell(r?.safe_values?.[col-1]??'',col)}
 function normalizeReportOwnerName(raw){
  let name=String(raw??'').replace(/\u00a0/g,' ').trim();
  if(!name)return '미배정';
