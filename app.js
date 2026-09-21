@@ -10,6 +10,18 @@ const can=k=>!!me?.[k],isAdmin=()=>me?.role==='admin'&&me?.approved;
 const canCreateSite=()=>isAdmin()||can('can_create_staff_sites');
 const canEditSite=()=>isAdmin()||can('can_edit_staff_sites');
 const canExportAllSites=()=>isAdmin()||can('can_export_staff_sites');
+function uuid(){
+  try{
+    if(globalThis.crypto?.randomUUID)return globalThis.crypto.randomUUID();
+    if(globalThis.crypto?.getRandomValues){
+      const b=new Uint8Array(16);globalThis.crypto.getRandomValues(b);
+      b[6]=(b[6]&0x0f)|0x40;b[8]=(b[8]&0x3f)|0x80;
+      const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+      return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+    }
+  }catch(e){}
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)});
+}
 function notify(el,msg,ok=false){el.textContent=msg||'';el.style.color=ok?'#17733c':'#b42318'}
 function val(row,label){const ix=labels.indexOf(label);return ix<0?'':(row.safe_values?.[ix]??'')}
 function statusOf(r){const plan=!!(r.field_plan_start||r.field_plan_end),end=!!r.field_end,report=!!r.report_complete_date;if(report)return'complete';if(end)return'unwritten';if(plan)return'checking';if(String(r.inspection_stage||'').trim())return'target';return'inprogress'}
