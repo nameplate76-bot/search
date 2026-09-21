@@ -103,3 +103,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .phoneLinkItem{display:inline-flex;align-items:center;min-height:40px;padding:8px 11px;border:1px solid #bfd2ff;border-radius:10px;background:#f5f8ff;text-decoration:none!important}
 .phoneLinkItem:active{background:#e9f0ff}
 @media(max-width:800px){.phoneLinkItem{width:100%;justify-content:flex-start;font-size:16px;min-height:46px}.phoneLinkList{gap:8px}}
+
+/* V14 - 전체 현장 DB 삭제 */
+.danger{background:#fff;color:#b42318;border-color:#f3b7b2;font-weight:800}.danger:hover{background:#fff1f0;border-color:#e67c73}.danger:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:800px){.pageTitle .actions .danger{flex:1 1 calc(50% - 6px)}}
