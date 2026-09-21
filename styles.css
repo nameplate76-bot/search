@@ -248,3 +248,14 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   .unwrittenTable .uw-col-actions{min-width:120px;width:120px!important}
 }
 @media(max-width:800px){.unwrittenListHint{display:none}}
+
+
+/* V27 - 보고서 미작성 표시항목 설정 */
+#unwrittenFieldsSelectAll{border-color:#b6ccff;color:#1d4ed8;background:#f4f7ff}
+#unwrittenFieldsSelectDefault{border-color:#cfd7e5;background:#fff}
+#unwrittenFieldsClearAll{border-color:#f0c2bd;color:#b42318;background:#fff7f6}
+#unwrittenFieldSelectionCount{font-size:13px;color:#475467;white-space:nowrap}
+#unwrittenFieldList label{cursor:pointer}
+#unwrittenFieldList label:has(input:checked){background:#f1f6ff;border-color:#b8cdfd}
+#unwrittenFieldList input[type=checkbox]{accent-color:#2563eb}
+@media(max-width:800px){#unwrittenFieldSelectionCount{text-align:right;font-size:12px}}
