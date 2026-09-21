@@ -365,14 +365,76 @@ async function openDetail(id){let r=lastSites.find(x=>Number(x.source_id)===Numb
 
 const siteEditGroups=[['기본정보',1,18],['진행·담당·계약',19,45],['금액·문서번호',46,54],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
+let siteNameSuggestTimer=null,siteNameSuggestRequest=0,siteNameSuggestions=[];
 function siteFieldAllowed(f){if(!f?.label?.trim())return false;if(f.label==='관리주체 연락처/이메일')return false;if(f.financial&&!isAdmin())return false;return true}
 function siteInputType(col){return dateCols.has(col)?'date':'text'}
 function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has= schema.fields.some(f=>f.col>=g[1]&&f.col<=g[2]&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
-function renderSiteEditFields(){const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];const fields=schema.fields.filter(f=>f.col>=g[1]&&f.col<=g[2]&&siteFieldAllowed(f));$('siteEditFields').innerHTML=fields.map(f=>{const v=normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';return `<label class="siteField${fin}"><span>${esc(f.label)}${f.col===4?' *':''}</span><input data-site-col="${f.col}" type="${siteInputType(f.col)}" value="${esc(v)}"${req}></label>`}).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';$('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{siteEditValues[Number(inp.dataset.siteCol)-1]=inp.value})}
+function renderSiteEditFields(){
+ const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];
+ const fields=schema.fields.filter(f=>f.col>=g[1]&&f.col<=g[2]&&siteFieldAllowed(f));
+ $('siteEditFields').innerHTML=fields.map(f=>{
+  const v=normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';
+  if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(f.label)}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
+  if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(f.label)} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장을 선택하면 S/N을 포함한 등록정보를 복사합니다. 복사 후 원하는 항목을 수정해 새 현장으로 저장할 수 있습니다.</small></label>`;
+  return `<label class="siteField${fin}"><span>${esc(f.label)}${f.col===4?' *':''}</span><input data-site-col="${f.col}" type="${siteInputType(f.col)}" value="${esc(v)}"${req}></label>`;
+ }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
+ $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
+  siteEditValues[Number(inp.dataset.siteCol)-1]=inp.value;
+  if(siteEditMode==='create'&&Number(inp.dataset.siteCol)===4)scheduleSiteNameSuggestions(inp.value);
+ });
+ const nextBtn=$('applyNextSnBtn');if(nextBtn)nextBtn.onclick=()=>applyNextSiteSn(true);
+ const nameInput=$('siteNameLookupInput');if(nameInput){
+  nameInput.onfocus=()=>{if(String(nameInput.value||'').trim())scheduleSiteNameSuggestions(nameInput.value,true)};
+  nameInput.onblur=()=>setTimeout(hideSiteNameSuggestions,180);
+ }
+}
+async function applyNextSiteSn(force=false){
+ if(siteEditMode!=='create'||!canCreateSite())return;
+ try{
+  const{data,error}=await sb.rpc('staff_next_site_sn');if(error)throw error;
+  if(force||!String(siteEditValues[0]||'').trim())siteEditValues[0]=String(data||'');
+  const inp=$('siteEditFields')?.querySelector('[data-site-col="1"]');if(inp)inp.value=siteEditValues[0]||'';
+  if(force)notify($('siteEditMsg'),`다음 S/N ${siteEditValues[0]}을 적용했습니다.`,true);
+ }catch(e){if(force)notify($('siteEditMsg'),'다음 S/N 조회 실패: '+e.message)}
+}
+function hideSiteNameSuggestions(){const box=$('siteNameSuggestions');if(box)box.classList.add('hidden')}
+function scheduleSiteNameSuggestions(value,immediate=false){
+ clearTimeout(siteNameSuggestTimer);const q=String(value||'').trim();
+ if(!q){hideSiteNameSuggestions();return}
+ siteNameSuggestTimer=setTimeout(()=>searchSiteNameSuggestions(q),immediate?0:250);
+}
+async function searchSiteNameSuggestions(term){
+ if(siteEditMode!=='create'||!canCreateSite())return;
+ const seq=++siteNameSuggestRequest,box=$('siteNameSuggestions');if(!box)return;
+ box.classList.remove('hidden');box.innerHTML='<div class="siteSuggestionState">검색 중...</div>';
+ try{
+  const q=String(term||'').replace(/[%_(),]/g,' ').trim();if(!q)return hideSiteNameSuggestions();
+  const{data,error}=await sb.from('staff_site_search').select('source_id,site_name,sn,region,report_grade,excel_row').ilike('site_name',`%${q}%`).order('site_name',{ascending:true}).limit(20);
+  if(error)throw error;if(seq!==siteNameSuggestRequest)return;
+  siteNameSuggestions=data||[];
+  if(!siteNameSuggestions.length){box.innerHTML='<div class="siteSuggestionState">일치하는 기존 현장이 없습니다. 새 현장명으로 계속 입력하세요.</div>';return}
+  box.innerHTML=siteNameSuggestions.map(r=>`<button type="button" class="siteSuggestionItem" data-template-source="${Number(r.source_id)}"><strong>${esc(r.site_name||'-')}</strong><span>S/N ${esc(r.sn||'-')} · ${esc(r.region||'지역 없음')} · ${esc(r.report_grade||'등급 없음')}</span></button>`).join('');
+  box.querySelectorAll('[data-template-source]').forEach(b=>b.onmousedown=e=>e.preventDefault());
+  box.querySelectorAll('[data-template-source]').forEach(b=>b.onclick=()=>applySiteTemplate(Number(b.dataset.templateSource)));
+ }catch(e){if(seq===siteNameSuggestRequest)box.innerHTML=`<div class="siteSuggestionState">현장명 검색 오류: ${esc(e.message)}</div>`}
+}
+async function applySiteTemplate(sourceId){
+ if(siteEditMode!=='create'||!canCreateSite())return;
+ try{
+  notify($('siteEditMsg'),'선택한 현장정보를 불러오는 중...',true);
+  const{data,error}=await sb.rpc('staff_site_template',{p_source_id:Number(sourceId)});if(error)throw error;
+  let vals=Array.isArray(data?.values)?[...data.values]:Array(137).fill('');while(vals.length<137)vals.push('');
+  siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));
+  $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');
+  hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
+  $('siteEditHint').textContent=`기존 현장 “${data?.site_name||''}” 정보를 복사했습니다. S/N을 포함해 필요한 항목을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
+  notify($('siteEditMsg'),'기존 현장정보를 복사했습니다. 필요한 내용을 수정한 뒤 저장하세요.',true);
+ }catch(e){notify($('siteEditMsg'),'기존 현장정보 불러오기 실패: '+e.message)}
+}
 function setSiteAddressMode(mode){siteAddressMode=mode==='manual'?'manual':'search';const manual=siteAddressMode==='manual',addr=$('siteFormAddress');addr.readOnly=!manual;$('siteAddressQuery').closest('label')?.classList.toggle('hidden',manual);$('siteAddressDetailLabel')?.classList.toggle('hidden',manual);$('siteManualAddressBtn')?.classList.toggle('hidden',manual);$('siteSearchAddressModeBtn')?.classList.toggle('hidden',!manual);addr.placeholder=manual?'주소를 직접 입력하세요':'주소 검색 결과를 선택하세요';if(manual){$('siteFormAddressDetail').value='';addr.focus();notify($('siteAddressMsg'),'')}}
 function searchSiteAddress(){const q=String($('siteAddressQuery').value||'').trim();if(!(window.kakao&&window.kakao.Postcode)){setSiteAddressMode('manual');notify($('siteAddressMsg'),'주소 검색 서비스를 불러오지 못했습니다. 직접입력으로 전환했습니다.');return}let had=true;new window.kakao.Postcode({onsearch:data=>{had=Number(data?.count||0)>0;notify($('siteAddressMsg'),had?`검색 결과 ${Number(data.count).toLocaleString()}건입니다. 주소를 선택하세요.`:'검색 결과가 없습니다. 검색어를 바꾸거나 직접입력을 선택하세요.',had)},oncomplete:data=>{const a=(data.userSelectedType==='R'?data.roadAddress:data.jibunAddress)||data.roadAddress||data.jibunAddress||data.address||'';$('siteFormAddress').value=a;$('siteAddressQuery').value=a;$('siteFormAddressDetail').value='';notify($('siteAddressMsg'),'주소가 선택되었습니다. 필요한 경우 상세주소를 입력하세요.',true);$('siteFormAddressDetail').focus()},onclose:()=>{if(!had)notify($('siteAddressMsg'),'검색 결과가 없었습니다. 직접입력을 선택할 수 있습니다.')}}).open({q,popupTitle:'현장 주소 검색',popupKey:'staff-site-edit-address'})}
 function resetSiteEditor(){siteEditValues=Array(137).fill('');siteEditRow=null;siteEditGroupIndex=0;$('siteEditSourceId').value='';$('siteFormPhone').value='';$('siteFormEmail').value='';$('siteFormAddress').value='';$('siteFormAddressDetail').value='';$('siteAddressQuery').value='';setSiteAddressMode('search');notify($('siteAddressMsg'),'검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.',true);notify($('siteEditMsg'),'')}
-function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent='현장명은 필수입니다. 금액항목은 관리자만 입력할 수 있습니다.';$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
+async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent='S/N은 현재 DB의 마지막 숫자형 S/N 다음 번호가 자동 표시됩니다. 현장명을 입력하면 기존 현장을 검색해 복사할 수 있습니다.';$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');let r=lastSites.find(x=>Number(x.source_id)===Number(id));if(!r){const{data,error}=await sb.from('staff_site_search').select('*').eq('source_id',Number(id)).maybeSingle();if(error)return alert('수정할 현장을 불러오지 못했습니다: '+error.message);r=data;if(r)lastSites.push(r)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';resetSiteEditor();siteEditRow=r;$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');if(isAdmin()){const{data,error}=await sb.from('staff_site_source').select('full_values,client_phone,client_email,site_address').eq('id',id).maybeSingle();if(error)return alert('현장 원본을 불러오지 못했습니다: '+error.message);if(Array.isArray(data?.full_values))vals=[...data.full_values];Object.assign(r,{client_phone:data?.client_phone??r.client_phone,client_email:data?.client_email??r.client_email,site_address:data?.site_address??r.site_address})}while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보를 수정할 수 있습니다.':'부여된 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 전화번호 변경은 관리자만 가능합니다.';$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 function sitePayload(){const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');const id=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:id,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),searchSites()]);if($('page-unwritten')?.classList.contains('active')&&isAdmin())await loadUnwrittenDashboard();}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
