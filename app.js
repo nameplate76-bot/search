@@ -194,26 +194,132 @@ async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.f
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
 async function searchSites(){if(!can('can_view_staff_sites'))return;const q=$('siteQuery').value.trim();$('searchMeta').textContent='검색 중...';try{const rows=await fetchPaged('staff_site_search','*',query=>{query=query.order('excel_row',{ascending:true});if(q){const s=q.replace(/[%_,()]/g,' ').trim();query=query.or(`site_name.ilike.%${s}%,previous_name.ilike.%${s}%,region.ilike.%${s}%,sn.ilike.%${s}%,document_owner.ilike.%${s}%,field_inspector.ilike.%${s}%`)}return query});lastSites=rows.filter(filterOk);$('searchMeta').textContent=`검색 ${rows.length.toLocaleString()}건 · 현재 조건 ${lastSites.length.toLocaleString()}건`;renderSites()}catch(e){$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML=''}}
 function siteStatusLabel(r){const s=statusOf(r);return s==='complete'?'보고서 완료':s==='unwritten'?'보고서 미작성':s==='checking'?'점검 진행 중':s==='target'?'점검대상':'전체 진행 중'}
+
+const SITE_LIST_COLUMNS=[
+ {key:'no',label:'No.',sortable:false},
+ {key:'sn',label:'S/N',sortable:true},
+ {key:'site_name',label:'현장명',sortable:true},
+ {key:'report_grade',label:'보고서 등급',sortable:true},
+ {key:'region',label:'지역',sortable:true},
+ {key:'document_owner',label:'문서담당',sortable:true},
+ {key:'field_inspector',label:'점검원',sortable:true},
+ {key:'status',label:'진행상태',sortable:true},
+ {key:'source',label:'등록구분',sortable:true},
+ {key:'actions',label:'관리',sortable:false}
+];
+const SITE_LIST_DEFAULT_ORDER=SITE_LIST_COLUMNS.map(c=>c.key);
+function readSiteListOrder(){
+ try{
+  const saved=JSON.parse(localStorage.getItem('staff_site_list_column_order')||'null');
+  if(Array.isArray(saved)&&saved.length===SITE_LIST_DEFAULT_ORDER.length&&SITE_LIST_DEFAULT_ORDER.every(k=>saved.includes(k)))return saved;
+ }catch(e){}
+ return [...SITE_LIST_DEFAULT_ORDER];
+}
+let siteListColumnOrder=readSiteListOrder();
+let siteListSort={key:null,dir:'asc'};
+let suppressSiteSortClick=false;
+const siteListCollator=new Intl.Collator('ko-KR',{numeric:true,sensitivity:'base'});
+function siteListColumn(key){return SITE_LIST_COLUMNS.find(c=>c.key===key)||SITE_LIST_COLUMNS[0]}
+function siteListSortValue(r,key){
+ if(key==='sn')return r.sn||'';
+ if(key==='site_name')return r.site_name||'';
+ if(key==='report_grade')return r.report_grade||'';
+ if(key==='region')return r.region||'';
+ if(key==='document_owner')return r.document_owner||'';
+ if(key==='field_inspector')return r.field_inspector||'';
+ if(key==='status')return siteStatusLabel(r);
+ if(key==='source')return Number(r.excel_row)<0?'직접등록':'Excel/DB';
+ return '';
+}
+function sortedSiteRows(rows){
+ if(!siteListSort.key)return rows;
+ const dir=siteListSort.dir==='desc'?-1:1,key=siteListSort.key;
+ return [...rows].sort((a,b)=>{
+  const av=siteListSortValue(a,key),bv=siteListSortValue(b,key);
+  const cmp=siteListCollator.compare(String(av??''),String(bv??''));
+  if(cmp)return cmp*dir;
+  return (Number(a.excel_row||0)-Number(b.excel_row||0))||((Number(a.source_id||0)-Number(b.source_id||0)));
+ });
+}
+function toggleSiteListSort(key){
+ const col=siteListColumn(key);if(!col.sortable)return;
+ if(siteListSort.key===key)siteListSort.dir=siteListSort.dir==='asc'?'desc':'asc';
+ else siteListSort={key,dir:'asc'};
+ renderSites();
+}
+function moveSiteListColumn(dragKey,targetKey,placeAfter=false){
+ if(!dragKey||!targetKey||dragKey===targetKey)return;
+ const next=siteListColumnOrder.filter(k=>k!==dragKey),idx=next.indexOf(targetKey);
+ if(idx<0)return;
+ next.splice(idx+(placeAfter?1:0),0,dragKey);
+ siteListColumnOrder=next;
+ localStorage.setItem('staff_site_list_column_order',JSON.stringify(siteListColumnOrder));
+ renderSites();
+}
+function siteListHeaderHtml(key){
+ const c=siteListColumn(key),active=siteListSort.key===key,arrow=active?(siteListSort.dir==='asc'?' ▲':' ▼'):'';
+ return `<th class="col-${key} ${c.sortable?'sortableHeader':''} ${active?'sortActive':''}" data-col-key="${key}" data-sortable="${c.sortable?'1':'0'}" draggable="true" title="${c.sortable?'클릭: 정렬 · ':''}드래그: 열 이동"><span>${esc(c.label)}${arrow}</span></th>`;
+}
+function siteListCellHtml(r,key,index){
+ if(key==='no')return `<td class="center col-no">${index+1}</td>`;
+ if(key==='sn')return `<td class="col-sn">${esc(r.sn||'-')}</td>`;
+ if(key==='site_name')return `<td class="siteNameCell col-site_name"><strong>${esc(r.site_name||'-')}</strong></td>`;
+ if(key==='report_grade')return `<td class="col-report_grade">${esc(r.report_grade||'-')}</td>`;
+ if(key==='region')return `<td class="col-region">${esc(r.region||'-')}</td>`;
+ if(key==='document_owner')return `<td class="col-document_owner">${esc(r.document_owner||'-')}</td>`;
+ if(key==='field_inspector')return `<td class="col-field_inspector">${esc(r.field_inspector||'-')}</td>`;
+ if(key==='status')return `<td class="col-status"><span class="statusPill status-${statusOf(r)}">${siteStatusLabel(r)}</span></td>`;
+ if(key==='source')return `<td class="col-source">${Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'<span class="tag">Excel/DB</span>'}</td>`;
+ if(key==='actions'){
+  const edit=canEditSite()?`<button class="primary smallBtn desktopEditBtn" data-site-edit="${r.source_id}">수정</button>`:'';
+  return `<td class="center rowActions col-actions">${edit}<button class="smallBtn" data-detail-btn="${r.source_id}">상세</button></td>`;
+ }
+ return '<td></td>';
+}
+function bindSiteListHeaderInteractions(root){
+ let dragKey=null;
+ const clearMarks=()=>root.querySelectorAll('.desktopSiteTable th').forEach(x=>x.classList.remove('dragging','dragBefore','dragAfter'));
+ root.querySelectorAll('.desktopSiteTable th[data-col-key]').forEach(th=>{
+  th.addEventListener('click',()=>{if(suppressSiteSortClick)return;toggleSiteListSort(th.dataset.colKey)});
+  th.addEventListener('dragstart',e=>{
+   dragKey=th.dataset.colKey;th.classList.add('dragging');suppressSiteSortClick=true;
+   if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragKey)}
+  });
+  th.addEventListener('dragover',e=>{
+   if(!dragKey||dragKey===th.dataset.colKey)return;e.preventDefault();clearMarks();
+   const rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;
+   th.classList.add(after?'dragAfter':'dragBefore');
+   if(e.dataTransfer)e.dataTransfer.dropEffect='move';
+  });
+  th.addEventListener('dragleave',()=>th.classList.remove('dragBefore','dragAfter'));
+  th.addEventListener('drop',e=>{
+   e.preventDefault();const target=th.dataset.colKey,rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;
+   clearMarks();const from=dragKey;dragKey=null;
+   setTimeout(()=>{suppressSiteSortClick=false},120);
+   moveSiteListColumn(from,target,after);
+  });
+  th.addEventListener('dragend',()=>{clearMarks();dragKey=null;setTimeout(()=>{suppressSiteSortClick=false},120)});
+ });
+}
 function renderSites(){
  const root=$('siteResults');
  if(!lastSites.length){root.innerHTML='<div class="siteCard">검색 결과가 없습니다.</div>';return}
- const visible=lastSites.slice(0,600);
  const desktop=window.matchMedia('(min-width: 801px)').matches;
  if(desktop){
-   const rows=visible.map((r,i)=>{
-     const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'<span class="tag">Excel/DB</span>';
-     const edit=canEditSite()?`<button class="primary smallBtn desktopEditBtn" data-site-edit="${r.source_id}">수정</button>`:'';
-     return `<tr class="siteListRow" data-detail="${r.source_id}" tabindex="0" aria-label="${esc(r.site_name)} 상세조회"><td class="center">${i+1}</td><td>${esc(r.sn||'-')}</td><td class="siteNameCell"><strong>${esc(r.site_name||'-')}</strong></td><td>${esc(r.report_grade||'-')}</td><td>${esc(r.region||'-')}</td><td>${esc(r.document_owner||'-')}</td><td>${esc(r.field_inspector||'-')}</td><td><span class="statusPill status-${statusOf(r)}">${siteStatusLabel(r)}</span></td><td>${manual}</td><td class="center rowActions">${edit}<button class="smallBtn" data-detail-btn="${r.source_id}">상세</button></td></tr>`;
-   }).join('');
-   root.innerHTML=`<div class="desktopSiteList"><div class="desktopListHint">현장 행을 클릭하면 상세정보를 확인할 수 있습니다.</div><div class="desktopSiteTableWrap"><table class="desktopSiteTable"><thead><tr><th>No.</th><th>S/N</th><th>현장명</th><th>보고서 등급</th><th>지역</th><th>문서담당</th><th>점검원</th><th>진행상태</th><th>등록구분</th><th>관리</th></tr></thead><tbody>${rows}</tbody></table></div></div>${lastSites.length>600?'<div class="listLimitNotice">화면 성능을 위해 처음 600건만 표시합니다. 검색어를 입력하면 원하는 현장을 더 빠르게 찾을 수 있습니다.</div>':''}`;
+   const sorted=sortedSiteRows(lastSites),visible=sorted.slice(0,600);
+   const rows=visible.map((r,i)=>`<tr class="siteListRow" data-detail="${r.source_id}" tabindex="0" aria-label="${esc(r.site_name)} 상세조회">${siteListColumnOrder.map(key=>siteListCellHtml(r,key,i)).join('')}</tr>`).join('');
+   const headers=siteListColumnOrder.map(siteListHeaderHtml).join('');
+   root.innerHTML=`<div class="desktopSiteList"><div class="desktopListHint"><strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목을 마우스로 잡아 왼쪽/오른쪽으로 드래그하세요. 열 순서는 자동 저장됩니다.</div><div class="desktopSiteTableWrap"><table class="desktopSiteTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div></div>${lastSites.length>600?'<div class="listLimitNotice">화면 성능을 위해 정렬된 결과 중 처음 600건만 표시합니다. 검색어를 입력하면 원하는 현장을 더 빠르게 찾을 수 있습니다.</div>':''}`;
+   bindSiteListHeaderInteractions(root);
    root.querySelectorAll('.siteListRow').forEach(tr=>{
-     tr.onclick=e=>{if(e.target.closest('button,a,input,select'))return;openDetail(Number(tr.dataset.detail))};
+     tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;openDetail(Number(tr.dataset.detail))};
      tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDetail(Number(tr.dataset.detail))}};
    });
    root.querySelectorAll('[data-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.detailBtn))});
    root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.siteEdit))});
    return;
  }
+ const visible=lastSites.slice(0,600);
  root.innerHTML=visible.map(r=>{const minis=displayFields.map(f=>`<div><span>${esc(f)}</span><b>${esc(val(r,f)||'-')}</b></div>`).join('');const p1=r.field_plan_start?'done':'',p2=r.field_end?'done':(r.field_plan_start?'working':''),p3=r.report_complete_date?'done':(r.field_end?'working':'');const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';return `<article class="siteCard"><div class="siteTop"><div><h3>${esc(r.site_name)}</h3><span class="tag">${esc(r.report_grade||'등급 없음')}</span><span class="tag">${esc(r.region||'지역 없음')}</span>${manual}</div><span class="tag">${esc(r.sn||'')}</span></div><div class="miniGrid">${minis}</div><div class="stepRow"><div class="step ${p1}">점검계획</div><div class="step ${p2}">현장점검</div><div class="step ${p3}">보고서</div></div><div class="siteActions">${edit}<button data-detail="${r.source_id}">상세 조회</button></div></article>`}).join('')+(lastSites.length>600?`<div class="siteCard">화면 성능을 위해 처음 600건만 표시합니다. 검색어를 입력하면 원하는 현장을 더 빠르게 찾을 수 있습니다.</div>`:'');
  root.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDetail(Number(b.dataset.detail)));
  root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=()=>openSiteEditor(Number(b.dataset.siteEdit)));
