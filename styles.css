@@ -165,3 +165,40 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   #page-search .desktopSiteTable .col-actions{width:8%}
   #page-search .desktopListHint strong{color:#344054}
 }
+
+/* V22 - 검색 결과 표시항목 빠른 선택 + 사용자별 저장 + 선택열만 표시 */
+.fieldsDlg{width:min(1100px,96vw)}
+.fieldsDlg .dlgHead small{display:block;margin-top:4px;color:var(--muted);font-size:12px;font-weight:400}
+.fieldQuickBar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:#f8fafc;position:sticky;top:65px;z-index:2}
+.fieldQuickButtons{display:flex;gap:8px;flex-wrap:wrap}
+.fieldQuickButtons button{font-weight:800;padding:8px 13px}
+#fieldsSelectAll{border-color:#b6ccff;color:#1d4ed8;background:#f4f7ff}
+#fieldsSelectDefault{border-color:#cfd7e5;background:#fff}
+#fieldsClearAll{border-color:#f0c2bd;color:#b42318;background:#fff7f6}
+#fieldSelectionCount{font-size:13px;color:#475467;white-space:nowrap}
+.fieldDlgFoot{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fieldDlgFoot span{font-size:12px;color:var(--muted)}
+#fieldList label{cursor:pointer}
+#fieldList label:has(input:checked){background:#f1f6ff;border-color:#b8cdfd}
+#fieldList input[type=checkbox]{accent-color:#2563eb}
+.siteSelectionMeta:empty{display:none}.siteSelectionMeta{display:flex;justify-content:flex-end;margin-bottom:4px}
+
+@media (min-width:801px){
+  #page-search .desktopSiteTable{width:max-content!important;min-width:100%!important;table-layout:auto!important}
+  #page-search .desktopSiteTable th,#page-search .desktopSiteTable td{width:auto!important;max-width:none!important}
+  #page-search .desktopSiteTable th.col-dynamic,#page-search .desktopSiteTable td.col-dynamic{min-width:125px}
+  #page-search .desktopSiteTable th.col-no,#page-search .desktopSiteTable td.col-no{min-width:56px;width:56px!important}
+  #page-search .desktopSiteTable th.col-actions,#page-search .desktopSiteTable td.col-actions{min-width:115px;width:115px!important}
+  #page-search .desktopSiteTable td.siteNameCell{min-width:260px}
+  #page-search .desktopSiteTable th[data-col-key]{white-space:normal;line-height:1.25}
+}
+
+@media(max-width:800px){
+  .fieldQuickBar{top:57px;align-items:stretch;flex-direction:column;padding:10px 12px;gap:8px}
+  .fieldQuickButtons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+  .fieldQuickButtons button{min-width:0;padding:8px 4px;font-size:12px}
+  #fieldSelectionCount{text-align:right;font-size:12px}
+  .fieldDlgFoot{align-items:flex-end}.fieldDlgFoot span{max-width:65%}
+  .selectedFieldsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:380px){.selectedFieldsGrid{grid-template-columns:1fr}.fieldDlgFoot span{display:none}}

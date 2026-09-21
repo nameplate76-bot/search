@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260921-2018-v21">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260921-2018-v22">
 <script>
 (function(){
-  const BUILD='20260921-2018-v21';
+  const BUILD='20260921-2018-v22';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,7 +34,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V21</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V22</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -94,7 +94,7 @@
 </section>
 </main></div>
 <dialog id="detailDlg"><div class="dlgHead"><h3 id="detailTitle">현장 상세</h3><button class="iconBtn" id="detailClose">×</button></div><div id="detailTabs" class="filterRow"></div><div id="detailBody" class="detailGrid"></div></dialog>
-<dialog id="fieldsDlg"><div class="dlgHead"><h3>검색 결과 표시 항목</h3><button class="iconBtn" id="fieldsClose">×</button></div><div id="fieldList" class="checkGrid"></div><div class="dlgFoot"><button id="fieldsSave" class="primary">저장</button></div></dialog>
+<dialog id="fieldsDlg" class="fieldsDlg"><div class="dlgHead"><div><h3>검색 결과 표시 항목</h3><small>선택한 항목만 검색결과에 표시되며, 사용자 계정별로 저장됩니다.</small></div><button class="iconBtn" id="fieldsClose">×</button></div><div class="fieldQuickBar"><div class="fieldQuickButtons"><button type="button" id="fieldsSelectAll">전체 선택</button><button type="button" id="fieldsSelectDefault">기본 선택</button><button type="button" id="fieldsClearAll">선택 해제</button></div><strong id="fieldSelectionCount">0개 선택</strong></div><div id="fieldList" class="checkGrid"></div><div class="dlgFoot fieldDlgFoot"><span>항목을 하나 이상 선택한 후 저장해 주세요.</span><button id="fieldsSave" class="primary">저장</button></div></dialog>
 <dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button class="iconBtn" id="userClose">×</button></div><form id="userForm" class="formGrid">
 <label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자 3자 이상"></label><label>비밀번호<input id="empPw" type="password" required minlength="8" placeholder="8자 이상"></label><label>전화번호<input id="empPhone" required placeholder="010-0000-0000"></label>
 <label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
@@ -129,4 +129,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260921-2018-v21"></script><script src="fields.js?v=20260921-2018-v21"></script><script src="app.js?v=20260921-2018-v21"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260921-2018-v22"></script><script src="fields.js?v=20260921-2018-v22"></script><script src="app.js?v=20260921-2018-v22"></script></body></html>
