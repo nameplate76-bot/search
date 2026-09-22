@@ -259,3 +259,18 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #unwrittenFieldList label:has(input:checked){background:#f1f6ff;border-color:#b8cdfd}
 #unwrittenFieldList input[type=checkbox]{accent-color:#2563eb}
 @media(max-width:800px){#unwrittenFieldSelectionCount{text-align:right;font-size:12px}}
+
+/* V30 - PC 표 전체 열 폭 마우스 조절 */
+@media (min-width:801px){
+  table.columnResizeEnabled{table-layout:fixed!important}
+  table.columnResizeEnabled th{position:relative}
+  .desktopSiteTable.columnResizeEnabled th,.unwrittenTable.columnResizeEnabled th{position:sticky}
+  table.columnResizeEnabled th,table.columnResizeEnabled td{box-sizing:border-box}
+  .columnResizer{position:absolute;top:0;right:-5px;width:10px;height:100%;cursor:col-resize;z-index:12;touch-action:none;user-select:none;-webkit-user-select:none}
+  .columnResizer::after{content:'';position:absolute;top:15%;bottom:15%;left:4px;width:2px;border-radius:2px;background:transparent;transition:background .12s ease}
+  .columnResizer:hover::after,.columnResizer.active::after{background:#2563eb}
+  body.columnResizing,body.columnResizing *{cursor:col-resize!important;user-select:none!important;-webkit-user-select:none!important}
+  .desktopSiteTable.columnResizeEnabled td,.unwrittenTable.columnResizeEnabled td,#salesTable.columnResizeEnabled td,#userTable.columnResizeEnabled td{overflow:hidden;text-overflow:ellipsis}
+  #salesTable.columnResizeEnabled,#userTable.columnResizeEnabled{max-width:none}
+}
+@media(max-width:800px){.columnResizer{display:none!important}}
