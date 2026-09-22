@@ -62,6 +62,18 @@ function cleanResizableTableClone(table){
  clone.querySelectorAll('col').forEach(col=>{const original=col.dataset.originalStyle;if(original!==undefined){if(original)col.setAttribute('style',original);else col.removeAttribute('style');delete col.dataset.originalStyle}});
  return clone;
 }
+const tableResizeTimers=new WeakMap();
+function scheduleTableColumnResize(table,tableName,attempt=0){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ const old=tableResizeTimers.get(table);if(old)cancelAnimationFrame(old);
+ const id=requestAnimationFrame(()=>{
+  tableResizeTimers.delete(table);
+  const first=table.querySelector('thead tr:first-child > th');
+  if((!first||first.getBoundingClientRect().width<=0)&&attempt<4){setTimeout(()=>scheduleTableColumnResize(table,tableName,attempt+1),40*(attempt+1));return}
+  installTableColumnResize(table,tableName);
+ });
+ tableResizeTimers.set(table,id);
+}
 function installTableColumnResize(table,tableName){
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length||!headers[0].getBoundingClientRect().width)return;
@@ -71,28 +83,29 @@ function installTableColumnResize(table,tableName){
  while(colgroup.children.length<headers.length)colgroup.appendChild(document.createElement('col'));
  while(colgroup.children.length>headers.length)colgroup.lastElementChild.remove();
  const cols=[...colgroup.children],stored=readTableColumnWidths(tableName),resolved={...stored};
+ const applyTableWidth=()=>{const total=cols.reduce((sum,c)=>sum+(parseFloat(c.style.width)||0),0);table.style.setProperty('width',`${Math.ceil(total)}px`,'important');table.style.setProperty('min-width','0','important');table.style.setProperty('table-layout','fixed','important')};
  headers.forEach((th,i)=>{
   const col=cols[i],key=tableResizeHeaderKey(th,i),rect=th.getBoundingClientRect();
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
   const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
   const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:Math.round(rect.width));
-  col.style.width=`${width}px`;resolved[key]=width;
-  const handle=document.createElement('span');handle.className='columnResizer';handle.setAttribute('role','separator');handle.setAttribute('aria-label',`${String(th.textContent||'열').replace(/\s+/g,' ').trim()} 열 폭 조절`);handle.draggable=false;
+  col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;
+  const handle=document.createElement('div');handle.className='columnResizer';handle.setAttribute('role','separator');handle.setAttribute('aria-orientation','vertical');handle.setAttribute('aria-label',`${String(th.textContent||'열').replace(/\s+/g,' ').trim()} 열 폭 조절`);handle.draggable=false;
   handle.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
+  handle.addEventListener('dragstart',e=>{e.preventDefault();e.stopPropagation()});
   handle.addEventListener('pointerdown',e=>{
    if(e.button!==0)return;e.preventDefault();e.stopPropagation();
    const startX=e.clientX,startW=parseFloat(col.style.width)||rect.width,oldDraggable=th.getAttribute('draggable');
    th.setAttribute('draggable','false');document.body.classList.add('columnResizing');handle.classList.add('active');
    try{handle.setPointerCapture(e.pointerId)}catch(err){}
-   const applyTableWidth=()=>{const total=cols.reduce((sum,c)=>sum+(parseFloat(c.style.width)||0),0);table.style.setProperty('width',`${Math.ceil(total)}px`,'important');table.style.setProperty('min-width','0','important');table.style.setProperty('table-layout','fixed','important')};
-   const move=ev=>{const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.width=`${width}px`;resolved[key]=width;applyTableWidth()};
-   const up=()=>{window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved)};
-   window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);applyTableWidth();
+   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth()};
+   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
+   window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);window.addEventListener('pointercancel',up,true);applyTableWidth();
   });
   th.appendChild(handle);
  });
- const total=cols.reduce((sum,c)=>sum+(parseFloat(c.style.width)||0),0);table.classList.add('columnResizeEnabled');table.style.setProperty('width',`${Math.ceil(total)}px`,'important');table.style.setProperty('min-width','0','important');table.style.setProperty('table-layout','fixed','important');
+ table.classList.add('columnResizeEnabled');applyTableWidth();
 }
 function ownerParts(raw){raw=String(raw||'').trim();const m=raw.match(/^(20\d{2}|\d{2})(.*)$/);if(!m)return{year:null,owner:raw};let y=Number(m[1]);if(y<100)y+=2000;return{year:y,owner:m[2].trim()||raw}}
 function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20]||vals[19])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}
@@ -268,7 +281,7 @@ async function login(){
     notify($('loginMsg'),error?.message||'로그인에 실패했습니다. ID와 비밀번호를 확인하세요.');
   }
 }
-function showPage(name,save=true){if(name==='search'&&!can('can_view_staff_sites'))return alert('현장 검색 권한이 없습니다.');if(name==='unwritten'&&!isAdmin())return alert('보고서 미작성 대시보드는 관리자만 사용할 수 있습니다.');if(name==='sales'&&!(isAdmin()&&can('can_view_staff_sales')))return alert('매출 관리는 관리자만 사용할 수 있습니다.');if(name==='users'&&!(isAdmin()&&can('can_manage_staff_users')))return alert('사용자 관리는 관리자만 사용할 수 있습니다.');document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#mainNav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('page-'+name).classList.add('active');if(save)rememberPage(name);if(name==='unwritten')loadUnwrittenDashboard();if(name==='sales')loadSales();if(name==='users')loadUsers()}
+function showPage(name,save=true){if(name==='search'&&!can('can_view_staff_sites'))return alert('현장 검색 권한이 없습니다.');if(name==='unwritten'&&!isAdmin())return alert('보고서 미작성 대시보드는 관리자만 사용할 수 있습니다.');if(name==='sales'&&!(isAdmin()&&can('can_view_staff_sales')))return alert('매출 관리는 관리자만 사용할 수 있습니다.');if(name==='users'&&!(isAdmin()&&can('can_manage_staff_users')))return alert('사용자 관리는 관리자만 사용할 수 있습니다.');document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#mainNav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('page-'+name).classList.add('active');if(save)rememberPage(name);if(name==='unwritten')loadUnwrittenDashboard();if(name==='sales')loadSales();if(name==='users')loadUsers();requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search');if(name==='unwritten')scheduleTableColumnResize(document.querySelector('#unwrittenList .unwrittenTable'),'unwritten');if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')})}
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
 async function searchSites(){if(!can('can_view_staff_sites'))return;const q=$('siteQuery').value.trim();$('searchMeta').textContent='검색 중...';try{const rows=await fetchPaged('staff_site_search','*',query=>{query=query.order('excel_row',{ascending:true});if(q){const s=q.replace(/[%_,()]/g,' ').trim();query=query.or(`site_name.ilike.%${s}%,previous_name.ilike.%${s}%,region.ilike.%${s}%,sn.ilike.%${s}%,document_owner.ilike.%${s}%,field_inspector.ilike.%${s}%,sales_manager.ilike.%${s}%`)}return query});lastSites=rows.filter(filterOk);selectedSiteIds.clear();$('searchMeta').textContent=`검색 ${rows.length.toLocaleString()}건 · 현재 조건 ${lastSites.length.toLocaleString()}건`;renderSites()}catch(e){$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML=''}}
@@ -450,7 +463,7 @@ function renderSites(){
    root.querySelectorAll('[data-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.detailBtn))});
    root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.siteEdit))});
    bindSiteSelectionControls(root,visible);
-   installTableColumnResize(root.querySelector('.desktopSiteTable'),'search');
+   scheduleTableColumnResize(root.querySelector('.desktopSiteTable'),'search');
    return;
  }
  const visible=lastSites.slice(0,600);
@@ -715,7 +728,7 @@ function renderUnwrittenList(){
    const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}">${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
    root.innerHTML=`<div class="unwrittenListHint"><strong>정렬:</strong> 열 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 자동 저장됩니다.</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
    bindUnwrittenHeaderInteractions(root);
-   installTableColumnResize(root.querySelector('.unwrittenTable'),'unwritten');
+   scheduleTableColumnResize(root.querySelector('.unwrittenTable'),'unwritten');
    root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;openDetail(Number(tr.dataset.reportDetail))});
  }else{
    const selected=sanitizeUnwrittenDisplayFields(unwrittenDisplayFields);
@@ -801,7 +814,7 @@ function renderSales(){
  $('salesBody').innerHTML=body?body+totalRow:'<tr><td colspan="8" class="emptyrow">선택한 조건에 해당하는 보고서 작성 완료 건이 없습니다.</td></tr>';
  $('salesFoot').innerHTML='';
  $('salesTitle').textContent=`${y||''}년 ${m==='all'?'전체':m+'월'} 보고서 작성 완료 매출 관리${o==='all'?'':' - '+o}`;
- installTableColumnResize($('salesTable'),'sales');
+ scheduleTableColumnResize($('salesTable'),'sales');
 }
 function exportSales(){
  if(!(isAdmin()&&can('can_export_staff_sales')))return alert('매출 관리 엑셀 내보내기는 관리자만 사용할 수 있습니다.');
@@ -815,7 +828,7 @@ async function importSalesExcel(file){
   if(!body.length)throw new Error('현장명이 있는 매출 관리표를 찾지 못했습니다.');
   let tc=0,tm=0,ts=0;
   $('salesBody').innerHTML=body.map((r,i)=>{const c=salesNumber(r['계약 금액 (VAT 별도)']),m=salesNumber(r['유지관리자 선임비(VAT 별도)']),sale=salesNumber(r['매출액 (VAT 별도)']);tc+=c;tm+=m;ts+=sale;const note=String(r['비고']||'');return `<tr><td class="center">${i+1}</td><td>${esc(r['현장명'])}</td><td class="center">${esc(r['계약 구분 (유지/성능/유지선임)']||'')}</td><td>${esc(r['점검참여자']||'')}</td><td class="num">${salesMoney(c)}</td><td class="num">${salesMoney(m)}</td><td class="num">${salesMoney(sale)}</td><td class="${note==='완료'?'salesDone':''}">${esc(note)}</td></tr>`}).join('')+`<tr class="totalrow"><td colspan="4" class="center">매출 합계</td><td class="num">${salesMoney(tc)}</td><td class="num">${salesMoney(tm)}</td><td class="num">${salesMoney(ts)}</td><td></td></tr>`;
-  $('salesFoot').innerHTML='';salesImported=true;installTableColumnResize($('salesTable'),'sales');
+  $('salesFoot').innerHTML='';salesImported=true;scheduleTableColumnResize($('salesTable'),'sales');
  }catch(e){alert('엑셀 가져오기 실패\n\n'+e.message)}
 }
 function printSalesReport(){
@@ -887,7 +900,7 @@ async function deleteAllSiteDb(){
  }
 }
 
-async function loadUsers(){if(!(isAdmin()&&can('can_manage_staff_users')))return;const{data,error}=await sb.from('pjt_profiles').select('*').order('name',{ascending:true});if(error)return alert(error.message);const tb=$('userTable').querySelector('tbody');tb.innerHTML=(data||[]).map(p=>{const admin=p.role==='admin';return `<tr><td>${esc(p.name||'')}</td><td>${esc(p.user_id||'')}</td><td>${esc(p.phone||'')}</td><td><select data-u="${p.id}" data-k="role"><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${[['approved','승인'],['can_use_staff_portal','포털'],['can_view_staff_sites','현장'],['can_create_staff_sites','등록'],['can_edit_staff_sites','수정'],['can_export_staff_sites','전체엑셀'],['can_view_staff_sales','매출'],['can_import_staff_sites','가져오기'],['can_manage_staff_users','사용자']].map(([k])=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${admin&&k!=='approved'?'disabled':''}></td>`).join('')}<td><div class="userActions"><button data-reset="${p.id}">PW</button>${p.id!==me.id?`<button data-del="${p.id}">삭제</button>`:''}</div></td></tr>`}).join('');document.querySelectorAll('#userTable [data-k]').forEach(el=>el.onchange=()=>changeUserPermission(el));document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>resetPw(b.dataset.reset));document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>deleteUser(b.dataset.del));installTableColumnResize($('userTable'),'users')}
+async function loadUsers(){if(!(isAdmin()&&can('can_manage_staff_users')))return;const{data,error}=await sb.from('pjt_profiles').select('*').order('name',{ascending:true});if(error)return alert(error.message);const tb=$('userTable').querySelector('tbody');tb.innerHTML=(data||[]).map(p=>{const admin=p.role==='admin';return `<tr><td>${esc(p.name||'')}</td><td>${esc(p.user_id||'')}</td><td>${esc(p.phone||'')}</td><td><select data-u="${p.id}" data-k="role"><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${[['approved','승인'],['can_use_staff_portal','포털'],['can_view_staff_sites','현장'],['can_create_staff_sites','등록'],['can_edit_staff_sites','수정'],['can_export_staff_sites','전체엑셀'],['can_view_staff_sales','매출'],['can_import_staff_sites','가져오기'],['can_manage_staff_users','사용자']].map(([k])=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${admin&&k!=='approved'?'disabled':''}></td>`).join('')}<td><div class="userActions"><button data-reset="${p.id}">PW</button>${p.id!==me.id?`<button data-del="${p.id}">삭제</button>`:''}</div></td></tr>`}).join('');document.querySelectorAll('#userTable [data-k]').forEach(el=>el.onchange=()=>changeUserPermission(el));document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>resetPw(b.dataset.reset));document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>deleteUser(b.dataset.del));scheduleTableColumnResize($('userTable'),'users')}
 async function changeUserPermission(el){const id=el.dataset.u,k=el.dataset.k,v=el.type==='checkbox'?el.checked:el.value;let patch={[k]:v};if((k==='can_create_staff_sites'||k==='can_edit_staff_sites'||k==='can_export_staff_sites')&&v===true)patch.can_view_staff_sites=true;if(k==='can_view_staff_sites'&&v===false){patch.can_create_staff_sites=false;patch.can_edit_staff_sites=false;patch.can_export_staff_sites=false}if(k==='role'&&v==='admin')patch={...patch,approved:true,can_use_staff_portal:true,can_view_staff_sites:true,can_create_staff_sites:true,can_edit_staff_sites:true,can_export_staff_sites:true,can_import_staff_sites:true,can_manage_staff_users:true,can_view_staff_sales:true,can_export_staff_sales:true,can_print_staff_sales:true,can_view_money:true,can_view_sales:true,can_print_sales:true};const{error}=await sb.from('pjt_profiles').update(patch).eq('id',id);if(error){alert(error.message);loadUsers();return}loadUsers()}
 async function invokeAdmin(body){const{data,error}=await sb.functions.invoke(cfg.userAdminFunction,{body});if(error)throw error;if(data?.error)throw new Error(data.error);return data}
 async function createUser(e){e.preventDefault();notify($('userMsg'),'등록 중...',true);try{await invokeAdmin({action:'create',employee_id:$('empId').value,password:$('empPw').value,name:$('empName').value,phone:$('empPhone').value,role:$('empRole').value,approved:$('empApproved').checked,permissions:{can_use_staff_portal:$('permPortal').checked,can_view_staff_sites:($('permSites').checked||$('permSiteCreate').checked||$('permSiteEdit').checked),can_create_staff_sites:$('permSiteCreate').checked,can_edit_staff_sites:$('permSiteEdit').checked,can_export_staff_sites:$('permAllSitesExport').checked,can_view_staff_sales:$('permSales').checked,can_export_staff_sales:$('permSalesExport').checked,can_print_staff_sales:$('permSalesPrint').checked,can_import_staff_sites:$('permImport').checked,can_manage_staff_users:$('permUsers').checked}});notify($('userMsg'),'직원 등록이 완료되었습니다.',true);setTimeout(()=>{$('userDlg').close();$('userForm').reset();$('empApproved').checked=$('permPortal').checked=$('permSites').checked=true;$('permSiteCreate').checked=$('permSiteEdit').checked=$('permAllSitesExport').checked=false;loadUsers()},500)}catch(err){notify($('userMsg'),err.message)}}

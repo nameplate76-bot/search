@@ -274,3 +274,16 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   #salesTable.columnResizeEnabled,#userTable.columnResizeEnabled{max-width:none}
 }
 @media(max-width:800px){.columnResizer{display:none!important}}
+
+
+/* V31 - 동적 표 열 폭 조절 안정화 */
+@media (min-width:801px){
+  table.columnResizeEnabled th{overflow:visible!important}
+  table.columnResizeEnabled .columnResizer{display:block!important;pointer-events:auto!important;position:absolute!important;top:0!important;right:-7px!important;width:14px!important;height:100%!important;min-height:28px;cursor:col-resize!important;z-index:50!important;touch-action:none!important;user-select:none!important;-webkit-user-select:none!important;background:transparent!important}
+  table.columnResizeEnabled .columnResizer::after{content:'';position:absolute;top:12%;bottom:12%;left:6px;width:2px;border-radius:2px;background:transparent;transition:background .12s ease}
+  table.columnResizeEnabled .columnResizer:hover::after,table.columnResizeEnabled .columnResizer.active::after{background:#2563eb}
+  .desktopSiteTable th[data-col-key]>.columnResizer,.unwrittenTable th[data-uw-col-key]>.columnResizer{pointer-events:auto!important;display:block!important}
+  .desktopSiteTable.columnResizeEnabled th,.desktopSiteTable.columnResizeEnabled td,.unwrittenTable.columnResizeEnabled th,.unwrittenTable.columnResizeEnabled td{min-width:0!important;max-width:none!important}
+  #userTable.columnResizeEnabled th,#userTable.columnResizeEnabled td{min-width:0!important;max-width:none!important}
+  .desktopSiteTable.columnResizeEnabled .siteNameCell,.unwrittenTable.columnResizeEnabled .uw-col-site_name,.unwrittenTable.columnResizeEnabled .uw-col-important{min-width:0!important}
+}
