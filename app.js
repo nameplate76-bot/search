@@ -210,28 +210,21 @@ function searchAddress(){
 }
 async function syncAddressToSameSiteName(sourceId,siteName,address,msgEl=null){
  const name=String(siteName||'').trim(),addr=String(address||'').trim();
- if(!name||!addr||!canEditSite())return{synced:false,updated:0};
+ if(!name||!addr||!canEditSite())return{synced:false,updated:0,matched:0};
  try{
   const{data:info,error:infoError}=await sb.rpc('staff_same_site_address_info',{p_source_id:Number(sourceId)||null,p_site_name:name,p_address:addr});
   if(infoError)throw infoError;
-  const others=Number(info?.others||0);if(others<1)return{synced:false,updated:0};
-  const different=Number(info?.different||0),existing=Array.isArray(info?.existing_addresses)?info.existing_addresses:[];
-  let message=`동일한 현장명 “${name}”이 현재 현장 외에 ${others.toLocaleString()}건 더 있습니다.\n\n같은 주소를 모두 적용하시겠습니까?\n\n적용 주소: ${addr}`;
-  if(different>0){
-   message+=`\n\n주의: ${different.toLocaleString()}건에는 현재와 다른 주소가 이미 등록되어 있습니다.`;
-   if(existing.length)message+=`\n기존 주소 예: ${existing.slice(0,3).join(' / ')}`;
-   message+='\n\n[확인]을 누르면 위 주소로 덮어씁니다.';
-  }
-  if(!confirm(message))return{synced:false,updated:0};
-  if(msgEl)notify(msgEl,'동일 현장명 주소를 함께 반영하는 중...',true);
+  const others=Number(info?.others||0),baseName=String(info?.base_name||name).trim();
+  if(others<1)return{synced:false,updated:0,matched:0,baseName};
+  if(msgEl)notify(msgEl,`같은 현장 “${baseName}” 주소를 자동 반영하는 중...`,true);
   const{data,error}=await sb.rpc('staff_apply_address_to_same_name',{p_source_id:Number(sourceId)||null,p_site_name:name,p_address:addr});
   if(error)throw error;
   const updated=Number(data?.updated||0);
   invalidateDataCaches('sites');
-  return{synced:true,updated};
+  return{synced:true,updated,matched:others,baseName:String(data?.base_name||baseName).trim()};
  }catch(err){
-  alert('동일 현장명 주소 자동반영 오류: '+(err?.message||err));
-  return{synced:false,updated:0,error:err};
+  alert('동일 현장 주소 자동반영 오류: '+(err?.message||err));
+  return{synced:false,updated:0,matched:0,error:err};
  }
 }
 
@@ -246,7 +239,7 @@ async function saveContact(e){
  const row=lastSites.find(x=>Number(x.source_id)===id);if(row)Object.assign(row,patch);
  const siteName=String($('contactSiteName').value||row?.site_name||'').trim();
  const syncResult=await syncAddressToSameSiteName(id,siteName,fullAddress,$('contactEditMsg'));
- notify($('contactEditMsg'),syncResult.synced?`저장했습니다. 동일 현장명 ${Math.max(0,syncResult.updated-1).toLocaleString()}건에도 주소를 반영했습니다.`:'저장했습니다.',true);
+ notify($('contactEditMsg'),syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.',true);
  invalidateDataCaches('sites');
  await refreshActiveData(true).catch(()=>{});
  setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
@@ -635,7 +628,7 @@ async function openCreateSite(){if(!canCreateSite())return alert('현장 직접�
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';resetSiteEditor();siteEditRow=r;$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');if(isAdmin()){const{data,error}=await sb.from('staff_site_source').select('full_values,client_phone,client_email,site_address').eq('id',id).maybeSingle();if(error)return alert('현장 원본을 불러오지 못했습니다: '+error.message);if(Array.isArray(data?.full_values))vals=[...data.full_values];Object.assign(r,{client_phone:data?.client_phone??r.client_phone,client_email:data?.client_email??r.client_email,site_address:data?.site_address??r.site_address})}while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보를 수정할 수 있습니다.':'부여된 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 전화번호 변경은 관리자만 가능합니다.';$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 function sitePayload(){const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
- if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 동일 현장명 ${Math.max(0,syncResult.updated-1).toLocaleString()}건에도 주소를 반영했습니다.`,true)}
+ if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  setTimeout(()=>{$('siteEditDlg').close()},350);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
