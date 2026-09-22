@@ -63,6 +63,71 @@ function excelDate(serial){const base=Date.UTC(1899,11,30),d=new Date(base+Numbe
 function normalizeCell(v,col){if(v===null||v===undefined)return'';if(dateCols.has(col)&&typeof v==='number'&&v>20000&&v<80000)return excelDate(v);return v}
 function displayNumber(v,decimals=0){const raw=String(v??'').trim().replace(/,/g,'');if(!raw)return'';const n=Number(raw);if(!Number.isFinite(n))return String(v??'').trim();return n.toLocaleString('ko-KR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals})}
 function formatDisplayCell(v,col){const normalized=normalizeCell(v,col);if(Number(col)===6)return displayNumber(normalized,2);if(Number(col)===7)return displayNumber(normalized,0);return normalized}
+function enterNavVisible(el){
+ if(!el||el.disabled)return false;
+ if(el.matches?.('input[type="hidden"],input[type="checkbox"],input[type="radio"],input[type="file"]'))return false;
+ if(el.matches?.('input[readonly],textarea[readonly]'))return false;
+ if(el.closest?.('.hidden'))return false;
+ const style=getComputedStyle(el);if(style.display==='none'||style.visibility==='hidden')return false;
+ return el.getClientRects().length>0;
+}
+function enterNavControls(form){
+ return [...form.querySelectorAll('input,select,textarea,button[type="submit"]')].filter(el=>{
+  if(el.tagName==='BUTTON')return !el.disabled&&el.getClientRects().length>0&&!el.closest('.hidden');
+  return enterNavVisible(el);
+ });
+}
+function focusEnterNavControl(el){
+ if(!el)return false;
+ try{el.focus({preventScroll:false})}catch(e){try{el.focus()}catch(err){return false}}
+ try{el.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}
+ return true;
+}
+function moveEnterNavNext(form,current){
+ const controls=enterNavControls(form),i=controls.indexOf(current);
+ if(i<0)return false;
+ const next=controls[i+1];
+ return next?focusEnterNavControl(next):false;
+}
+function editableSiteFieldsInOrder(){
+ const seen=new Set(),out=[];
+ for(const g of siteEditGroups){
+  for(const f of schema.fields.filter(x=>x.col>=g[1]&&x.col<=g[2]&&siteFieldAllowed(x)).sort((a,b)=>a.col-b.col)){
+   if(!seen.has(f.col)){seen.add(f.col);out.push(f)}
+  }
+ }
+ return out;
+}
+function moveSiteEditDataFieldNext(current){
+ const col=Number(current?.dataset?.siteCol||0);if(!col)return false;
+ const fields=editableSiteFieldsInOrder(),idx=fields.findIndex(f=>Number(f.col)===col),next=idx>=0?fields[idx+1]:null;
+ if(!next)return moveEnterNavNext($('siteEditForm'),current);
+ const nextGroup=siteEditGroups.findIndex(g=>next.col>=g[1]&&next.col<=g[2]);
+ if(nextGroup<0)return moveEnterNavNext($('siteEditForm'),current);
+ if(nextGroup!==siteEditGroupIndex){
+  siteEditGroupIndex=nextGroup;renderSiteEditTabs();renderSiteEditFields();
+  requestAnimationFrame(()=>{const el=$('siteEditFields')?.querySelector(`[data-site-col="${next.col}"]`);if(el)focusEnterNavControl(el)});
+  return true;
+ }
+ const el=$('siteEditFields')?.querySelector(`[data-site-col="${next.col}"]`);
+ return el?focusEnterNavControl(el):false;
+}
+function enableEnterToNext(form,{siteEditor=false}={}){
+ if(!form||form.dataset.enterNextReady==='1')return;
+ form.dataset.enterNextReady='1';
+ form.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.isComposing||e.keyCode===229||e.ctrlKey||e.altKey||e.metaKey)return;
+  const el=e.target?.closest?.('input,select,textarea');if(!el||!form.contains(el))return;
+  // 주소 검색어는 기존 Enter=주소검색 동작을 유지합니다.
+  if(el.id==='siteAddressQuery'||el.id==='addressQuery')return;
+  const type=String(el.type||'').toLowerCase();if(['hidden','checkbox','radio','file','button','submit'].includes(type))return;
+  // 전화번호 등 여러 줄 입력이 필요한 경우 Shift+Enter는 줄바꿈으로 남겨둡니다.
+  if(el.tagName==='TEXTAREA'&&e.shiftKey)return;
+  e.preventDefault();e.stopPropagation();
+  if(siteEditor&&el.matches('[data-site-col]')){moveSiteEditDataFieldNext(el);return}
+  moveEnterNavNext(form,el);
+ });
+}
 function tableColumnWidthStorageKey(tableName){return `staff_table_column_widths:${me?.id||'guest'}:${tableName}`}
 function tableResizeHeaderKey(th,index){
  return th?.dataset?.resizeKey||th?.dataset?.colKey||th?.dataset?.uwColKey||`col_${index}_${String(th?.textContent||'').replace(/\s+/g,' ').trim()}`;
@@ -1058,6 +1123,7 @@ const rerenderResultLayout=()=>{if(lastSites.length&&$('page-search')?.classList
 if(resultLayoutMedia.addEventListener)resultLayoutMedia.addEventListener('change',rerenderResultLayout);else if(resultLayoutMedia.addListener)resultLayoutMedia.addListener(rerenderResultLayout);
 const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
 if(isStandalone()){const n=$('standaloneNotice');n?.classList.remove('hidden');$('standaloneHelp')?.addEventListener('click',()=>alert('현재 Chrome에 설치된 웹앱으로 실행 중입니다.\n\n일반 Chrome 탭으로 사용하려면:\n1. 이 앱 창 오른쪽 위 ⋮ 메뉴를 누릅니다.\n2. 앱 제거/삭제를 선택합니다.\n3. 또는 Chrome 주소창에 chrome://apps 를 입력한 뒤 현장 검색 앱을 제거합니다.\n4. 이후 https://nameplate76-bot.github.io/search/ 를 Chrome 일반 탭에서 다시 여세요.'));}
+enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('contactEditForm'));enableEnterToNext($('userForm'));
 $('permSiteCreate').onchange=$('permSiteEdit').onchange=$('permAllSitesExport').onchange=e=>{if(e.target.checked)$('permSites').checked=true};$('permSites').onchange=e=>{if(!e.target.checked){$('permSiteCreate').checked=false;$('permSiteEdit').checked=false;$('permAllSitesExport').checked=false}};$('siteCreateBtn').onclick=openCreateSite;$('siteEditClose').onclick=()=>$('siteEditDlg').close();$('siteEditCancel').onclick=()=>$('siteEditDlg').close();$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=setupUnwrittenFields;$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('logoutBtn').onclick=async()=>{invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));$('searchBtn').onclick=()=>searchSites(true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites(true)};document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{currentFilter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));refilterSearchSites()});$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');$('fieldsSave').onclick=saveFields;$('detailClose').onclick=()=>$('detailDlg').close();$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary()};$('salesDashRun').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;renderSalesDashboard(true)};$('salesDashYear').onchange=()=>{};$('salesDashMonth').onchange=()=>{};['salesYear','salesMonth','salesOwner'].forEach(id=>$(id).onchange=renderSales);$('salesPrint').onclick=printSalesReport;$('salesExport').onclick=exportSales;$('salesImport').onclick=()=>isAdmin()?$('salesFile').click():alert('매출 관리는 관리자만 사용할 수 있습니다.');$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>isAdmin()&&can('can_import_staff_sites')?$('dbFile').click():alert('전체 DB 엑셀 갱신은 관리자만 사용할 수 있습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{$('userDlg').showModal();syncRoleForm()};$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;sb.auth.onAuthStateChange((event,session)=>{
