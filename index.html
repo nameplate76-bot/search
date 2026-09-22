@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260922-1715-v38">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260922-2011-v39">
 <script>
 (function(){
-  const BUILD='20260922-1715-v38';
+  const BUILD='20260922-2011-v39';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,7 +34,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V38</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V39</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -105,7 +105,7 @@
   </section>
   <div class="salesPanel">
     <div class="salesFilters"><select id="salesYear"></select><select id="salesMonth"></select><select id="salesOwner"></select></div>
-    <div class="salesNotice">보고서 작성 완료 값이 있는 현장만 표시하고, 해당 현장의 매출액만 합계합니다. 완료월이 선택한 연도·월에 해당하는 보고서를 표시합니다. PC에서는 표 제목의 오른쪽 경계선을 좌우로 드래그해 열 폭을 조절할 수 있습니다. 매출 관리는 관리자만 사용할 수 있습니다.</div>
+    <div class="salesNotice">보고서 작성 완료 값이 있는 현장만 표시하고, 해당 현장의 매출액만 합계합니다. 완료월이 선택한 연도·월에 해당하는 보고서를 표시합니다. PC에서는 표 제목의 오른쪽 경계선을 좌우로 드래그해 열 폭을 조절할 수 있습니다. 매출 조회 권한이 있는 사용자는 이용할 수 있습니다.</div>
     <div class="salesWrap"><table class="salesReportTable" id="salesTable">
       <colgroup><col style="width:4%"><col style="width:31%"><col style="width:14%"><col style="width:14%"><col style="width:10%"><col style="width:10%"><col style="width:10%"><col style="width:7%"></colgroup>
       <thead><tr><th>No.</th><th>현장명</th><th>계약 구분<br>(유지/성능/유지선임)</th><th>점검참여자</th><th>계약 금액<br>(VAT 별도)</th><th>유지관리자<br>선임비(VAT 별도)</th><th>매출액<br>(VAT 별도)</th><th>비고</th></tr></thead>
@@ -115,8 +115,8 @@
 </section>
 <section id="page-users" class="page">
   <div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자가 직접 사원명·ID·PW·전화번호를 등록하고 사내포털 권한을 부여합니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div>
-  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>전체엑셀</th><th>매출조회</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
-  <p class="hint">관리자로 지정하면 사내포털 권한은 모두 자동 부여됩니다. 일반 사용자는 필요한 권한만 선택할 수 있습니다. PC에서는 표 제목의 오른쪽 경계선을 좌우로 드래그해 열 폭을 조절할 수 있습니다.</p>
+  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>전체엑셀</th><th>매출조회</th><th>매출내보내기</th><th>매출출력</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
+  <p class="hint">권한을 선택한 뒤 각 사용자 행의 <strong>권한 저장</strong> 버튼을 눌러 적용합니다. 관리자는 모든 권한이 자동 적용되고, 일반 사용자는 저장된 개별 권한에 따라 해당 메뉴와 기능을 사용할 수 있습니다. PC에서는 표 제목의 오른쪽 경계선을 좌우로 드래그해 열 폭을 조절할 수 있습니다.</p>
 </section>
 </main></div>
 <dialog id="detailDlg"><div class="dlgHead"><h3 id="detailTitle">현장 상세</h3><button class="iconBtn" id="detailClose">×</button></div><div id="detailTabs" class="filterRow"></div><div id="detailBody" class="detailGrid"></div></dialog>
@@ -163,4 +163,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260922-1715-v38"></script><script src="fields.js?v=20260922-1715-v38"></script><script src="app.js?v=20260922-1715-v38"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260922-2011-v39"></script><script src="fields.js?v=20260922-2011-v39"></script><script src="app.js?v=20260922-2011-v39"></script></body></html>

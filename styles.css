@@ -320,3 +320,13 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .siteTemplateSearchState{padding:16px;text-align:center;color:#667085;font-size:12px}
 .siteTemplateSelected{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:1px solid #a9c5fb;border-radius:10px;background:#eef5ff}.siteTemplateSelected>div:first-child{display:grid;gap:2px;min-width:0}.siteTemplateSelected span{font-size:10px;font-weight:800;color:#667085}.siteTemplateSelected strong{font-size:13px;color:#174ea6;overflow-wrap:anywhere}.siteTemplateSelected small{font-size:11px;color:#667085}.siteTemplateSelectedNote{font-size:11px;color:#344054;white-space:nowrap}.siteTemplateSelectedNote b{color:#174ea6}
 @media(max-width:800px){.siteTemplateSearchPanel{margin:10px 12px 7px;padding:11px}.siteTemplateSearchHead{display:block}.siteTemplateStep{display:inline-block;margin-top:7px}.siteTemplateSearchRow{grid-template-columns:1fr}.siteTemplateSearchRow button{width:100%;min-height:42px}.siteTemplateResultList{max-height:260px}.siteTemplateResultItem{align-items:stretch;flex-direction:column}.siteTemplateResultItem button{width:100%}.siteTemplateSelected{align-items:flex-start;flex-direction:column}.siteTemplateSelectedNote{white-space:normal}}
+
+
+/* V39 - 사용자 권한 선택 후 저장 */
+#userTable .userSaveBtn{white-space:nowrap;font-weight:800}
+#userTable .userSaveBtn:disabled{opacity:.62;background:#eef2f7;color:#667085;border-color:#d0d5dd;cursor:default}
+#userTable tr.userRowDirty{background:#fff9e8}
+#userTable tr.userRowDirty td{border-bottom-color:#f3d68a}
+#userTable tr.userRowDirty .userSaveBtn:not(:disabled){box-shadow:0 0 0 2px rgba(37,99,235,.12)}
+#userTable .permCell input:disabled{cursor:not-allowed;opacity:.65}
+@media(max-width:800px){#userTable .userActions{min-width:110px}.userSaveBtn{min-height:40px}}
