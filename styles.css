@@ -353,3 +353,13 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .salesDashKpis>div>small{display:block;margin-top:4px;font-size:10px;color:var(--muted);font-weight:700}
 
 @media(max-width:800px){.salesDashHeadActions{grid-template-columns:1fr!important}}
+
+/* V43 - 매출 대시보드 자동조회 + 매출액/건수 동시 비교 */
+.salesDashBody{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.salesDashCompareRow{grid-template-columns:minmax(78px,110px) minmax(0,1fr) minmax(0,.72fr);gap:10px;align-items:start;padding:11px 0}
+.salesDashCompareGroup{display:grid;grid-template-columns:48px minmax(0,1fr);gap:7px;min-width:0}.salesDashCompareGroupTitle{font-size:10px;font-weight:900;color:#475467;padding-top:4px;white-space:nowrap}.salesDashCompareGroup.count{border-left:1px solid #edf0f5;padding-left:10px}.salesDashCompareGroup .salesDashMetricRow{grid-template-columns:34px minmax(70px,1fr) minmax(92px,138px)}.salesDashCompareGroup.count .salesDashMetricRow{grid-template-columns:34px minmax(55px,1fr) minmax(46px,62px)}.salesDashBarTrack.countTrack{height:15px}.salesDashCompareGroup.count .salesDashMetricRow>b{min-width:46px}
+.salesDashTable{min-width:1080px}
+@media(max-width:1200px){.salesDashCompareRow{grid-template-columns:minmax(75px,95px) minmax(0,1fr)}.salesDashCompareGroup.count{grid-column:2;border-left:0;border-top:1px dashed #e4e7ec;padding-left:0;padding-top:6px}}
+@media(max-width:1000px){.salesDashBody{grid-template-columns:1fr}}
+@media(max-width:800px){.salesDashCompareRow{grid-template-columns:minmax(68px,82px) minmax(0,1fr)}.salesDashCompareGroup{grid-template-columns:40px minmax(0,1fr)}.salesDashCompareGroup .salesDashMetricRow,.salesDashCompareGroup.count .salesDashMetricRow{grid-template-columns:30px minmax(60px,1fr)}.salesDashCompareGroup .salesDashMetricRow>b,.salesDashCompareGroup.count .salesDashMetricRow>b{grid-column:2;text-align:left;font-size:10px}.salesDashCompareGroup.count{grid-column:2}.salesDashKpis{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.salesDashCompareRow{grid-template-columns:1fr}.salesDashBarLabel{margin-bottom:1px}.salesDashCompareGroup,.salesDashCompareGroup.count{grid-column:1}}
