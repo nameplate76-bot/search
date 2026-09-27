@@ -5,6 +5,7 @@ const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g
 const labels=schema.fields.map(x=>x.label), financialCols=new Set(schema.financial_cols||[46,47,48,49,50,51,52]);
 const dateCols=new Set([8,18,22,23,26,27,28,29,30,32,40,44,45]);
 let me=null,currentFilter='all',lastSites=[],salesRows=[],salesImported=false;
+let salesAssignedRows=[];
 let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
 let unwrittenRows=[],unwrittenOwnerFilter='all';
@@ -18,6 +19,7 @@ let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
  if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function activePageName(){return document.querySelector('.page.active')?.id?.replace(/^page-/,'')||savedPage()}
@@ -991,7 +993,7 @@ function salesOwnerName(r){return normalizeReportOwnerName(r?.document_owner||r?
 function salesDashboardStorageKey(){return `staff_sales_dashboard:${me?.id||'guest'}`}
 function readSalesDashboardPrefs(){try{const v=JSON.parse(localStorage.getItem(salesDashboardStorageKey())||'{}');return v&&typeof v==='object'?v:{}}catch(e){return{}}}
 function saveSalesDashboardPrefs(){try{localStorage.setItem(salesDashboardStorageKey(),JSON.stringify({period:salesDashboardPeriod,year:$('salesDashYear')?.value||'',month:$('salesDashMonth')?.value||'',owners:[...salesDashboardOwners]}))}catch(e){}}
-function salesDashboardOwnerNames(){return [...new Set(salesRows.map(salesOwnerName).filter(x=>x&&x!=='미배정'))].sort((a,b)=>a.localeCompare(b,'ko'))}
+function salesDashboardOwnerNames(){return [...new Set([...salesRows.map(salesOwnerName),...salesAssignedRows.map(x=>String(x.owner_name||'').trim())].filter(x=>x&&x!=='미배정'))].sort((a,b)=>a.localeCompare(b,'ko'))}
 function updateSalesDashboardOwnerSummary(){const n=salesDashboardOwners.size,total=salesDashboardOwnerNames().length;const el=$('salesDashOwnerSummary');if(el)el.textContent=n?`담당자 ${n}명 선택${n===total?' · 전체':''}`:'담당자를 선택하세요'}
 function renderSalesDashboardOwnerList(){
  const root=$('salesDashOwnerList');if(!root)return;
@@ -1002,7 +1004,7 @@ function renderSalesDashboardOwnerList(){
 }
 function setSalesDashboardPeriod(period){salesDashboardPeriod=period==='monthly'?'monthly':'annual';$('salesDashAnnual')?.classList.toggle('active',salesDashboardPeriod==='annual');$('salesDashMonthly')?.classList.toggle('active',salesDashboardPeriod==='monthly');$('salesDashMonthWrap')?.classList.toggle('hidden',salesDashboardPeriod!=='monthly')}
 function setupSalesDashboardFilters(){
- const years=[...new Set(salesRows.map(r=>String(r.sales_year||'')).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+ const years=[...new Set([...salesRows.map(r=>String(r.sales_year||'')),...salesAssignedRows.map(r=>String(r.allocation_year||''))].filter(Boolean))].sort((a,b)=>b.localeCompare(a));
  const owners=salesDashboardOwnerNames(),prefs=readSalesDashboardPrefs(),yearSel=$('salesDashYear'),monthSel=$('salesDashMonth');
  const oldYear=yearSel?.value||'',oldMonth=monthSel?.value||'';
  if(yearSel){yearSel.innerHTML=years.map(y=>`<option value="${esc(y)}">${esc(y)}년</option>`).join('');const py=String(prefs.year||oldYear||$('salesYear')?.value||years[0]||'');yearSel.value=years.includes(py)?py:(years[0]||'')}
@@ -1018,13 +1020,15 @@ function setupSalesDashboardFilters(){
  setSalesDashboardPeriod(salesDashboardPeriod);renderSalesDashboardOwnerList();renderSalesDashboard();
 }
 function salesDashboardMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
+function salesDashboardRate(written,allocated){return allocated>0?written/allocated*100:null}
 function salesDashboardAggregates(){
  const year=$('salesDashYear')?.value||'',month=$('salesDashMonth')?.value||'';
- const selected=new Set(salesDashboardOwners),map=new Map([...selected].map(o=>[o,{owner:o,sales:0,count:0}]));
- const rows=salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(r.sales_month)===Number(month))&&selected.has(salesOwnerName(r)));
- rows.forEach(r=>{const owner=salesOwnerName(r),a=map.get(owner);if(!a)return;a.sales+=salesAmount(r);a.count+=1});
- const items=[...map.values()].sort((a,b)=>b.sales-a.sales||a.owner.localeCompare(b.owner,'ko'));
- return{year,month,rows,items,total:items.reduce((n,x)=>n+x.sales,0)};
+ const selected=new Set(salesDashboardOwners),map=new Map([...selected].map(o=>[o,{owner:o,allocated:0,written:0,count:0}]));
+ const writtenRows=salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(r.sales_month)===Number(month))&&selected.has(salesOwnerName(r)));
+ writtenRows.forEach(r=>{const owner=salesOwnerName(r),a=map.get(owner);if(!a)return;a.written+=salesAmount(r);a.count+=1});
+ salesAssignedRows.filter(a=>String(a.allocation_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(a.allocation_month)===Number(month))&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{const item=map.get(String(a.owner_name||'').trim());if(item)item.allocated+=salesNumber(a.allocation_amount)});
+ const items=[...map.values()].sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
+ return{year,month,writtenRows,items,totalWritten:items.reduce((n,x)=>n+x.written,0),totalAllocated:items.reduce((n,x)=>n+x.allocated,0)};
 }
 function renderSalesDashboard(showValidation=false){
  if(!salesDashboardInitialized)return;
@@ -1034,12 +1038,13 @@ function renderSalesDashboard(showValidation=false){
   kpi.innerHTML='';chart.innerHTML='<div class="salesDashEmpty">담당자를 한 명 이상 선택한 뒤 [대시보드 조회]를 눌러주세요.</div>';summary.innerHTML='';return;
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
- const avg=d.items.length?d.total/d.items.length:0,max=Math.max(0,...d.items.map(x=>x.sales));
- kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>매출 합계</span><b>${esc(salesDashboardMoney(d.total))}</b></div><div><span>담당자 평균</span><b>${esc(salesDashboardMoney(avg))}</b></div>`;
- $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 매출액`;
- chart.innerHTML=d.items.map(x=>{const pct=max>0?Math.max(x.sales>0?1:0,Math.round(x.sales/max*1000)/10):0;return `<div class="salesDashBarRow"><div class="salesDashBarLabel" title="${esc(x.owner)}">${esc(x.owner)}</div><div class="salesDashBarTrack"><div class="salesDashBarFill" style="width:${pct}%"></div></div><div class="salesDashBarValue">${esc(salesDashboardMoney(x.sales))}</div></div>`}).join('')||'<div class="salesDashEmpty">해당 기간의 매출 자료가 없습니다.</div>';
- const rows=d.items.map((x,i)=>{const share=d.total>0?x.sales/d.total*100:0;return `<tr><td class="center">${i+1}</td><td>${esc(x.owner)}</td><td class="num">${esc(salesDashboardMoney(x.sales))}</td><td class="center">${x.count.toLocaleString()}건</td><td class="num">${share.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td></tr>`}).join('');
- summary.innerHTML=`<div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable"><thead><tr><th>No.</th><th>담당자</th><th>매출액 합계</th><th>완료 현장</th><th>구성비</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="salesDashEmpty">자료가 없습니다.</td></tr>'}</tbody><tfoot><tr><th colspan="2">합계</th><th class="num">${esc(salesDashboardMoney(d.total))}</th><th class="center">${d.rows.length.toLocaleString()}건</th><th class="num">100.0%</th></tr></tfoot></table></div>`;
+ const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),max=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written]));
+ kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 접수일자 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
+ $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 할당 매출액 · 담당자별 작성 매출액`;
+ chart.innerHTML=d.items.map(x=>{const ap=max>0?Math.max(x.allocated>0?1:0,Math.round(x.allocated/max*1000)/10):0,wp=max>0?Math.max(x.written>0?1:0,Math.round(x.written/max*1000)/10):0;return `<div class="salesDashCompareRow"><div class="salesDashBarLabel" title="${esc(x.owner)}">${esc(x.owner)}</div><div class="salesDashCompareBars"><div class="salesDashMetricRow"><span>할당</span><div class="salesDashBarTrack"><div class="salesDashBarFill allocation" style="width:${ap}%"></div></div><b>${esc(salesDashboardMoney(x.allocated))}</b></div><div class="salesDashMetricRow"><span>작성</span><div class="salesDashBarTrack"><div class="salesDashBarFill written" style="width:${wp}%"></div></div><b>${esc(salesDashboardMoney(x.written))}</b></div></div></div>`}).join('')||'<div class="salesDashEmpty">해당 기간의 매출 자료가 없습니다.</div>';
+ const rows=d.items.map((x,i)=>{const share=d.totalWritten>0?x.written/d.totalWritten*100:0,rate=salesDashboardRate(x.written,x.allocated);return `<tr><td class="center">${i+1}</td><td>${esc(x.owner)}</td><td class="num">${esc(salesDashboardMoney(x.allocated))}</td><td class="num">${esc(salesDashboardMoney(x.written))}</td><td class="center">${x.count.toLocaleString()}건</td><td class="num">${share.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td><td class="num ${rate!==null&&rate>=100?'salesRateDone':''}">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td></tr>`}).join('');
+ const totalShare=d.totalWritten>0?'100.0%':'-';
+ summary.innerHTML=`<div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable"><thead><tr><th>No.</th><th>담당자</th><th>할당 매출액</th><th>작성 매출액</th><th>완료 현장</th><th>구성비</th><th>할당 대비 작성률</th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="salesDashEmpty">자료가 없습니다.</td></tr>'}</tbody><tfoot><tr><th colspan="2">합계</th><th class="num">${esc(salesDashboardMoney(d.totalAllocated))}</th><th class="num">${esc(salesDashboardMoney(d.totalWritten))}</th><th class="center">${d.writtenRows.length.toLocaleString()}건</th><th class="num">${totalShare}</th><th class="num">${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th></tr></tfoot></table></div>`;
  scheduleTableColumnResize($('salesDashSummaryTable'),'sales-dashboard-summary');saveSalesDashboardPrefs();
 }
 async function loadSales(force=false){
@@ -1047,8 +1052,8 @@ async function loadSales(force=false){
  if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){renderSales();return}
  if(salesLoadPromise&&!force)return salesLoadPromise;
  salesLoadPromise=(async()=>{try{
-  salesRows=await fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false}));
-  salesRows=salesRows.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
+  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
+  salesRows=salesData.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesAssignedRows=allocationData||[];salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
  }catch(e){alert('매출 자료 조회 오류: '+e.message)}finally{salesLoadPromise=null}})();
  return salesLoadPromise;
 }
@@ -1201,17 +1206,43 @@ function syncUserSelectionUi(){const tb=$('userTable')?.querySelector('tbody');i
 function selectAllUsers(){if(!isAdmin())return alert('직원 삭제는 관리자만 할 수 있습니다.');selectedUserIds=new Set((usersRows||[]).filter(p=>String(p.id)!==String(me?.id)).map(p=>String(p.id)));syncUserSelectionUi()}
 function clearUserSelection(){selectedUserIds.clear();syncUserSelectionUi()}
 function userPermissionLabel(k){return ({approved:'승인',can_use_staff_portal:'포털 사용',can_view_staff_sites:'현장 검색',can_create_staff_sites:'현장 등록',can_edit_staff_sites:'현장 수정',can_export_staff_sites:'전체 엑셀',can_view_staff_sales:'매출 조회',can_export_staff_sales:'매출 내보내기',can_print_staff_sales:'매출 출력',can_import_staff_sites:'엑셀 DB 등록',can_manage_staff_users:'사용자 관리'})[k]||k}
+function userPhoneCanEdit(p){return !!p&&(isAdmin()||String(p.id)===String(me?.id))}
+function userPhoneHtml(p){
+ const phone=formatPhone(p?.phone||'');
+ const call=phone?`<a class="userPhoneCall" href="tel:${esc(cleanPhone(phone))}" data-user-phone-call="${esc(phone)}">📞 ${esc(phone)}</a>`:'<span class="contactEmpty">미등록</span>';
+ const edit=userPhoneCanEdit(p)?`<div class="userPhoneEdit"><input id="userInfoPhoneInput" inputmode="tel" autocomplete="tel" value="${esc(phone)}" placeholder="010-0000-0000"><button type="button" class="primary smallBtn" data-user-phone-save="${esc(p.id)}">전화번호 저장</button></div>`:'';
+ return `<div class="userPhoneInfo">${call}${edit}</div>`;
+}
 function openUserInfo(id){
- const p=(usersRows||[]).find(x=>String(x.id)===String(id));if(!p)return;
+ const p=(usersRows||[]).find(x=>String(x.id)===String(id))||(String(id)===String(me?.id)?me:null);if(!p)return;
  $('userInfoTitle').textContent=`${p.name||p.user_id||'직원'} · 직원 정보`;
  const permissions=['approved','can_use_staff_portal','can_view_staff_sites','can_create_staff_sites','can_edit_staff_sites','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- $('userInfoBody').innerHTML=`<section class="userInfoSummary"><div><span>사원명</span><b>${esc(p.name||'-')}</b></div><div><span>ID</span><b>${esc(p.user_id||'-')}</b></div><div><span>전화번호</span><b>${esc(p.phone||'-')}</b></div><div><span>사용자 구분</span><b>${p.role==='admin'?'관리자':'일반 사용자'}</b></div></section><section class="userInfoPermissions"><h4>권한 현황</h4><div class="userPermissionGrid">${permissions.map(k=>`<div class="userPermissionItem ${p[k]?'on':'off'}"><span>${esc(userPermissionLabel(k))}</span><b>${p[k]?'사용':'미사용'}</b></div>`).join('')}</div></section>`;
+ $('userInfoBody').innerHTML=`<section class="userInfoSummary"><div><span>사원명</span><b>${esc(p.name||'-')}</b></div><div><span>ID</span><b>${esc(p.user_id||'-')}</b></div><div class="userPhoneInfoCard"><span>전화번호</span>${userPhoneHtml(p)}</div><div><span>사용자 구분</span><b>${p.role==='admin'?'관리자':'일반 사용자'}</b></div></section><section class="userInfoPermissions"><h4>권한 현황</h4><div class="userPermissionGrid">${permissions.map(k=>`<div class="userPermissionItem ${p[k]?'on':'off'}"><span>${esc(userPermissionLabel(k))}</span><b>${p[k]?'사용':'미사용'}</b></div>`).join('')}</div></section>`;
+ const save=$('userInfoBody').querySelector('[data-user-phone-save]');if(save)save.onclick=()=>saveUserPhone(save.dataset.userPhoneSave);
+ $('userInfoBody').querySelectorAll('[data-user-phone-call]').forEach(a=>a.onclick=e=>{e.stopPropagation()});
  $('userInfoDlg').showModal();
 }
+async function saveUserPhone(id){
+ const input=$('userInfoPhoneInput');if(!input)return;
+ const phone=formatPhone(input.value||'');
+ const btn=$('userInfoBody').querySelector('[data-user-phone-save]'),old=btn?.textContent||'전화번호 저장';
+ try{
+  if(btn){btn.disabled=true;btn.textContent='저장 중...'}
+  const{data,error}=await sb.rpc('staff_update_employee_phone',{p_user_id:id,p_phone:phone});if(error)throw error;
+  const saved=formatPhone(data?.phone||phone);
+  const ix=usersRows.findIndex(x=>String(x.id)===String(id));if(ix>=0)usersRows[ix]={...usersRows[ix],phone:saved};
+  if(String(id)===String(me?.id))me={...me,phone:saved};
+  usersCacheReady=usersCacheReady&&ix>=0;
+  if($('page-users')?.classList.contains('active')&&usersRows.length)renderUsers(usersRows);
+  openUserInfo(id);
+ }catch(e){alert('전화번호 저장 오류: '+(e?.message||e));}
+ finally{if(btn){btn.disabled=false;btn.textContent=old}}
+}
+
 function renderUsers(rows){
  const tb=$('userTable').querySelector('tbody');
  const perms=['approved','can_use_staff_portal','can_view_staff_sites','can_create_staff_sites','can_edit_staff_sites','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${esc(p.phone||'')}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${isAdmin()?`<button data-reset="${p.id}">PW</button>${!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
+ tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${isAdmin()?`<button data-reset="${p.id}">PW</button>${!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
  tb.querySelectorAll('tr[data-user-row]').forEach(tr=>{
   syncUserRowDependencies(tr);
   tr.querySelectorAll('[data-k]').forEach(el=>el.onchange=()=>{syncUserRowDependencies(tr,el.dataset.k);markUserRowDirty(tr,true)});
@@ -1222,6 +1253,7 @@ function renderUsers(rows){
  tb.querySelectorAll('[data-save-user]').forEach(b=>b.onclick=e=>{e.stopPropagation();saveUserPermissions(b.dataset.saveUser)});
  tb.querySelectorAll('[data-reset]').forEach(b=>b.onclick=e=>{e.stopPropagation();resetPw(b.dataset.reset)});
  tb.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();deleteUser(b.dataset.del)});
+ tb.querySelectorAll('[data-user-phone-call]').forEach(a=>a.onclick=e=>e.stopPropagation());
  updateUsersSelectedCount();scheduleTableColumnResize($('userTable'),'users');
 }
 async function loadUsers(force=false){
@@ -1272,7 +1304,7 @@ enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('cont
 $('permSalesExport').onchange=$('permSalesPrint').onchange=e=>{if(e.target.checked)$('permSales').checked=true};$('permSales').onchange=e=>{if(!e.target.checked){$('permSalesExport').checked=false;$('permSalesPrint').checked=false}};
 $('permSiteCreate').onchange=$('permSiteEdit').onchange=$('permAllSitesExport').onchange=$('permImport').onchange=e=>{if(e.target.checked)$('permSites').checked=true};$('permSites').onchange=e=>{if(!e.target.checked){$('permSiteCreate').checked=false;$('permSiteEdit').checked=false;$('permAllSitesExport').checked=false;$('permImport').checked=false}};$('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=()=>$('siteEditDlg').close();$('siteEditCancel').onclick=()=>$('siteEditDlg').close();$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=setupUnwrittenFields;$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
-$('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('logoutBtn').onclick=async()=>{invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));$('searchBtn').onclick=()=>searchSites(true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites(true)};document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{currentFilter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));refilterSearchSites()});$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');$('fieldsSave').onclick=saveFields;$('detailClose').onclick=()=>$('detailDlg').close();$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary()};$('salesDashRun').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;renderSalesDashboard(true)};$('salesDashYear').onchange=()=>{};$('salesDashMonth').onchange=()=>{};['salesYear','salesMonth','salesOwner'].forEach(id=>$(id).onchange=renderSales);$('salesPrint').onclick=printSalesReport;$('salesExport').onclick=exportSales;$('salesImport').onclick=()=>canViewSales()?$('salesFile').click():alert('매출 조회 권한이 없습니다.');$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
+$('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));$('searchBtn').onclick=()=>searchSites(true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites(true)};document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{currentFilter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));refilterSearchSites()});$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');$('fieldsSave').onclick=saveFields;$('detailClose').onclick=()=>$('detailDlg').close();$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary()};$('salesDashRun').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;renderSalesDashboard(true)};$('salesDashYear').onchange=()=>{};$('salesDashMonth').onchange=()=>{};['salesYear','salesMonth','salesOwner'].forEach(id=>$(id).onchange=renderSales);$('salesPrint').onclick=printSalesReport;$('salesExport').onclick=exportSales;$('salesImport').onclick=()=>canViewSales()?$('salesFile').click():alert('매출 조회 권한이 없습니다.');$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 let ownPermissionRefreshAt=0,ownPermissionRefreshBusy=false;
 async function refreshOwnPermissions(){
  if(!me||ownPermissionRefreshBusy||Date.now()-ownPermissionRefreshAt<15000)return;ownPermissionRefreshBusy=true;ownPermissionRefreshAt=Date.now();
