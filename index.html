@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260922-2011-v39">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20260928-0711-v40">
 <script>
 (function(){
-  const BUILD='20260922-2011-v39';
+  const BUILD='20260928-0711-v40';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,7 +34,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V39</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V40</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -114,14 +114,15 @@
   </div>
 </section>
 <section id="page-users" class="page">
-  <div class="pageTitle"><div><h2>사용자 관리</h2><p>관리자가 직접 사원명·ID·PW·전화번호를 등록하고 사내포털 권한을 부여합니다.</p></div><button id="newUserBtn" class="primary">직원 등록</button></div>
-  <div class="tableWrap"><table id="userTable"><thead><tr><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>전체엑셀</th><th>매출조회</th><th>매출내보내기</th><th>매출출력</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
-  <p class="hint">권한을 선택한 뒤 각 사용자 행의 <strong>권한 저장</strong> 버튼을 눌러 적용합니다. 관리자는 모든 권한이 자동 적용되고, 일반 사용자는 저장된 개별 권한에 따라 해당 메뉴와 기능을 사용할 수 있습니다. PC에서는 표 제목의 오른쪽 경계선을 좌우로 드래그해 열 폭을 조절할 수 있습니다.</p>
+  <div class="pageTitle userPageTitle"><div><h2>사용자 관리</h2><p>직원을 선택해 일괄 삭제하거나, 행을 클릭해 직원 상세정보를 확인하고 권한을 관리합니다.</p></div><div class="actions userTopActions"><button id="newUserBtn" class="primary">직원 등록</button><button id="usersSelectAllBtn" class="ghost">전체선택</button><button id="usersClearSelectionBtn" class="ghost">선택해제</button><button id="usersDeleteSelectedBtn" class="danger">선택삭제</button><span id="usersSelectedCount" class="usersSelectedCount">0명 선택</span></div></div>
+  <div class="tableWrap"><table id="userTable"><thead><tr><th class="userSelectCol">선택</th><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>전체엑셀</th><th>매출조회</th><th>매출내보내기</th><th>매출출력</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
+  <p class="hint">권한을 선택한 뒤 각 사용자 행의 <strong>권한 저장</strong> 버튼을 눌러 적용합니다. 직원 행의 빈 영역이나 사원명·ID를 클릭하면 상세정보를 확인할 수 있습니다. 현재 로그인한 계정은 일괄삭제 대상에서 제외됩니다.</p>
 </section>
 </main></div>
 <dialog id="detailDlg"><div class="dlgHead"><h3 id="detailTitle">현장 상세</h3><button class="iconBtn" id="detailClose">×</button></div><div id="detailTabs" class="filterRow"></div><div id="detailBody" class="detailGrid"></div></dialog>
 <dialog id="fieldsDlg" class="fieldsDlg"><div class="dlgHead"><div><h3>검색 결과 표시 항목</h3><small>선택한 항목만 검색결과에 표시되며, 사용자 계정별로 저장됩니다.</small></div><button class="iconBtn" id="fieldsClose">×</button></div><div class="fieldQuickBar"><div class="fieldQuickButtons"><button type="button" id="fieldsSelectAll">전체 선택</button><button type="button" id="fieldsSelectDefault">기본 선택</button><button type="button" id="fieldsClearAll">선택 해제</button></div><strong id="fieldSelectionCount">0개 선택</strong></div><div id="fieldList" class="checkGrid"></div><div class="dlgFoot fieldDlgFoot"><span>항목을 하나 이상 선택한 후 저장해 주세요.</span><button id="fieldsSave" class="primary">저장</button></div></dialog>
 <dialog id="unwrittenFieldsDlg" class="fieldsDlg"><div class="dlgHead"><div><h3>미작성 현황 표시 항목</h3><small>선택한 항목만 미작성 현장 리스트와 스마트폰 카드에 표시되며, 관리자 계정별로 저장됩니다.</small></div><button class="iconBtn" id="unwrittenFieldsClose">×</button></div><div class="fieldQuickBar"><div class="fieldQuickButtons"><button type="button" id="unwrittenFieldsSelectAll">전체 선택</button><button type="button" id="unwrittenFieldsSelectDefault">기본 선택</button><button type="button" id="unwrittenFieldsClearAll">선택 해제</button></div><strong id="unwrittenFieldSelectionCount">0개 선택</strong></div><div id="unwrittenFieldList" class="checkGrid"></div><div class="dlgFoot fieldDlgFoot"><span>No.와 관리(상세·수정) 열은 항상 표시됩니다.</span><button id="unwrittenFieldsSave" class="primary">저장</button></div></dialog>
+<dialog id="userInfoDlg" class="userInfoDlg"><div class="dlgHead"><div><h3 id="userInfoTitle">직원 정보</h3><small>등록된 직원 정보와 현재 저장된 권한입니다.</small></div><button class="iconBtn" id="userInfoClose" aria-label="닫기">×</button></div><div id="userInfoBody" class="userInfoBody"></div></dialog>
 <dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button class="iconBtn" id="userClose">×</button></div><form id="userForm" class="formGrid">
 <label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자 3자 이상"></label><label>비밀번호<input id="empPw" type="password" required minlength="8" placeholder="8자 이상"></label><label>전화번호<input id="empPhone" required placeholder="010-0000-0000"></label>
 <label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
@@ -163,4 +164,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260922-2011-v39"></script><script src="fields.js?v=20260922-2011-v39"></script><script src="app.js?v=20260922-2011-v39"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20260928-0711-v40"></script><script src="fields.js?v=20260928-0711-v40"></script><script src="app.js?v=20260928-0711-v40"></script></body></html>
