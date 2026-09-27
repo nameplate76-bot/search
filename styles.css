@@ -363,3 +363,44 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:1000px){.salesDashBody{grid-template-columns:1fr}}
 @media(max-width:800px){.salesDashCompareRow{grid-template-columns:minmax(68px,82px) minmax(0,1fr)}.salesDashCompareGroup{grid-template-columns:40px minmax(0,1fr)}.salesDashCompareGroup .salesDashMetricRow,.salesDashCompareGroup.count .salesDashMetricRow{grid-template-columns:30px minmax(60px,1fr)}.salesDashCompareGroup .salesDashMetricRow>b,.salesDashCompareGroup.count .salesDashMetricRow>b{grid-column:2;text-align:left;font-size:10px}.salesDashCompareGroup.count{grid-column:2}.salesDashKpis{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.salesDashCompareRow{grid-template-columns:1fr}.salesDashBarLabel{margin-bottom:1px}.salesDashCompareGroup,.salesDashCompareGroup.count{grid-column:1}}
+
+
+/* V44 - 매출 대시보드 요약카드 한 줄 배치 + 담당자별 합계 중앙정렬 */
+@media (min-width:1201px){
+  .salesDashKpis{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:8px;
+  }
+  .salesDashKpis>div{
+    padding:11px 12px;
+    min-width:0;
+  }
+  .salesDashKpis span{
+    font-size:11px;
+    white-space:nowrap;
+  }
+  .salesDashKpis b{
+    margin-top:5px;
+    font-size:17px;
+    line-height:1.25;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .salesDashKpis>div>small{
+    font-size:9px;
+    white-space:nowrap;
+  }
+}
+.salesDashSummary .salesDashTable th,
+.salesDashSummary .salesDashTable td,
+.salesDashSummary .salesDashTable th.num,
+.salesDashSummary .salesDashTable td.num,
+.salesDashSummary .salesDashTable th.center,
+.salesDashSummary .salesDashTable td.center{
+  text-align:center!important;
+  vertical-align:middle;
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .salesDashKpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
