@@ -418,3 +418,6 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .salesPanel.collapsed{padding-bottom:14px}
 @media(max-width:800px){.salesPanelHead{flex-direction:column;align-items:stretch}.salesPanelHint{text-align:left;padding-top:0}.salesPanelToggle{width:100%;justify-content:center}}
 @media print{.salesPanelHead,.salesPanelToggle{display:none!important}.salesPanelBody{display:block!important}}
+
+/* V48 금액정보 권한 및 진행·담당·계약 표시 */
+.financialDetailItem{background:#fffaf0!important;border-color:#f4d79b!important}.financialDetailItem span{color:#8a5a00!important}.financialDetailItem b{color:#6f4800;font-weight:900}.financialField>span{color:#8a5a00!important}.financialField input{font-weight:800;text-align:right}.userPermissionItem.on span{font-weight:700}
