@@ -405,3 +405,16 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   .salesDashKpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 \n\n/* V45 - 본인/관리자 비밀번호 변경 */\n.userPasswordSection{margin-top:16px;padding-top:16px;border-top:1px solid #dbe3ef}\n.userPasswordSection h4{margin:0 0 4px;font-size:15px}\n.userPasswordHelp{margin:0 0 10px;color:#64748b;font-size:12px}\n.userPasswordEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end}\n.userPasswordEdit label{display:grid;gap:5px;font-size:12px;color:#475569}\n.userPasswordEdit input{width:100%;min-width:0}\n.userPasswordEdit button{min-height:40px;white-space:nowrap}\n.userPasswordMsg{display:block;min-height:18px;margin-top:7px;color:#166534}\n.userPasswordMsg.error{color:#b91c1c}\n@media(max-width:700px){.userPasswordEdit{grid-template-columns:1fr}.userPasswordEdit button{width:100%}}\n
+
+/* V47 매출 상세목록 접기/펼치기 */
+.salesPanelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.salesPanelHint{display:block;color:#667085;line-height:1.45;padding-top:4px;text-align:right}
+.salesPanelToggle{display:inline-flex;align-items:center;gap:8px;font-weight:800;border-radius:12px;padding:10px 14px;background:#eef4ff;border-color:#bfd2ff;color:#1f4fbf;white-space:nowrap;flex-shrink:0}
+.salesPanelToggle:hover{background:#e5efff}
+.salesPanelToggleIcon{display:inline-block;width:16px;text-align:center;font-size:14px;transition:transform .2s ease}
+.salesPanel.collapsed .salesPanelToggleIcon{transform:rotate(-90deg)}
+.salesPanelBody{display:block}
+.salesPanel.collapsed .salesPanelBody{display:none}
+.salesPanel.collapsed{padding-bottom:14px}
+@media(max-width:800px){.salesPanelHead{flex-direction:column;align-items:stretch}.salesPanelHint{text-align:left;padding-top:0}.salesPanelToggle{width:100%;justify-content:center}}
+@media print{.salesPanelHead,.salesPanelToggle{display:none!important}.salesPanelBody{display:block!important}}
