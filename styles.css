@@ -421,3 +421,6 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V48 금액정보 권한 및 진행·담당·계약 표시 */
 .financialDetailItem{background:#fffaf0!important;border-color:#f4d79b!important}.financialDetailItem span{color:#8a5a00!important}.financialDetailItem b{color:#6f4800;font-weight:900}.financialField>span{color:#8a5a00!important}.financialField input{font-weight:800;text-align:right}.userPermissionItem.on span{font-weight:700}
+
+/* V50 자동입력 필드 */
+.siteField input[readonly]{background:#f3f6fa;color:#475467;border-color:#d7dee9}.siteField input[readonly]:focus{outline:none;border-color:#d7dee9}
