@@ -404,3 +404,4 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media (min-width:1001px) and (max-width:1200px){
   .salesDashKpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+\n\n/* V45 - 본인/관리자 비밀번호 변경 */\n.userPasswordSection{margin-top:16px;padding-top:16px;border-top:1px solid #dbe3ef}\n.userPasswordSection h4{margin:0 0 4px;font-size:15px}\n.userPasswordHelp{margin:0 0 10px;color:#64748b;font-size:12px}\n.userPasswordEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end}\n.userPasswordEdit label{display:grid;gap:5px;font-size:12px;color:#475569}\n.userPasswordEdit input{width:100%;min-width:0}\n.userPasswordEdit button{min-height:40px;white-space:nowrap}\n.userPasswordMsg{display:block;min-height:18px;margin-top:7px;color:#166534}\n.userPasswordMsg.error{color:#b91c1c}\n@media(max-width:700px){.userPasswordEdit{grid-template-columns:1fr}.userPasswordEdit button{width:100%}}\n

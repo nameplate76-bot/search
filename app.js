@@ -1219,12 +1219,19 @@ function userPhoneHtml(p){
  const edit=userPhoneCanEdit(p)?`<div class="userPhoneEdit"><input id="userInfoPhoneInput" inputmode="tel" autocomplete="tel" value="${esc(phone)}" placeholder="010-0000-0000"><button type="button" class="primary smallBtn" data-user-phone-save="${esc(p.id)}">전화번호 저장</button></div>`:'';
  return `<div class="userPhoneInfo">${call}${edit}</div>`;
 }
+function userPasswordCanEdit(p){return !!p&&(isAdmin()||String(p.id)===String(me?.id))}
+function userPasswordHtml(p){
+ if(!userPasswordCanEdit(p))return '';
+ return `<section class="userPasswordSection"><h4>비밀번호 변경</h4><p class="userPasswordHelp">${String(p.id)===String(me?.id)?'본인 계정의 새 비밀번호를 입력하세요.':'관리자는 이 직원의 새 비밀번호를 설정할 수 있습니다.'}</p><div class="userPasswordEdit"><label>새 비밀번호<input id="userInfoPwInput" type="password" minlength="8" autocomplete="new-password" placeholder="8자 이상"></label><label>비밀번호 확인<input id="userInfoPwConfirm" type="password" minlength="8" autocomplete="new-password" placeholder="한 번 더 입력"></label><button type="button" class="primary" data-user-password-save="${esc(p.id)}">비밀번호 저장</button></div><small id="userInfoPwMsg" class="userPasswordMsg"></small></section>`;
+}
 function openUserInfo(id){
  const p=(usersRows||[]).find(x=>String(x.id)===String(id))||(String(id)===String(me?.id)?me:null);if(!p)return;
  $('userInfoTitle').textContent=`${p.name||p.user_id||'직원'} · 직원 정보`;
  const permissions=['approved','can_use_staff_portal','can_view_staff_sites','can_create_staff_sites','can_edit_staff_sites','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- $('userInfoBody').innerHTML=`<section class="userInfoSummary"><div><span>사원명</span><b>${esc(p.name||'-')}</b></div><div><span>ID</span><b>${esc(p.user_id||'-')}</b></div><div class="userPhoneInfoCard"><span>전화번호</span>${userPhoneHtml(p)}</div><div><span>사용자 구분</span><b>${p.role==='admin'?'관리자':'일반 사용자'}</b></div></section><section class="userInfoPermissions"><h4>권한 현황</h4><div class="userPermissionGrid">${permissions.map(k=>`<div class="userPermissionItem ${p[k]?'on':'off'}"><span>${esc(userPermissionLabel(k))}</span><b>${p[k]?'사용':'미사용'}</b></div>`).join('')}</div></section>`;
+ $('userInfoBody').innerHTML=`<section class="userInfoSummary"><div><span>사원명</span><b>${esc(p.name||'-')}</b></div><div><span>ID</span><b>${esc(p.user_id||'-')}</b></div><div class="userPhoneInfoCard"><span>전화번호</span>${userPhoneHtml(p)}</div><div><span>사용자 구분</span><b>${p.role==='admin'?'관리자':'일반 사용자'}</b></div></section><section class="userInfoPermissions"><h4>권한 현황</h4><div class="userPermissionGrid">${permissions.map(k=>`<div class="userPermissionItem ${p[k]?'on':'off'}"><span>${esc(userPermissionLabel(k))}</span><b>${p[k]?'사용':'미사용'}</b></div>`).join('')}</div></section>${userPasswordHtml(p)}`;
  const save=$('userInfoBody').querySelector('[data-user-phone-save]');if(save)save.onclick=()=>saveUserPhone(save.dataset.userPhoneSave);
+ const pwSave=$('userInfoBody').querySelector('[data-user-password-save]');if(pwSave)pwSave.onclick=()=>saveUserPassword(pwSave.dataset.userPasswordSave);
+ const pwConfirm=$('userInfoPwConfirm');if(pwConfirm)pwConfirm.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();saveUserPassword(p.id)}};
  $('userInfoBody').querySelectorAll('[data-user-phone-call]').forEach(a=>a.onclick=e=>{e.stopPropagation()});
  $('userInfoDlg').showModal();
 }
@@ -1245,10 +1252,30 @@ async function saveUserPhone(id){
  finally{if(btn){btn.disabled=false;btn.textContent=old}}
 }
 
+async function saveUserPassword(id){
+ const pw=$('userInfoPwInput'),confirmPw=$('userInfoPwConfirm'),msg=$('userInfoPwMsg');
+ if(!pw||!confirmPw)return;
+ const value=String(pw.value||''),check=String(confirmPw.value||'');
+ if(value.length<8){if(msg){msg.textContent='비밀번호는 8자 이상 입력하세요.';msg.classList.add('error')}pw.focus();return}
+ if(value!==check){if(msg){msg.textContent='비밀번호 확인값이 일치하지 않습니다.';msg.classList.add('error')}confirmPw.focus();return}
+ const btn=$('userInfoBody').querySelector('[data-user-password-save]'),old=btn?.textContent||'비밀번호 저장';
+ try{
+  if(btn){btn.disabled=true;btn.textContent='저장 중...'}
+  if(msg){msg.textContent='';msg.classList.remove('error')}
+  await invokeAdmin({action:'reset_password',user_uuid:id,password:value});
+  pw.value='';confirmPw.value='';
+  if(msg){msg.textContent='비밀번호가 변경되었습니다.';msg.classList.remove('error')}
+  alert(String(id)===String(me?.id)?'내 비밀번호가 변경되었습니다. 다음 로그인부터 새 비밀번호를 사용하세요.':'직원 비밀번호가 변경되었습니다.');
+ }catch(e){
+  const text='비밀번호 변경 오류: '+(e?.message||e);
+  if(msg){msg.textContent=text;msg.classList.add('error')}else alert(text);
+ }finally{if(btn){btn.disabled=false;btn.textContent=old}}
+}
+
 function renderUsers(rows){
  const tb=$('userTable').querySelector('tbody');
  const perms=['approved','can_use_staff_portal','can_view_staff_sites','can_create_staff_sites','can_edit_staff_sites','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${isAdmin()?`<button data-reset="${p.id}">PW</button>${!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
+ tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${(isAdmin()||self)?`<button data-reset="${p.id}">비밀번호</button>${isAdmin()&&!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
  tb.querySelectorAll('tr[data-user-row]').forEach(tr=>{
   syncUserRowDependencies(tr);
   tr.querySelectorAll('[data-k]').forEach(el=>el.onchange=()=>{syncUserRowDependencies(tr,el.dataset.k);markUserRowDirty(tr,true)});
@@ -1284,7 +1311,7 @@ async function saveUserPermissions(id){
 }
 async function invokeAdmin(body){const{data,error}=await sb.functions.invoke(cfg.userAdminFunction,{body});if(error)throw error;if(data?.error)throw new Error(data.error);return data}
 async function createUser(e){e.preventDefault();notify($('userMsg'),'등록 중...',true);try{await invokeAdmin({action:'create',employee_id:$('empId').value,password:$('empPw').value,name:$('empName').value,phone:$('empPhone').value,role:$('empRole').value,approved:$('empApproved').checked,permissions:{can_use_staff_portal:$('permPortal').checked,can_view_staff_sites:($('permSites').checked||$('permSiteCreate').checked||$('permSiteEdit').checked||$('permAllSitesExport').checked||$('permImport').checked),can_create_staff_sites:$('permSiteCreate').checked,can_edit_staff_sites:$('permSiteEdit').checked,can_export_staff_sites:$('permAllSitesExport').checked,can_view_staff_sales:($('permSales').checked||$('permSalesExport').checked||$('permSalesPrint').checked),can_export_staff_sales:$('permSalesExport').checked,can_print_staff_sales:$('permSalesPrint').checked,can_import_staff_sites:$('permImport').checked,can_manage_staff_users:$('permUsers').checked}});notify($('userMsg'),'직원 등록이 완료되었습니다.',true);setTimeout(()=>{$('userDlg').close();$('userForm').reset();$('empApproved').checked=$('permPortal').checked=$('permSites').checked=true;$('permSiteCreate').checked=$('permSiteEdit').checked=$('permAllSitesExport').checked=false;invalidateDataCaches('users');loadUsers(true)},500)}catch(err){notify($('userMsg'),err.message)}}
-async function resetPw(id){const pw=prompt('새 비밀번호를 8자 이상 입력하세요.');if(!pw)return;try{await invokeAdmin({action:'reset_password',user_uuid:id,password:pw});alert('비밀번호를 변경했습니다.')}catch(e){alert(e.message)}}
+function resetPw(id){openUserInfo(id);requestAnimationFrame(()=>setTimeout(()=>$('userInfoPwInput')?.focus(),0))}
 async function deleteUser(id){if(!isAdmin())return alert('직원 삭제는 관리자만 할 수 있습니다.');if(String(id)===String(me?.id))return alert('현재 로그인한 계정은 삭제할 수 없습니다.');const p=(usersRows||[]).find(x=>String(x.id)===String(id));if(!confirm(`${p?.name||p?.user_id||'이 직원'} 계정을 삭제할까요?`))return;try{await invokeAdmin({action:'delete',user_uuid:id});selectedUserIds.delete(String(id));invalidateDataCaches('users');loadUsers(true)}catch(e){alert(e.message)}}
 async function deleteSelectedUsers(){
  if(!isAdmin())return alert('직원 삭제는 관리자만 할 수 있습니다.');
