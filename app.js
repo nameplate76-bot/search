@@ -644,19 +644,28 @@ async function ensureFullSiteRow(id,row=null){
  const ix=lastSites.findIndex(x=>Number(x.source_id)===Number(id));if(ix>=0)lastSites[ix]=merged;
  return merged;
 }
-function siteMoneyFieldLabel(f){return ({46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'금액 (VAT 미포함)'})[Number(f?.col)]||f?.label||''}
+function siteMoneyFieldLabel(f){return ({46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'금액 (VAT 미포함)',51:'제본비',52:'매출액 대비 제본비 비율'})[Number(f?.col)]||f?.label||''}
 function siteMoneyDisplay(v,col){
- if([46,47,48,49,50,51].includes(Number(col))){const raw=String(v??'').trim().replace(/,/g,'');if(!raw)return '-';const n=Number(raw);return Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:2})+'원':String(v)}
+ const c=Number(col),raw=String(v??'').trim().replace(/,/g,'');if(!raw)return '-';const n=Number(raw);if(!Number.isFinite(n))return String(v);
+ if(c===52){const pct=Math.abs(n)<=1?n*100:n;return pct.toLocaleString('ko-KR',{maximumFractionDigits:4})+'%'}
+ if([46,47,48,49,50,51].includes(c))return n.toLocaleString('ko-KR',{maximumFractionDigits:2})+'원';
  return formatDisplayCell(v,col);
 }
 function siteMoneyInput(v,col){
- if(![46,47,48,49,50,51].includes(Number(col)))return normalizeCell(v,col);
- const raw=String(v??'').trim().replace(/,/g,'');if(!raw)return '';const n=Number(raw);return Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:2}):String(v??'');
+ const c=Number(col),raw=String(v??'').trim().replace(/[,％%]/g,'');if(!raw)return '';const n=Number(raw);if(!Number.isFinite(n))return String(v??'');
+ if(c===52){const pct=Math.abs(n)<=1?n*100:n;return pct.toLocaleString('ko-KR',{maximumFractionDigits:4})}
+ if([46,47,48,49,50,51].includes(c))return n.toLocaleString('ko-KR',{maximumFractionDigits:2});
+ return normalizeCell(v,col);
 }
-const groups=[['기본정보',1,18],['진행·담당·계약',19,50],['유지관리 전체수량',55,82],['성능점검 대상수량',83,110],['성능점검 확정수량',111,137]];
+function siteFinancialRawInput(v,col){
+ const c=Number(col),raw=String(v??'').trim().replace(/[,％%]/g,'');if(!raw)return '';const n=Number(raw);if(!Number.isFinite(n))return v;
+ if(c===52)return String(n/100);
+ return v;
+}
+const groups=[['기본정보',1,18],['진행·담당·계약',19,52],['문서번호',53,54],['유지관리 전체수량',55,82],['성능점검 대상수량',83,110],['성능점검 확정수량',111,137]];
 async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const[,a,b]=groups[i];const fields=schema.fields.filter(f=>f.col>=a&&f.col<=b&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(f.financial?siteMoneyFieldLabel(f):f.label)}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
-const siteEditGroups=[['기본정보',1,18],['진행·담당·계약',19,50],['제본·문서번호',51,54],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
+const siteEditGroups=[['기본정보',1,18],['진행·담당·계약',19,52],['문서번호',53,54],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
 let siteNameSuggestTimer=null,siteNameSuggestRequest=0,siteNameSuggestions=[];
 let siteTemplateSearchRequest=0,siteTemplateSearchRows=[];
@@ -670,13 +679,15 @@ function renderSiteEditFields(){
   const v=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';
   if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(f.label)}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
   if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(f.label)} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장을 선택하면 S/N을 포함한 등록정보를 복사합니다. 복사 후 원하는 항목을 수정해 새 현장으로 저장할 수 있습니다.</small></label>`;
-  return `<label class="siteField${fin}"><span>${esc(f.financial?siteMoneyFieldLabel(f):f.label)}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(v)}"${req}></label>`;
+  const help=f.col===52?'<small class="fieldHelp">퍼센트 숫자로 입력하세요. 예: 2.5 입력 = 2.5%</small>':'';
+  return `<label class="siteField${fin}"><span>${esc(f.financial?siteMoneyFieldLabel(f):f.label)}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(v)}"${req}>${help}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
-  siteEditValues[Number(inp.dataset.siteCol)-1]=inp.value;
-  if(siteEditMode==='create'&&Number(inp.dataset.siteCol)===4)scheduleSiteNameSuggestions(inp.value);
+  const col=Number(inp.dataset.siteCol);
+  siteEditValues[col-1]=col===52?siteFinancialRawInput(inp.value,col):inp.value;
+  if(siteEditMode==='create'&&col===4)scheduleSiteNameSuggestions(inp.value);
  });
- $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{inp.value=siteMoneyInput(inp.value,Number(inp.dataset.siteCol));siteEditValues[Number(inp.dataset.siteCol)-1]=inp.value});
+ $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);if(col===52){siteEditValues[col-1]=siteFinancialRawInput(inp.value,col);inp.value=siteMoneyInput(siteEditValues[col-1],col)}else{inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value}});
  const nextBtn=$('applyNextSnBtn');if(nextBtn)nextBtn.onclick=()=>applyNextSiteSn(true);
  const nameInput=$('siteNameLookupInput');if(nameInput){
   nameInput.onfocus=()=>{if(String(nameInput.value||'').trim())scheduleSiteNameSuggestions(nameInput.value,true)};
