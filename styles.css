@@ -566,3 +566,24 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .salesDashReorderable thead th.dragBefore{box-shadow:inset 4px 0 0 #2563eb}
 .salesDashReorderable thead th.dragAfter{box-shadow:inset -4px 0 0 #2563eb}
 .salesDashReorderable td,.salesDashReorderable th{overflow:hidden;text-overflow:ellipsis}
+
+
+/* V61 보고서 미작성 엑셀식 사용자 지정 틀 고정 */
+@media(min-width:801px){
+  #page-unwritten .unwrittenFreezeToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 8px;padding:9px 10px;background:#f8fafc;border:1px solid #dbe3ee;border-radius:11px}
+  #page-unwritten .unwrittenFreezeButtons{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  #page-unwritten .unwrittenFreezeToolbar button{padding:7px 11px;border-radius:9px;font-size:12px;font-weight:800}
+  #page-unwritten .unwrittenFreezeSelectBtn.active{background:#2563eb;color:#fff;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+  #page-unwritten .unwrittenFreezeStatus{font-size:12px;color:#667085;text-align:right;line-height:1.35}
+  #page-unwritten .unwrittenTableWrap{position:relative;max-height:calc(100vh - 270px);min-height:320px;overflow:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
+  #page-unwritten .unwrittenTable.unwrittenFreezePicking th,#page-unwritten .unwrittenTable.unwrittenFreezePicking td{cursor:crosshair!important}
+  #page-unwritten .unwrittenTable.unwrittenFreezePicking th:hover,#page-unwritten .unwrittenTable.unwrittenFreezePicking td:hover{box-shadow:inset 0 0 0 2px #2563eb;background:#eaf2ff!important}
+  #page-unwritten .unwrittenTable .unwrittenFreezeCell{position:sticky!important;background:#fff;background-clip:padding-box}
+  #page-unwritten .unwrittenTable thead .unwrittenFreezeCell{background:#e8f1ff}
+  #page-unwritten .unwrittenTable tbody tr:hover .unwrittenFreezeCell{background:#f4f8ff}
+  #page-unwritten .unwrittenTable .unwrittenFreezeCorner{background:#dfebff}
+  #page-unwritten .unwrittenTable .unwrittenFreezeBoundaryRight{box-shadow:3px 0 0 rgba(37,99,235,.75)}
+  #page-unwritten .unwrittenTable .unwrittenFreezeBoundaryBottom{border-bottom:3px solid rgba(37,99,235,.75)!important}
+  #page-unwritten .unwrittenTable .unwrittenFreezeCorner.unwrittenFreezeBoundaryRight{box-shadow:3px 0 0 rgba(37,99,235,.75)}
+}
+@media(max-width:800px){#page-unwritten .unwrittenFreezeToolbar{display:none!important}}

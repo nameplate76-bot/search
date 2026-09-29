@@ -192,8 +192,8 @@ function installTableColumnResize(table,tableName){
    const startX=e.clientX,startW=parseFloat(col.style.width)||rectWidth,oldDraggable=th.getAttribute('draggable');
    th.setAttribute('draggable','false');document.body.classList.add('columnResizing');handle.classList.add('active');
    try{handle.setPointerCapture(e.pointerId)}catch(err){}
-   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth();if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table)};
-   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
+   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth();if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table)};
+   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
    window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);window.addEventListener('pointercancel',up,true);applyTableWidth();
   });
   th.appendChild(handle);
@@ -417,7 +417,7 @@ function showPage(name,save=true){
  if(name==='unwritten')loadUnwrittenDashboard(false);
  if(name==='sales'){applySalesPanelCollapsed(readSalesPanelCollapsed());loadSales(false);}
  if(name==='users')loadUsers(false);
- requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search');if(name==='unwritten')scheduleTableColumnResize(document.querySelector('#unwrittenList .unwrittenTable'),'unwritten');if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
+ requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
 }
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
@@ -1082,6 +1082,101 @@ function unwrittenCellHtml(r,key,index){
  if(key==='actions')return `<td class="center reportActions uw-col-actions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button><button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button></td>`;
  return '<td></td>';
 }
+let unwrittenFreezeSelectMode=false;
+function unwrittenFreezeStorageKey(){return `staff_unwritten_freeze_panes:${me?.id||'guest'}`}
+function readUnwrittenFreezePanes(){
+ try{const v=JSON.parse(localStorage.getItem(unwrittenFreezeStorageKey())||'{}');return{rows:Math.max(0,Number(v?.rows)||0),cols:Math.max(0,Number(v?.cols)||0)}}catch(e){return{rows:0,cols:0}}
+}
+function saveUnwrittenFreezePanes(rows,cols){try{localStorage.setItem(unwrittenFreezeStorageKey(),JSON.stringify({rows:Math.max(0,rows|0),cols:Math.max(0,cols|0)}))}catch(e){}}
+function clearUnwrittenFreezePanes(){
+ unwrittenFreezeSelectMode=false;saveUnwrittenFreezePanes(0,0);
+ const table=document.querySelector('#unwrittenList .unwrittenTable');if(table){table.classList.remove('unwrittenFreezePicking');applyUnwrittenFreezePanes(table)}
+ updateUnwrittenFreezeControls();
+}
+function unwrittenFreezeStatusText(){
+ const f=readUnwrittenFreezePanes();
+ if(unwrittenFreezeSelectMode)return '표에서 기준 셀을 클릭하세요. 클릭한 셀의 위쪽 행과 왼쪽 열이 고정됩니다.';
+ if(!f.rows&&!f.cols)return '고정 안 됨';
+ const rowText=f.rows?`위쪽 ${Math.max(0,f.rows-1)}개 현장행 + 제목행`:'';
+ const colText=f.cols?`왼쪽 ${f.cols}개 열`:'';
+ return [rowText,colText].filter(Boolean).join(' · ')+' 고정 중';
+}
+function updateUnwrittenFreezeControls(){
+ const root=$('unwrittenList');if(!root)return;
+ const selectBtn=root.querySelector('[data-unwritten-freeze-select]'),clearBtn=root.querySelector('[data-unwritten-freeze-clear]'),status=root.querySelector('[data-unwritten-freeze-status]');
+ if(selectBtn){selectBtn.classList.toggle('active',unwrittenFreezeSelectMode);selectBtn.textContent=unwrittenFreezeSelectMode?'📍 고정할 셀을 클릭하세요':'📌 틀 고정 위치 선택'}
+ const f=readUnwrittenFreezePanes();if(clearBtn)clearBtn.disabled=!f.rows&&!f.cols;
+ if(status)status.textContent=unwrittenFreezeStatusText();
+}
+let unwrittenFreezeLayoutFrame=0;
+function scheduleUnwrittenFreezeLayout(table){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ if(unwrittenFreezeLayoutFrame)cancelAnimationFrame(unwrittenFreezeLayoutFrame);
+ unwrittenFreezeLayoutFrame=requestAnimationFrame(()=>{unwrittenFreezeLayoutFrame=0;applyUnwrittenFreezePanes(table)});
+}
+function resetUnwrittenFreezeStyles(table){
+ if(!table)return;
+ table.querySelectorAll('th,td').forEach(cell=>{
+  cell.classList.remove('unwrittenFreezeCell','unwrittenFreezeCorner','unwrittenFreezeBoundaryRight','unwrittenFreezeBoundaryBottom');
+  cell.style.removeProperty('--unwritten-freeze-left');cell.style.removeProperty('--unwritten-freeze-top');cell.style.removeProperty('left');cell.style.removeProperty('top');cell.style.removeProperty('z-index');
+ });
+ table.classList.remove('unwrittenFreezeActive');
+}
+function applyUnwrittenFreezePanes(table){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ resetUnwrittenFreezeStyles(table);
+ const f=readUnwrittenFreezePanes(),allRows=[...table.rows];if(!allRows.length)return;
+ const rowCount=Math.min(f.rows,allRows.length),colCount=Math.min(f.cols,allRows[0]?.cells?.length||0);
+ if(!rowCount&&!colCount){updateUnwrittenFreezeControls();return}
+ table.classList.add('unwrittenFreezeActive');
+ const colLeft=[];let left=0;
+ for(let c=0;c<colCount;c++){
+  colLeft[c]=left;
+  const ref=allRows[0]?.cells?.[c];left+=ref?ref.getBoundingClientRect().width:0;
+ }
+ const rowTop=[];let top=0;
+ for(let r=0;r<rowCount;r++){
+  rowTop[r]=top;
+  top+=allRows[r]?.getBoundingClientRect().height||0;
+ }
+ allRows.forEach((row,r)=>[...row.cells].forEach((cell,c)=>{
+  const freezeRow=r<rowCount,freezeCol=c<colCount;if(!freezeRow&&!freezeCol)return;
+  cell.classList.add('unwrittenFreezeCell');
+  if(freezeCol){cell.style.setProperty('--unwritten-freeze-left',`${Math.round(colLeft[c]||0)}px`);cell.style.left=`${Math.round(colLeft[c]||0)}px`}
+  if(freezeRow){cell.style.setProperty('--unwritten-freeze-top',`${Math.round(rowTop[r]||0)}px`);cell.style.top=`${Math.round(rowTop[r]||0)}px`}
+  if(freezeRow&&freezeCol){cell.classList.add('unwrittenFreezeCorner');cell.style.zIndex='8'}
+  else if(freezeRow){cell.style.zIndex='6'}
+  else if(freezeCol){cell.style.zIndex='5'}
+  if(freezeCol&&c===colCount-1)cell.classList.add('unwrittenFreezeBoundaryRight');
+  if(freezeRow&&r===rowCount-1)cell.classList.add('unwrittenFreezeBoundaryBottom');
+ }));
+ updateUnwrittenFreezeControls();
+}
+function selectUnwrittenFreezeCell(cell){
+ const table=cell?.closest?.('.unwrittenTable');if(!table)return;
+ const row=cell.parentElement,rowIndex=[...table.rows].indexOf(row),colIndex=[...row.cells].indexOf(cell);
+ if(rowIndex<0||colIndex<0)return;
+ saveUnwrittenFreezePanes(rowIndex,colIndex);unwrittenFreezeSelectMode=false;applyUnwrittenFreezePanes(table);updateUnwrittenFreezeControls();
+ const parts=[];
+ if(rowIndex)parts.push(rowIndex>1?`제목행과 위쪽 현장 ${rowIndex-1}개`:'제목행');
+ if(colIndex)parts.push(`왼쪽 ${colIndex}개 열`);
+ if(!parts.length)parts.push('고정 영역 없음');
+ const status=$('unwrittenList')?.querySelector('[data-unwritten-freeze-status]');if(status)status.textContent=parts.join(' · ')+'을 고정했습니다.';
+}
+function bindUnwrittenFreezeControls(root,table){
+ if(!root||!table)return;
+ const selectBtn=root.querySelector('[data-unwritten-freeze-select]'),clearBtn=root.querySelector('[data-unwritten-freeze-clear]');
+ if(selectBtn)selectBtn.onclick=()=>{unwrittenFreezeSelectMode=!unwrittenFreezeSelectMode;updateUnwrittenFreezeControls();table.classList.toggle('unwrittenFreezePicking',unwrittenFreezeSelectMode)};
+ if(clearBtn)clearBtn.onclick=()=>{table.classList.remove('unwrittenFreezePicking');clearUnwrittenFreezePanes()};
+ table.addEventListener('click',e=>{
+  if(!unwrittenFreezeSelectMode)return;
+  const cell=e.target.closest('th,td');if(!cell||!table.contains(cell))return;
+  e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  table.classList.remove('unwrittenFreezePicking');selectUnwrittenFreezeCell(cell);
+ },true);
+ updateUnwrittenFreezeControls();scheduleUnwrittenFreezeLayout(table);
+}
+
 function bindUnwrittenHeaderInteractions(root){
  let dragKey=null;
  const clearMarks=()=>root.querySelectorAll('.unwrittenTable th').forEach(x=>x.classList.remove('dragging','dragBefore','dragAfter'));
@@ -1106,9 +1201,10 @@ function renderUnwrittenList(){
    const sorted=sortedUnwrittenRows(filtered);
    const headers=unwrittenColumnOrder.map(unwrittenHeaderHtml).join('');
    const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}">${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
-   root.innerHTML=`<div class="unwrittenListHint"><strong>정렬:</strong> 열 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 자동 저장됩니다.</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
-   bindUnwrittenHeaderInteractions(root);
-   scheduleTableColumnResize(root.querySelector('.unwrittenTable'),'unwritten');
+   root.innerHTML=`<div class="unwrittenFreezeToolbar"><div class="unwrittenFreezeButtons"><button type="button" class="ghost unwrittenFreezeSelectBtn" data-unwritten-freeze-select>📌 틀 고정 위치 선택</button><button type="button" class="ghost" data-unwritten-freeze-clear>🔓 틀 고정 해제</button></div><span class="unwrittenFreezeStatus" data-unwritten-freeze-status></span></div><div class="unwrittenListHint"><strong>틀 고정:</strong> 위치 선택 버튼 → 원하는 셀 클릭 (선택 셀의 위쪽·왼쪽 고정) · <strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계 드래그</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
+   const unwrittenTable=root.querySelector('.unwrittenTable');
+   bindUnwrittenHeaderInteractions(root);bindUnwrittenFreezeControls(root,unwrittenTable);
+   scheduleTableColumnResize(unwrittenTable,'unwritten');setTimeout(()=>scheduleUnwrittenFreezeLayout(unwrittenTable),80);
    root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;openDetail(Number(tr.dataset.reportDetail))});
  }else{
    const selected=sanitizeUnwrittenDisplayFields(unwrittenDisplayFields);
