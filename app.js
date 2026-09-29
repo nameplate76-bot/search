@@ -192,8 +192,8 @@ function installTableColumnResize(table,tableName){
    const startX=e.clientX,startW=parseFloat(col.style.width)||rectWidth,oldDraggable=th.getAttribute('draggable');
    th.setAttribute('draggable','false');document.body.classList.add('columnResizing');handle.classList.add('active');
    try{handle.setPointerCapture(e.pointerId)}catch(err){}
-   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth()};
-   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
+   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth();if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table)};
+   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
    window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);window.addEventListener('pointercancel',up,true);applyTableWidth();
   });
   th.appendChild(handle);
@@ -438,6 +438,96 @@ async function searchSites(force=false){
 function refilterSearchSites(){const q=$('siteQuery').value.trim();if(searchCacheReady&&searchCacheQuery===q){applySearchCache();return}searchSites(false)}
 function siteStatusLabel(r){const s=statusOf(r);return s==='complete'?'보고서 완료':s==='unwritten'?'보고서 미작성':s==='checking'?'점검 진행 중':s==='target'?'점검대상':'전체 진행 중'}
 
+let siteFreezeSelectMode=false;
+function siteFreezeStorageKey(){return `staff_site_freeze_panes:${me?.id||'guest'}`}
+function readSiteFreezePanes(){
+ try{const v=JSON.parse(localStorage.getItem(siteFreezeStorageKey())||'{}');return{rows:Math.max(0,Number(v?.rows)||0),cols:Math.max(0,Number(v?.cols)||0)}}catch(e){return{rows:0,cols:0}}
+}
+function saveSiteFreezePanes(rows,cols){try{localStorage.setItem(siteFreezeStorageKey(),JSON.stringify({rows:Math.max(0,rows|0),cols:Math.max(0,cols|0)}))}catch(e){}}
+function clearSiteFreezePanes(){siteFreezeSelectMode=false;saveSiteFreezePanes(0,0);const table=document.querySelector('#siteResults .desktopSiteTable');if(table)applySiteFreezePanes(table);updateSiteFreezeControls()}
+function siteFreezeStatusText(){
+ const f=readSiteFreezePanes();
+ if(siteFreezeSelectMode)return '표에서 기준 셀을 클릭하세요. 클릭한 셀의 위쪽 행과 왼쪽 열이 고정됩니다.';
+ if(!f.rows&&!f.cols)return '고정 안 됨';
+ const rowText=f.rows?`위쪽 ${Math.max(0,f.rows-1)}개 현장행 + 제목행`:'';
+ const colText=f.cols?`왼쪽 ${f.cols}개 열`:'';
+ return [rowText,colText].filter(Boolean).join(' · ')+' 고정 중';
+}
+function updateSiteFreezeControls(){
+ const root=$('siteResults');if(!root)return;
+ const selectBtn=root.querySelector('[data-site-freeze-select]'),clearBtn=root.querySelector('[data-site-freeze-clear]'),status=root.querySelector('[data-site-freeze-status]');
+ if(selectBtn){selectBtn.classList.toggle('active',siteFreezeSelectMode);selectBtn.textContent=siteFreezeSelectMode?'📍 고정할 셀을 클릭하세요':'📌 틀 고정 위치 선택'}
+ const f=readSiteFreezePanes();if(clearBtn)clearBtn.disabled=!f.rows&&!f.cols;
+ if(status)status.textContent=siteFreezeStatusText();
+}
+let siteFreezeLayoutFrame=0;
+function scheduleSiteFreezeLayout(table){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ if(siteFreezeLayoutFrame)cancelAnimationFrame(siteFreezeLayoutFrame);
+ siteFreezeLayoutFrame=requestAnimationFrame(()=>{siteFreezeLayoutFrame=0;applySiteFreezePanes(table)});
+}
+function resetSiteFreezeStyles(table){
+ if(!table)return;
+ table.querySelectorAll('th,td').forEach(cell=>{
+  cell.classList.remove('siteFreezeCell','siteFreezeCorner','siteFreezeBoundaryRight','siteFreezeBoundaryBottom');
+  cell.style.removeProperty('--site-freeze-left');cell.style.removeProperty('--site-freeze-top');cell.style.removeProperty('left');cell.style.removeProperty('top');cell.style.removeProperty('z-index');
+ });
+ table.classList.remove('siteFreezeActive');
+}
+function applySiteFreezePanes(table){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ resetSiteFreezeStyles(table);
+ const f=readSiteFreezePanes(),allRows=[...table.rows];if(!allRows.length)return;
+ const rowCount=Math.min(f.rows,allRows.length),colCount=Math.min(f.cols,allRows[0]?.cells?.length||0);
+ if(!rowCount&&!colCount){updateSiteFreezeControls();return}
+ table.classList.add('siteFreezeActive');
+ const colLeft=[];let left=0;
+ for(let c=0;c<colCount;c++){
+  colLeft[c]=left;
+  const ref=allRows[0]?.cells?.[c];left+=ref?ref.getBoundingClientRect().width:0;
+ }
+ const rowTop=[];let top=0;
+ for(let r=0;r<rowCount;r++){
+  rowTop[r]=top;
+  top+=allRows[r]?.getBoundingClientRect().height||0;
+ }
+ allRows.forEach((row,r)=>[...row.cells].forEach((cell,c)=>{
+  const freezeRow=r<rowCount,freezeCol=c<colCount;if(!freezeRow&&!freezeCol)return;
+  cell.classList.add('siteFreezeCell');
+  if(freezeCol){cell.style.setProperty('--site-freeze-left',`${Math.round(colLeft[c]||0)}px`);cell.style.left=`${Math.round(colLeft[c]||0)}px`}
+  if(freezeRow){cell.style.setProperty('--site-freeze-top',`${Math.round(rowTop[r]||0)}px`);cell.style.top=`${Math.round(rowTop[r]||0)}px`}
+  if(freezeRow&&freezeCol){cell.classList.add('siteFreezeCorner');cell.style.zIndex='8'}
+  else if(freezeRow){cell.style.zIndex='6'}
+  else if(freezeCol){cell.style.zIndex='5'}
+  if(freezeCol&&c===colCount-1)cell.classList.add('siteFreezeBoundaryRight');
+  if(freezeRow&&r===rowCount-1)cell.classList.add('siteFreezeBoundaryBottom');
+ }));
+ updateSiteFreezeControls();
+}
+function selectSiteFreezeCell(cell){
+ const table=cell?.closest?.('.desktopSiteTable');if(!table)return;
+ const row=cell.parentElement,rowIndex=[...table.rows].indexOf(row),colIndex=[...row.cells].indexOf(cell);
+ if(rowIndex<0||colIndex<0)return;
+ saveSiteFreezePanes(rowIndex,colIndex);siteFreezeSelectMode=false;applySiteFreezePanes(table);updateSiteFreezeControls();
+ const rowLabel=Math.max(0,rowIndex-1),colLabel=colIndex;
+ const parts=[];if(rowIndex)parts.push(rowLabel?`제목행과 위쪽 현장 ${rowLabel}개`:'제목행');if(colIndex)parts.push(`왼쪽 ${colLabel}개 열`);
+ if(!parts.length)parts.push('고정 영역 없음');
+ const status=$('siteResults')?.querySelector('[data-site-freeze-status]');if(status)status.textContent=parts.join(' · ')+'을 고정했습니다.';
+}
+function bindSiteFreezeControls(root,table){
+ if(!root||!table)return;
+ const selectBtn=root.querySelector('[data-site-freeze-select]'),clearBtn=root.querySelector('[data-site-freeze-clear]');
+ if(selectBtn)selectBtn.onclick=()=>{siteFreezeSelectMode=!siteFreezeSelectMode;updateSiteFreezeControls();table.classList.toggle('siteFreezePicking',siteFreezeSelectMode)};
+ if(clearBtn)clearBtn.onclick=()=>{table.classList.remove('siteFreezePicking');clearSiteFreezePanes()};
+ table.addEventListener('click',e=>{
+  if(!siteFreezeSelectMode)return;
+  const cell=e.target.closest('th,td');if(!cell||!table.contains(cell))return;
+  e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  table.classList.remove('siteFreezePicking');selectSiteFreezeCell(cell);
+ },true);
+ updateSiteFreezeControls();scheduleSiteFreezeLayout(table);
+}
+
 const SITE_LIST_SPECIAL_COLUMNS={
  no:{key:'no',label:'No.',sortable:false},
  actions:{key:'actions',label:'관리',sortable:false}
@@ -605,7 +695,7 @@ function renderSites(){
    const selectHead=isAdmin()?'<th class="center siteSelectCol"><input type="checkbox" data-site-select-master aria-label="현재 표시된 현장 전체선택"></th>':'';
    const rows=visible.map((r,i)=>`<tr class="siteListRow" data-detail="${r.source_id}" tabindex="0" aria-label="${esc(r.site_name)} 상세조회">${isAdmin()?`<td class="center siteSelectCol"><input type="checkbox" class="siteRowCheck" data-site-select="${r.source_id}" aria-label="${esc(r.site_name)} 선택"></td>`:''}${siteListColumnOrder.map(key=>siteListCellHtml(r,key,i)).join('')}</tr>`).join('');
    const headers=siteListColumnOrder.map(siteListHeaderHtml).join('');
-   root.innerHTML=`<div class="desktopSiteList">${siteSelectionBarHtml(visible)}<div class="desktopListHint"><strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목을 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 자동 저장됩니다.</div><div class="desktopSiteTableWrap"><table class="desktopSiteTable"><thead><tr>${selectHead}${headers}</tr></thead><tbody>${rows}</tbody></table></div></div>${lastSites.length>600?'<div class="listLimitNotice">화면 성능을 위해 정렬된 결과 중 처음 600건만 표시합니다. 전체선택은 현재 표시된 행을 대상으로 합니다.</div>':''}`;
+   root.innerHTML=`<div class="desktopSiteList">${siteSelectionBarHtml(visible)}<div class="siteFreezeToolbar"><div class="siteFreezeButtons"><button type="button" class="ghost siteFreezeSelectBtn" data-site-freeze-select>📌 틀 고정 위치 선택</button><button type="button" class="ghost" data-site-freeze-clear>🔓 틀 고정 해제</button></div><span class="siteFreezeStatus" data-site-freeze-status></span></div><div class="desktopListHint"><strong>틀 고정:</strong> 위치 선택 버튼 → 원하는 셀 클릭 (선택 셀의 위쪽·왼쪽 고정) · <strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계 드래그</div><div class="desktopSiteTableWrap"><table class="desktopSiteTable"><thead><tr>${selectHead}${headers}</tr></thead><tbody>${rows}</tbody></table></div></div>${lastSites.length>600?'<div class="listLimitNotice">화면 성능을 위해 정렬된 결과 중 처음 600건만 표시합니다. 전체선택은 현재 표시된 행을 대상으로 합니다.</div>':''}`;
    bindSiteListHeaderInteractions(root);
    root.querySelectorAll('.siteListRow').forEach(tr=>{
      tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;openDetail(Number(tr.dataset.detail))};
@@ -614,7 +704,8 @@ function renderSites(){
    root.querySelectorAll('[data-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.detailBtn))});
    root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.siteEdit))});
    bindSiteSelectionControls(root,visible);
-   scheduleTableColumnResize(root.querySelector('.desktopSiteTable'),'search');
+   const siteTable=root.querySelector('.desktopSiteTable');bindSiteFreezeControls(root,siteTable);
+   scheduleTableColumnResize(siteTable,'search');setTimeout(()=>scheduleSiteFreezeLayout(siteTable),80);
    return;
  }
  const visible=lastSites.slice(0,600);
