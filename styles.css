@@ -424,3 +424,6 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V50 자동입력 필드 */
 .siteField input[readonly]{background:#f3f6fa;color:#475467;border-color:#d7dee9}.siteField input[readonly]:focus{outline:none;border-color:#d7dee9}
+
+/* V52 성능점검 확정수량 자동계산 */
+.performanceConfirmRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}.performanceConfirmRow .performanceAutoBtn{padding:9px 10px;white-space:nowrap;font-size:12px}.performanceConfirmField:not(.manualOverride){background:#f5f9ff;border:1px solid #d7e6ff;border-radius:10px;padding:9px}.performanceConfirmField.manualOverride{background:#fffaf0;border:1px solid #fde3ad;border-radius:10px;padding:9px}
