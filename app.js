@@ -684,7 +684,14 @@ function syncFieldEndFromPlan(){
 const PERFORMANCE_CONFIRM_RULES={
   83:{confirmedCol:111,rate:.5,label:'50%'},84:{confirmedCol:112,rate:.5,label:'50%'},85:{confirmedCol:113,rate:1,label:'100%'},
   86:{confirmedCol:114,rate:.5,label:'50%'},87:{confirmedCol:115,rate:.5,label:'50%'},88:{confirmedCol:116,rate:1,label:'100%'},
-  89:{confirmedCol:117,rate:.2,label:'20%'}
+  89:{confirmedCol:117,rate:.2,label:'20%'},
+  90:{confirmedCol:118,rate:1,label:'100%'},91:{confirmedCol:119,rate:1,label:'100%'},92:{confirmedCol:120,rate:1,label:'100%'},
+  93:{confirmedCol:121,rate:.2,label:'20%'},94:{confirmedCol:122,rate:.2,label:'20%'},95:{confirmedCol:123,rate:.2,label:'20%'},
+  96:{confirmedCol:124,rate:.2,label:'20%'},97:{confirmedCol:125,rate:.2,label:'20%'},
+  98:{confirmedCol:126,rate:1,label:'100%'},99:{confirmedCol:127,rate:1,label:'100%'},100:{confirmedCol:128,rate:1,label:'100%'},
+  101:{confirmedCol:129,rate:1,label:'100%'},102:{confirmedCol:130,rate:1,label:'100%'},103:{confirmedCol:131,rate:1,label:'100%'},
+  104:{confirmedCol:132,rate:1,label:'100%'},105:{confirmedCol:133,rate:1,label:'100%'},106:{confirmedCol:134,rate:1,label:'100%'},
+  107:{confirmedCol:135,rate:1,label:'100%'},108:{confirmedCol:136,rate:1,label:'100%'},109:{confirmedCol:137,rate:1,label:'100%'}
 };
 const PERFORMANCE_CONFIRM_BY_COL=Object.fromEntries(Object.entries(PERFORMANCE_CONFIRM_RULES).map(([target,rule])=>[rule.confirmedCol,{targetCol:Number(target),...rule}]));
 let sitePerformanceManualCols=new Set();
