@@ -702,7 +702,7 @@ function calculatedPerformanceQty(targetCol){const rule=PERFORMANCE_CONFIRM_RULE
 function syncPerformanceConfirmed(targetCol,force=false){const rule=PERFORMANCE_CONFIRM_RULES[Number(targetCol)];if(!rule)return;if(!force&&sitePerformanceManualCols.has(rule.confirmedCol))return;const value=calculatedPerformanceQty(targetCol);if(value==='')return;siteEditValues[rule.confirmedCol-1]=value;const inp=$('siteEditFields')?.querySelector(`[data-site-col="${rule.confirmedCol}"]`);if(inp)inp.value=value}
 function seedPerformanceConfirmedBlanks(){Object.entries(PERFORMANCE_CONFIRM_RULES).forEach(([target,rule])=>{if(String(siteEditValues[rule.confirmedCol-1]??'').trim()==='')syncPerformanceConfirmed(Number(target),true)})}
 function resetPerformanceConfirmedToAuto(confirmedCol){const meta=PERFORMANCE_CONFIRM_BY_COL[Number(confirmedCol)];if(!meta)return;sitePerformanceManualCols.delete(Number(confirmedCol));syncPerformanceConfirmed(meta.targetCol,true)}
-const groups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,82],['성능점검 대상 전체수량',83,110],['성능점검수량',111,137]];
+const groups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
 async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const g=groups[i];const fields=siteFieldsForGroup(g).filter(f=>(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
 const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
@@ -715,7 +715,11 @@ function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEd
 function renderSiteEditFields(){
  const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];
  const fields=siteFieldsForGroup(g).filter(siteFieldAllowed);
- $('siteEditFields').innerHTML=fields.map(f=>{
+ const fieldsRoot=$('siteEditFields');
+ const isQuantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);
+ fieldsRoot.classList.toggle('quantityGrid',isQuantityGroup);
+ fieldsRoot.dataset.groupName=g?.[0]||'';
+ fieldsRoot.innerHTML=fields.map(f=>{
   if(f.col===17){const derived=regionFromAddress(siteDraftAddress());if(derived)siteEditValues[16]=derived;const v=siteEditValues[16]??'',locked=!!derived;return `<label class="siteField"><span>지역</span><input data-site-col="17" type="text" value="${esc(v)}"${locked?' readonly aria-readonly="true"':''}><small class="fieldHelp" data-region-help>${locked?`주소 기준 자동 지역: ${esc(derived)}`:'주소가 없는 경우에만 지역을 직접 입력할 수 있습니다.'}</small></label>`}
   const v=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';
   if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
