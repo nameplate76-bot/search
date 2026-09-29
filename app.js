@@ -680,10 +680,10 @@ function syncFieldEndFromPlan(){
  if(end){if(plan)end.value=plan;end.readOnly=!!plan;end.toggleAttribute('aria-readonly',!!plan)}
  return plan;
 }
-const groups=[['기본정보',1,18,[54]],['진행·담당·계약',19,52],['분류번호',53,53],['유지관리 전체수량',55,82],['성능점검 대상수량',83,110],['성능점검 확정수량',111,137]];
+const groups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,82],['성능점검 대상수량',83,110],['성능점검 확정수량',111,137]];
 async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const g=groups[i];const fields=schema.fields.filter(f=>siteFieldInGroup(f,g)&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(f.financial?siteMoneyFieldLabel(f):f.label)}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
-const siteEditGroups=[['기본정보',1,18,[54]],['진행·담당·계약',19,52],['분류번호',53,53],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
+const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상수량',83,109],['성능점검 확정수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
 let siteNameSuggestTimer=null,siteNameSuggestRequest=0,siteNameSuggestions=[];
 let siteTemplateSearchRequest=0,siteTemplateSearchRows=[];
