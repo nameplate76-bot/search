@@ -477,3 +477,82 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   #page-search .desktopSiteTable .siteFreezeCorner.siteFreezeBoundaryRight{box-shadow:3px 0 0 rgba(37,99,235,.75)}
 }
 @media(max-width:800px){#page-search .siteFreezeToolbar{display:none!important}}
+
+
+/* V58 수량 3개 탭 모바일 4열 레이아웃 - 상세조회 + 수정/등록 공통 */
+.detailGrid.quantityGrid{align-items:stretch}
+.detailGrid.quantityGrid .detailEditBar{grid-column:1/-1}
+.detailGrid.quantityGrid .detailItem{min-width:0;text-align:center;padding:8px 5px}
+.detailGrid.quantityGrid .detailItem span{font-weight:800;word-break:keep-all;overflow-wrap:anywhere}
+.detailGrid.quantityGrid .detailItem b{text-align:center;word-break:break-word}
+
+@media (max-width:1100px), (hover:none) and (pointer:coarse){
+  .siteEditFields.quantityGrid,
+  .detailGrid.quantityGrid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .siteEditFields.quantityGrid{padding:0 10px 16px!important}
+  .detailGrid.quantityGrid{padding:0 10px 16px!important}
+
+  .siteEditFields.quantityGrid .siteField{
+    min-width:0!important;
+    gap:4px!important;
+  }
+  .siteEditFields.quantityGrid .siteField>span,
+  .detailGrid.quantityGrid .detailItem>span{
+    min-height:30px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:11px!important;
+    line-height:1.15!important;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+  }
+  .siteEditFields.quantityGrid .siteField input{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+    padding:5px 4px!important;
+    font-size:14px!important;
+    text-align:center!important;
+  }
+  .siteEditFields.quantityGrid .performanceConfirmRow{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:3px!important;
+  }
+  .siteEditFields.quantityGrid .performanceAutoBtn{
+    width:100%!important;
+    min-width:0!important;
+    padding:5px 2px!important;
+    min-height:29px!important;
+    font-size:10px!important;
+    line-height:1.05!important;
+    border-radius:7px!important;
+  }
+  .siteEditFields.quantityGrid .fieldHelp{display:none!important}
+
+  .detailGrid.quantityGrid .detailItem{
+    padding:7px 4px!important;
+    border-radius:8px!important;
+  }
+  .detailGrid.quantityGrid .detailItem>b{
+    display:block;
+    font-size:14px!important;
+    line-height:1.2!important;
+    min-height:20px;
+  }
+}
+
+@media(max-width:380px){
+  .siteEditFields.quantityGrid,
+  .detailGrid.quantityGrid{gap:4px!important;padding-left:6px!important;padding-right:6px!important}
+  .siteEditFields.quantityGrid .siteField>span,
+  .detailGrid.quantityGrid .detailItem>span{font-size:10px!important}
+  .siteEditFields.quantityGrid .siteField input{font-size:13px!important;padding-left:2px!important;padding-right:2px!important}
+}
