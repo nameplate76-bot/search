@@ -1207,6 +1207,51 @@ function setupSalesDashboardFilters(){
  }
  setSalesDashboardPeriod(salesDashboardPeriod,false);renderSalesDashboardOwnerList();renderSalesDashboard();
 }
+const SALES_DASH_SUMMARY_KEYS=['no','owner','allocated','written','allocatedCount','writtenCount','allocShare','writtenShare','rate'];
+const SALES_DASH_SUMMARY_LABELS={no:'No.',owner:'담당자',allocated:'할당 매출액',written:'작성 매출액',allocatedCount:'할당 건수',writtenCount:'작성 건수',allocShare:'전체 할당 매출액 대비',writtenShare:'전체 작성 매출액 대비',rate:'할당 대비 작성률'};
+function salesDashSummaryOrderStorageKey(){return `staff_sales_dashboard_summary_column_order:${me?.id||'guest'}`}
+function salesDashSummaryColumnOrder(){
+ let saved=[];try{saved=JSON.parse(localStorage.getItem(salesDashSummaryOrderStorageKey())||'[]')}catch(e){}
+ const valid=SALES_DASH_SUMMARY_KEYS,seen=new Set(),out=[];
+ (Array.isArray(saved)?saved:[]).forEach(k=>{k=String(k);if(valid.includes(k)&&!seen.has(k)){seen.add(k);out.push(k)}});
+ valid.forEach(k=>{if(!seen.has(k))out.push(k)});
+ return out;
+}
+function saveSalesDashSummaryColumnOrder(order){try{localStorage.setItem(salesDashSummaryOrderStorageKey(),JSON.stringify(order))}catch(e){}}
+function salesDashSummaryCell(key,x,i,d,totalRate){
+ const allocShare=d.totalAllocated>0?x.allocated/d.totalAllocated*100:0,writtenShare=d.totalWritten>0?x.written/d.totalWritten*100:0,rate=salesDashboardRate(x.written,x.allocated);
+ const cells={
+  no:`<td data-summary-key="no" class="center">${i+1}</td>`,
+  owner:`<td data-summary-key="owner">${esc(x.owner)}</td>`,
+  allocated:`<td data-summary-key="allocated" class="num">${esc(salesDashboardMoney(x.allocated))}</td>`,
+  written:`<td data-summary-key="written" class="num">${esc(salesDashboardMoney(x.written))}</td>`,
+  allocatedCount:`<td data-summary-key="allocatedCount" class="center">${x.allocatedCount.toLocaleString()}건</td>`,
+  writtenCount:`<td data-summary-key="writtenCount" class="center">${x.writtenCount.toLocaleString()}건</td>`,
+  allocShare:`<td data-summary-key="allocShare" class="num">${allocShare.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td>`,
+  writtenShare:`<td data-summary-key="writtenShare" class="num">${writtenShare.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td>`,
+  rate:`<td data-summary-key="rate" class="num ${rate!==null&&rate>=100?'salesRateDone':''}">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td>`
+ };
+ return cells[key]||'<td></td>';
+}
+function salesDashSummaryFooterCell(key,d,totalRate){
+ const vals={
+  no:'',owner:'합계',allocated:esc(salesDashboardMoney(d.totalAllocated)),written:esc(salesDashboardMoney(d.totalWritten)),allocatedCount:d.totalAllocatedCount.toLocaleString()+'건',writtenCount:d.totalWrittenCount.toLocaleString()+'건',allocShare:d.totalAllocated>0?'100.0%':'-',writtenShare:d.totalWritten>0?'100.0%':'-',rate:totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'
+ };
+ const cls=['allocated','written','allocShare','writtenShare','rate'].includes(key)?'num':(['no','owner','allocatedCount','writtenCount'].includes(key)?'center':'');
+ return `<th data-summary-key="${key}" class="${cls}">${vals[key]??''}</th>`;
+}
+function bindSalesDashSummaryHeaderInteractions(table){
+ if(!table)return;let dragKey=null;
+ const clear=()=>table.querySelectorAll('thead th').forEach(x=>x.classList.remove('dragging','dragBefore','dragAfter'));
+ table.querySelectorAll('thead th[data-summary-key]').forEach(th=>{
+  th.addEventListener('dragstart',e=>{dragKey=th.dataset.summaryKey;th.classList.add('dragging');if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragKey)}});
+  th.addEventListener('dragover',e=>{if(!dragKey||dragKey===th.dataset.summaryKey)return;e.preventDefault();clear();const r=th.getBoundingClientRect(),after=e.clientX>r.left+r.width/2;th.classList.add(after?'dragAfter':'dragBefore');if(e.dataTransfer)e.dataTransfer.dropEffect='move'});
+  th.addEventListener('dragleave',()=>th.classList.remove('dragBefore','dragAfter'));
+  th.addEventListener('drop',e=>{e.preventDefault();const target=th.dataset.summaryKey,rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;clear();const from=dragKey;dragKey=null;if(!from||!target||from===target)return;const order=salesDashSummaryColumnOrder().filter(k=>k!==from),idx=order.indexOf(target);if(idx<0)return;order.splice(idx+(after?1:0),0,from);saveSalesDashSummaryColumnOrder(order);renderSalesDashboard()});
+  th.addEventListener('dragend',()=>{clear();dragKey=null});
+ });
+}
+
 function salesDashboardMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
 function salesDashboardRate(written,allocated){return allocated>0?written/allocated*100:null}
 function salesDashboardAggregates(){
@@ -1233,13 +1278,12 @@ function renderSalesDashboard(){
   const ac=maxCount>0?Math.max(x.allocatedCount>0?2:0,Math.round(x.allocatedCount/maxCount*1000)/10):0,wc=maxCount>0?Math.max(x.writtenCount>0?2:0,Math.round(x.writtenCount/maxCount*1000)/10):0;
   return `<div class="salesDashCompareRow"><div class="salesDashBarLabel" title="${esc(x.owner)}">${esc(x.owner)}</div><div class="salesDashCompareGroup"><div class="salesDashCompareGroupTitle">매출액</div><div class="salesDashCompareBars"><div class="salesDashMetricRow"><span>할당</span><div class="salesDashBarTrack"><div class="salesDashBarFill allocation" style="width:${ap}%"></div></div><b>${esc(salesDashboardMoney(x.allocated))}</b></div><div class="salesDashMetricRow"><span>작성</span><div class="salesDashBarTrack"><div class="salesDashBarFill written" style="width:${wp}%"></div></div><b>${esc(salesDashboardMoney(x.written))}</b></div></div></div><div class="salesDashCompareGroup count"><div class="salesDashCompareGroupTitle">건수</div><div class="salesDashCompareBars"><div class="salesDashMetricRow"><span>할당</span><div class="salesDashBarTrack countTrack"><div class="salesDashBarFill allocation" style="width:${ac}%"></div></div><b>${x.allocatedCount.toLocaleString()}건</b></div><div class="salesDashMetricRow"><span>작성</span><div class="salesDashBarTrack countTrack"><div class="salesDashBarFill written" style="width:${wc}%"></div></div><b>${x.writtenCount.toLocaleString()}건</b></div></div></div></div>`;
  }).join('')||'<div class="salesDashEmpty">해당 기간의 매출 자료가 없습니다.</div>';
- const rows=d.items.map((x,i)=>{
-  const allocShare=d.totalAllocated>0?x.allocated/d.totalAllocated*100:0,writtenShare=d.totalWritten>0?x.written/d.totalWritten*100:0,rate=salesDashboardRate(x.written,x.allocated);
-  return `<tr><td class="center">${i+1}</td><td>${esc(x.owner)}</td><td class="num">${esc(salesDashboardMoney(x.allocated))}</td><td class="num">${esc(salesDashboardMoney(x.written))}</td><td class="center">${x.allocatedCount.toLocaleString()}건</td><td class="center">${x.writtenCount.toLocaleString()}건</td><td class="num">${allocShare.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td><td class="num">${writtenShare.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</td><td class="num ${rate!==null&&rate>=100?'salesRateDone':''}">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td></tr>`;
- }).join('');
- const totalAllocShare=d.totalAllocated>0?'100.0%':'-',totalWrittenShare=d.totalWritten>0?'100.0%':'-';
- summary.innerHTML=`<div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable"><thead><tr><th>No.</th><th>담당자</th><th>할당 매출액</th><th>작성 매출액</th><th>할당 건수</th><th>작성 건수</th><th>전체 할당 매출액 대비</th><th>전체 작성 매출액 대비</th><th>할당 대비 작성률</th></tr></thead><tbody>${rows||'<tr><td colspan="9" class="salesDashEmpty">자료가 없습니다.</td></tr>'}</tbody><tfoot><tr><th colspan="2">합계</th><th class="num">${esc(salesDashboardMoney(d.totalAllocated))}</th><th class="num">${esc(salesDashboardMoney(d.totalWritten))}</th><th class="center">${d.totalAllocatedCount.toLocaleString()}건</th><th class="center">${d.totalWrittenCount.toLocaleString()}건</th><th class="num">${totalAllocShare}</th><th class="num">${totalWrittenShare}</th><th class="num">${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th></tr></tfoot></table></div>`;
- scheduleTableColumnResize($('salesDashSummaryTable'),'sales-dashboard-summary');saveSalesDashboardPrefs();
+ const summaryOrder=salesDashSummaryColumnOrder();
+ const rows=d.items.map((x,i)=>`<tr>${summaryOrder.map(key=>salesDashSummaryCell(key,x,i,d,totalRate)).join('')}</tr>`).join('');
+ const headers=summaryOrder.map(key=>`<th data-summary-key="${key}" data-resize-key="${key}" draggable="true" title="드래그: 열 이동 · 오른쪽 경계선 드래그: 열 폭 조절"><span>${esc(SALES_DASH_SUMMARY_LABELS[key])}</span></th>`).join('');
+ const footer=summaryOrder.map(key=>salesDashSummaryFooterCell(key,d,totalRate)).join('');
+ summary.innerHTML=`<div class="salesDashTableHelp"><strong>열 이동:</strong> 제목을 좌우로 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 사용자별로 자동 저장됩니다.</div><div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable salesDashReorderable"><thead><tr>${headers}</tr></thead><tbody>${rows||`<tr><td colspan="${summaryOrder.length}" class="salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr>${footer}</tr></tfoot></table></div>`;
+ const summaryTable=$('salesDashSummaryTable');bindSalesDashSummaryHeaderInteractions(summaryTable);scheduleTableColumnResize(summaryTable,'sales-dashboard-summary');saveSalesDashboardPrefs();
 }
 async function loadSales(force=false){
  if(!canViewSales())return;
