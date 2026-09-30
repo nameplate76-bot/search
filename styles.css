@@ -605,3 +605,25 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:430px){.salesMonthlyKpis{grid-template-columns:1fr}.salesMonthlyChart svg{min-width:780px}}
 
 .autoRatioField input[readonly]{background:#eef4fb;color:#344054;font-weight:900;cursor:not-allowed}.autoRatioField .fieldHelp{color:#475467;font-weight:700}
+
+
+/* V65 월별 차트 툴팁 + 담당자별 월 매트릭스 */
+.salesMonthlyChart{position:relative}
+.salesMonthlyChart .salesMonthlyHoverBand{cursor:crosshair;pointer-events:all}
+.salesMonthlyTooltip{position:absolute;z-index:20;display:none;min-width:210px;padding:10px 12px;border-radius:10px;background:rgba(17,24,39,.94);color:#fff;box-shadow:0 8px 24px rgba(15,23,42,.24);font-size:12px;line-height:1.5;pointer-events:none;white-space:nowrap}
+.salesMonthlyTooltip.show{display:block}.salesMonthlyTooltip strong{display:block;font-size:13px;margin-bottom:4px}.salesMonthlyTooltipRow{display:flex;justify-content:space-between;gap:18px}.salesMonthlyTooltipRow span{color:#d0d5dd}.salesMonthlyTooltipRow b{color:#fff}
+.salesMonthlyMatrix{min-width:1980px!important;border-collapse:separate!important;border-spacing:0;table-layout:fixed}
+.salesMonthlyMatrix th,.salesMonthlyMatrix td{border-right:1px solid #edf0f5}
+.salesMonthlyMatrix .ownerCol{width:110px;min-width:110px;max-width:110px;text-align:center;font-weight:900}
+.salesMonthlyMatrix .metricCol{width:118px;min-width:118px;max-width:118px;font-weight:800}
+.salesMonthlyMatrix .monthCol{width:125px;min-width:125px;max-width:125px;text-align:right}
+.salesMonthlyMatrix .totalCol{width:145px;min-width:145px;max-width:145px;text-align:right;background:#f6f9ff;font-weight:900}
+.salesMonthlyMatrix .stickyOwner{position:sticky;left:0;z-index:5;background:#fff}
+.salesMonthlyMatrix .stickyMetric{position:sticky;left:110px;z-index:4;background:#fff;box-shadow:2px 0 0 #d7e2f1}
+.salesMonthlyMatrix thead .stickyOwner,.salesMonthlyMatrix thead .stickyMetric{z-index:8;background:#eaf2ff}
+.salesMonthlyMatrix tbody tr.ownerGroupStart td{border-top:2px solid #cbd8ea}
+.salesMonthlyMatrix tbody tr:first-child td{border-top:0}
+.salesMonthlyMatrix tbody tr:hover td:not(.stickyOwner):not(.stickyMetric){background:#f8fbff}
+.salesMonthlyMatrix .metricAllocated{color:#2457a7}.salesMonthlyMatrix .metricWritten{color:#1849a9}.salesMonthlyMatrix .metricCount{color:#475467}
+.salesMonthlyMatrix tfoot .stickyOwner,.salesMonthlyMatrix tfoot .stickyMetric{background:#f1f6ff;z-index:7}
+@media(max-width:800px){.salesMonthlyTooltip{min-width:190px;font-size:11px}.salesMonthlyMatrix{min-width:1860px!important}.salesMonthlyMatrix .ownerCol{width:96px;min-width:96px;max-width:96px}.salesMonthlyMatrix .metricCol{width:108px;min-width:108px;max-width:108px}.salesMonthlyMatrix .stickyMetric{left:96px}}
