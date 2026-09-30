@@ -587,3 +587,21 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   #page-unwritten .unwrittenTable .unwrittenFreezeCorner.unwrittenFreezeBoundaryRight{box-shadow:3px 0 0 rgba(37,99,235,.75)}
 }
 @media(max-width:800px){#page-unwritten .unwrittenFreezeToolbar{display:none!important}}
+
+
+.salesMonthlyOverview{margin-top:14px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff;display:grid;gap:14px}
+.salesMonthlyHead h3{margin:0;font-size:28px;line-height:1.2;color:var(--navy)}
+.salesMonthlyHead p{margin:6px 0 0;color:var(--muted)}
+.salesMonthlyKpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.salesMonthlyKpis>div{border:1px solid var(--line);border-radius:14px;background:#f8fbff;padding:16px;display:grid;gap:7px}
+.salesMonthlyKpis span{font-size:12px;font-weight:800;color:#667085}.salesMonthlyKpis b{font-size:17px;color:#1243a6;line-height:1.25}.salesMonthlyKpis small{font-size:11px;color:#98a2b3;font-weight:700}
+.salesMonthlyChartCard,.salesMonthlyTableCard{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+.salesMonthlySectionTitle{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}.salesMonthlySectionTitle strong{font-size:15px}.salesMonthlySectionTitle small{font-size:11px;color:var(--muted);text-align:right}
+.salesMonthlyLineLegend{display:inline-block;width:12px;height:0;border-top:3px solid;border-radius:999px;vertical-align:middle;margin:0 4px 0 9px;position:relative;top:-1px}.salesMonthlyLineLegend::after{content:'';position:absolute;right:-1px;top:-4px;width:7px;height:7px;border-radius:999px;background:currentColor}.salesMonthlyLineLegend.allocated{color:#16a34a}.salesMonthlyLineLegend.written{color:#f97316}
+.salesMonthlyChart{width:100%;overflow:auto}.salesMonthlyChart svg{width:100%;min-width:980px;height:auto;display:block}.salesMonthlyChartEmpty{padding:28px 16px;text-align:center;color:var(--muted)}
+.salesMonthlyTables{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:12px}.salesMonthlyTableWrap{width:100%;overflow:auto}.salesMonthlyTable{width:100%;min-width:720px;border-collapse:collapse}.salesMonthlyTable th{background:#eef4ff;color:#294364;text-align:center;padding:8px 7px;font-size:12px;white-space:nowrap}.salesMonthlyTable td{padding:8px 7px;border-bottom:1px solid #edf0f5;font-size:12px;white-space:nowrap}.salesMonthlyTable td.num,.salesMonthlyTable th.num{text-align:right}.salesMonthlyTable td.center,.salesMonthlyTable th.center{text-align:center}.salesMonthlyTable tfoot th,.salesMonthlyTable tfoot td{font-weight:900;background:#f7faff;border-top:2px solid #bfd0ea}.salesMonthlyRate{font-weight:900;color:#1770d6}
+@media(max-width:1100px){.salesMonthlyKpis{grid-template-columns:repeat(2,minmax(0,1fr))}.salesMonthlyTables{grid-template-columns:1fr}}
+@media(max-width:800px){.salesMonthlyOverview{padding:12px}.salesMonthlyHead h3{font-size:22px}.salesMonthlySectionTitle{display:block}.salesMonthlySectionTitle small{display:block;text-align:left;margin-top:3px}.salesMonthlyKpis{grid-template-columns:1fr 1fr;gap:8px}.salesMonthlyKpis>div{padding:12px}.salesMonthlyKpis b{font-size:15px}}
+@media(max-width:430px){.salesMonthlyKpis{grid-template-columns:1fr}.salesMonthlyChart svg{min-width:780px}}
+
+.autoRatioField input[readonly]{background:#eef4fb;color:#344054;font-weight:900;cursor:not-allowed}.autoRatioField .fieldHelp{color:#475467;font-weight:700}

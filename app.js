@@ -750,6 +750,9 @@ function siteFinancialRawInput(v,col){
  if(c===52)return String(n/100);
  return v;
 }
+function siteMoneyNumber(v){const raw=String(v??'').trim().replace(/[,원\s]/g,'');if(raw==='')return null;const n=Number(raw);return Number.isFinite(n)?n:null}
+function calculatedBindingRatio(){const amount=siteMoneyNumber(siteEditValues[49]),binding=siteMoneyNumber(siteEditValues[50]);if(amount===null||amount===0||binding===null)return '';return String(binding/amount)}
+function syncBindingRatioFromAmounts(updateInput=true){const ratio=calculatedBindingRatio();siteEditValues[51]=ratio;if(updateInput){const inp=$('siteEditFields')?.querySelector('[data-site-col="52"]');if(inp)inp.value=siteMoneyInput(ratio,52)}return ratio}
 function regionFromAddress(address){
  const parts=String(address||'').trim().replace(/\s+/g,' ').split(' ').filter(Boolean);if(!parts.length)return '';
  const p1=parts[0]||'',p2=parts[1]||'',p3=parts[2]||'';
@@ -815,7 +818,8 @@ function renderSiteEditFields(){
   const v=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';
   if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
   if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(siteDisplayFieldLabel(f))} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장을 선택하면 S/N을 포함한 등록정보를 복사합니다. 복사 후 원하는 항목을 수정해 새 현장으로 저장할 수 있습니다.</small></label>`;
-  let help='';if(f.col===52)help='<small class="fieldHelp">퍼센트 숫자로 입력하세요. 예: 2.5 입력 = 2.5%</small>';else if(f.col===29)help='<small class="fieldHelp">계획 종료 날짜를 입력하면 현장점검 종료에도 같은 날짜가 자동 입력됩니다.</small>';else if(f.col===30)help='<small class="fieldHelp">현장점검 계획 종료일이 입력된 경우 같은 날짜로 자동 연동됩니다.</small>';
+  let help='';if(f.col===29)help='<small class="fieldHelp">계획 종료 날짜를 입력하면 현장점검 종료에도 같은 날짜가 자동 입력됩니다.</small>';else if(f.col===30)help='<small class="fieldHelp">현장점검 계획 종료일이 입력된 경우 같은 날짜로 자동 연동됩니다.</small>';
+  if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
@@ -823,13 +827,14 @@ function renderSiteEditFields(){
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
-  siteEditValues[col-1]=col===52?siteFinancialRawInput(inp.value,col):inp.value;
+  siteEditValues[col-1]=inp.value;
+  if(col===50||col===51)syncBindingRatioFromAmounts(true);
   if(PERFORMANCE_CONFIRM_BY_COL[col])sitePerformanceManualCols.add(col);
   if(PERFORMANCE_CONFIRM_RULES[col])syncPerformanceConfirmed(col,false);
   if(col===29){if(inp.value)siteEditValues[29]=inp.value;else if(String(siteEditValues[29]??'')===before)siteEditValues[29]='';syncFieldEndFromPlan()}
   if(siteEditMode==='create'&&col===4)scheduleSiteNameSuggestions(inp.value);
  });
- $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);if(col===52){siteEditValues[col-1]=siteFinancialRawInput(inp.value,col);inp.value=siteMoneyInput(siteEditValues[col-1],col)}else{inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value}});
+ $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if(col===50||col===51)syncBindingRatioFromAmounts(true)});
  $('siteEditFields').querySelectorAll('[data-performance-auto]').forEach(btn=>btn.onclick=()=>{const col=Number(btn.dataset.performanceAuto);resetPerformanceConfirmedToAuto(col);renderSiteEditFields()});
  const nextBtn=$('applyNextSnBtn');if(nextBtn)nextBtn.onclick=()=>applyNextSiteSn(true);
  const nameInput=$('siteNameLookupInput');if(nameInput){nameInput.onfocus=()=>{if(String(nameInput.value||'').trim())scheduleSiteNameSuggestions(nameInput.value,true)};nameInput.onblur=()=>setTimeout(hideSiteNameSuggestions,180)}
@@ -924,7 +929,7 @@ function searchSiteAddress(){const q=String($('siteAddressQuery').value||'').tri
 function resetSiteEditor(){siteEditValues=Array(137).fill('');sitePerformanceManualCols.clear();siteEditRow=null;siteEditGroupIndex=0;$('siteEditSourceId').value='';$('siteFormPhone').value='';$('siteFormEmail').value='';$('siteFormAddress').value='';$('siteFormAddressDetail').value='';$('siteAddressQuery').value='';resetSiteTemplateSearch();setSiteAddressMode('search');notify($('siteAddressMsg'),'검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.',true);notify($('siteEditMsg'),'')}
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal();setTimeout(()=>{$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';resetSiteEditor();siteEditRow=r;$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
-function sitePayload(){syncRegionFromSiteAddress();syncFieldEndFromPlan();const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
+function sitePayload(){syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  setTimeout(()=>{$('siteEditDlg').close()},350);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
@@ -1350,6 +1355,74 @@ function bindSalesDashSummaryHeaderInteractions(table){
 
 function salesDashboardMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
 function salesDashboardRate(written,allocated){return allocated>0?written/allocated*100:null}
+function salesMonthlyOverviewData(){
+ const year=$('salesDashYear')?.value||$('salesYear')?.value||'';
+ const ownerList=(salesDashboardOwners&&salesDashboardOwners.size?[...salesDashboardOwners]:salesDashboardOwnerNames()).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ko'));
+ const selected=new Set(ownerList);
+ const months=Array.from({length:12},(_,i)=>({month:i+1,allocated:0,written:0,allocatedCount:0,writtenCount:0}));
+ const monthMap=new Map(months.map(x=>[x.month,x]));
+ const detailMap=new Map();
+ const summaryMap=new Map(ownerList.map(o=>[o,{owner:o,allocated:0,written:0,allocatedCount:0,writtenCount:0}]));
+ function ensureDetail(month,owner){const key=`${month}|${owner}`;if(!detailMap.has(key))detailMap.set(key,{month,owner,allocated:0,written:0,allocatedCount:0,writtenCount:0});return detailMap.get(key)}
+ salesAssignedRows.filter(a=>String(a.allocation_year||'')===String(year)&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{
+   const owner=String(a.owner_name||'').trim(),month=Math.max(1,Math.min(12,Number(a.allocation_month)||0));if(!month)return;
+   const amount=salesNumber(a.allocation_amount),count=Math.max(0,Math.round(salesNumber(a.assigned_count)));
+   const m=monthMap.get(month),d=ensureDetail(month,owner),s=summaryMap.get(owner);
+   m.allocated+=amount;m.allocatedCount+=count;d.allocated+=amount;d.allocatedCount+=count;if(s){s.allocated+=amount;s.allocatedCount+=count}
+ });
+ salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year||'')===String(year)&&selected.has(salesOwnerName(r))).forEach(r=>{
+   const owner=salesOwnerName(r),month=Math.max(1,Math.min(12,Number(r.sales_month)||0));if(!month)return;
+   const amount=salesAmount(r),count=1;
+   const m=monthMap.get(month),d=ensureDetail(month,owner),s=summaryMap.get(owner);
+   m.written+=amount;m.writtenCount+=count;d.written+=amount;d.writtenCount+=count;if(s){s.written+=amount;s.writtenCount+=count}
+ });
+ const detailRows=[...detailMap.values()].sort((a,b)=>a.month-b.month||a.owner.localeCompare(b.owner,'ko'));
+ const summaryRows=[...summaryMap.values()].filter(x=>x.allocated||x.written||x.allocatedCount||x.writtenCount).sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
+ const totals=months.reduce((acc,m)=>{acc.allocated+=m.allocated;acc.written+=m.written;acc.allocatedCount+=m.allocatedCount;acc.writtenCount+=m.writtenCount;return acc},{allocated:0,written:0,allocatedCount:0,writtenCount:0});
+ return {year,owners:ownerList,months,detailRows,summaryRows,totals};
+}
+function salesMonthlyOverviewMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
+function salesMonthlyOverviewRate(w,a){return a>0?(w/a*100):null}
+function salesMonthlyAmountLabel(v){return (v/1000000).toLocaleString('ko-KR',{maximumFractionDigits:0})}
+function renderSalesMonthlyOverviewChart(data){
+ const root=$('salesMonthlyChart');if(!root)return;
+ if(!data.owners.length){root.innerHTML='<div class="salesMonthlyChartEmpty">담당자를 한 명 이상 선택하면 1월부터 12월까지의 월별 차트가 표시됩니다.</div>';return}
+ const maxAmount=Math.max(1,...data.months.flatMap(m=>[m.allocated,m.written]));
+ const maxCount=Math.max(1,...data.months.flatMap(m=>[m.allocatedCount,m.writtenCount]));
+ const width=1120,height=360,padL=72,padR=54,padT=24,padB=52,plotW=width-padL-padR,plotH=height-padT-padB,groupW=plotW/12,barW=Math.min(28,groupW*0.23),centerOffset=Math.min(16,groupW*0.18);
+ const amountTicks=5,countTicks=5;
+ const grid=[];for(let i=0;i<=amountTicks;i++){const y=padT+plotH-(plotH*(i/amountTicks));const val=Math.round(maxAmount/amountTicks*i);grid.push({y,val})}
+ const pointsA=[],pointsW=[];
+ const bars=[]; const labels=[];
+ data.months.forEach((m,idx)=>{const cx=padL+groupW*idx+groupW/2;const ah=(m.allocated/maxAmount)*plotH,wh=(m.written/maxAmount)*plotH;const ay=padT+plotH-ah,wy=padT+plotH-wh;
+ bars.push(`<rect x="${(cx-centerOffset-barW/2).toFixed(1)}" y="${ay.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,ah).toFixed(1)}" rx="4" fill="#bfdbfe" stroke="#93c5fd"></rect>`);
+ bars.push(`<rect x="${(cx+centerOffset-barW/2).toFixed(1)}" y="${wy.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,wh).toFixed(1)}" rx="4" fill="#2563eb"></rect>`);
+ const pyA=padT+plotH-(m.allocatedCount/maxCount)*plotH; const pyW=padT+plotH-(m.writtenCount/maxCount)*plotH; pointsA.push(`${cx.toFixed(1)},${pyA.toFixed(1)}`); pointsW.push(`${cx.toFixed(1)},${pyW.toFixed(1)}`);
+ labels.push(`<text x="${cx.toFixed(1)}" y="${height-22}" text-anchor="middle" font-size="11" fill="#475467">${m.month}월</text>`);
+ });
+ const countAxis=[];for(let i=0;i<=countTicks;i++){const y=padT+plotH-(plotH*(i/countTicks));const val=Math.round(maxCount/countTicks*i);countAxis.push(`<text x="${width-10}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#667085">${val}</text>`)}
+ root.innerHTML=`<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="월별 매출액 및 건수 현황 차트"><rect x="0" y="0" width="${width}" height="${height}" fill="#fff"></rect>${grid.map(g=>`<line x1="${padL}" y1="${g.y.toFixed(1)}" x2="${width-padR}" y2="${g.y.toFixed(1)}" stroke="#e5e7eb"></line><text x="${padL-10}" y="${(g.y+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#667085">${salesMonthlyAmountLabel(g.val)}</text>`).join('')}<text x="${padL-4}" y="14" text-anchor="start" font-size="11" fill="#667085">매출액(백만원)</text><text x="${width-padR+8}" y="14" text-anchor="start" font-size="11" fill="#667085">건수(건)</text>${countAxis.join('')}<line x1="${padL}" y1="${padT+plotH}" x2="${width-padR}" y2="${padT+plotH}" stroke="#cdd5df"></line>${bars.join('')}<polyline fill="none" stroke="#16a34a" stroke-width="3" points="${pointsA.join(' ')}"></polyline><polyline fill="none" stroke="#f97316" stroke-width="3" points="${pointsW.join(' ')}"></polyline>${pointsA.map(p=>{const[x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#16a34a" stroke-width="2"></circle>`}).join('')}${pointsW.map(p=>{const[x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#f97316" stroke-width="2"></circle>`}).join('')}${labels.join('')}</svg>`
+}
+function renderSalesMonthlyOverviewTables(data){
+ const detail=$('salesMonthlyDetail'),summary=$('salesMonthlySummary');if(!detail||!summary)return;
+ if(!data.owners.length){detail.innerHTML='<div class="salesDashEmpty">담당자를 한 명 이상 선택하면 표가 표시됩니다.</div>';summary.innerHTML='';return}
+ const detailRows=data.detailRows.map(r=>{const rate=salesMonthlyOverviewRate(r.written,r.allocated);return `<tr><td class="center">${r.month}월</td><td>${esc(r.owner)}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.allocated))}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.written))}</td><td class="num">${r.allocatedCount.toLocaleString()}</td><td class="num">${r.writtenCount.toLocaleString()}</td><td class="num salesMonthlyRate">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td></tr>`}).join('');
+ const monthFooterRate=salesMonthlyOverviewRate(data.totals.written,data.totals.allocated);
+ detail.innerHTML=`<table id="salesMonthlyDetailTable" class="salesMonthlyTable"><thead><tr><th class="center">월</th><th>담당자</th><th class="num">할당 매출액</th><th class="num">작성 매출액</th><th class="num">할당 건수</th><th class="num">작성 건수</th><th class="num">달성률</th></tr></thead><tbody>${detailRows||`<tr><td colspan="7" class="center salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr><th colspan="2" class="center">합계</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.written))}</th><th class="num">${data.totals.allocatedCount.toLocaleString()}</th><th class="num">${data.totals.writtenCount.toLocaleString()}</th><th class="num">${monthFooterRate===null?'-':monthFooterRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th></tr></tfoot></table>`;
+ const summaryRows=data.summaryRows.map(r=>{const rate=salesMonthlyOverviewRate(r.written,r.allocated),countRate=salesMonthlyOverviewRate(r.writtenCount,r.allocatedCount);return `<tr><td>${esc(r.owner)}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.allocated))}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.written))}</td><td class="num salesMonthlyRate">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td><td class="num">${r.allocatedCount.toLocaleString()}</td><td class="num">${r.writtenCount.toLocaleString()}</td><td class="num salesMonthlyRate">${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td></tr>`}).join('');
+ summary.innerHTML=`<table id="salesMonthlySummaryTable" class="salesMonthlyTable"><thead><tr><th>담당자</th><th class="num">할당 매출액</th><th class="num">작성 매출액</th><th class="num">달성률</th><th class="num">할당 건수</th><th class="num">작성 건수</th><th class="num">달성률</th></tr></thead><tbody>${summaryRows||`<tr><td colspan="7" class="center salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr><th>합계</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.written))}</th><th class="num">${monthFooterRate===null?'-':monthFooterRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th><th class="num">${data.totals.allocatedCount.toLocaleString()}</th><th class="num">${data.totals.writtenCount.toLocaleString()}</th><th class="num">${salesMonthlyOverviewRate(data.totals.writtenCount,data.totals.allocatedCount)===null?'-':salesMonthlyOverviewRate(data.totals.writtenCount,data.totals.allocatedCount).toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th></tr></tfoot></table>`;
+ scheduleTableColumnResize($('salesMonthlyDetailTable'),'sales-monthly-detail');
+ scheduleTableColumnResize($('salesMonthlySummaryTable'),'sales-monthly-summary');
+}
+function renderSalesMonthlyOverview(){
+ const title=$('salesMonthlyTitle'),kpis=$('salesMonthlyKpis');if(!title||!kpis)return;
+ const data=salesMonthlyOverviewData(); const year=data.year||'연도';
+ title.textContent=`${year}년 월별 담당자별 매출 현황`;
+ const rate=salesMonthlyOverviewRate(data.totals.written,data.totals.allocated);
+ const countRate=salesMonthlyOverviewRate(data.totals.writtenCount,data.totals.allocatedCount);
+ kpis.innerHTML=`<div><span>연간 할당 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</b><small>1월~12월 할당 매출액 합계</small></div><div><span>연간 작성 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.written))}</b><small>할당 대비 ${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div><div><span>연간 할당 건수</span><b>${data.totals.allocatedCount.toLocaleString()}건</b><small>1월~12월 할당 건수 합계</small></div><div><span>연간 작성 건수</span><b>${data.totals.writtenCount.toLocaleString()}건</b><small>할당 대비 ${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div>`;
+ renderSalesMonthlyOverviewChart(data); renderSalesMonthlyOverviewTables(data);
+}
 function salesDashboardAggregates(){
  const year=$('salesDashYear')?.value||'',month=$('salesDashMonth')?.value||'';
  const selected=new Set(salesDashboardOwners),map=new Map([...selected].map(o=>[o,{owner:o,allocated:0,written:0,allocatedCount:0,writtenCount:0}]));
@@ -1379,7 +1452,7 @@ function renderSalesDashboard(){
  const headers=summaryOrder.map(key=>`<th data-summary-key="${key}" data-resize-key="${key}" draggable="true" title="드래그: 열 이동 · 오른쪽 경계선 드래그: 열 폭 조절"><span>${esc(SALES_DASH_SUMMARY_LABELS[key])}</span></th>`).join('');
  const footer=summaryOrder.map(key=>salesDashSummaryFooterCell(key,d,totalRate)).join('');
  summary.innerHTML=`<div class="salesDashTableHelp"><strong>열 이동:</strong> 제목을 좌우로 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 사용자별로 자동 저장됩니다.</div><div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable salesDashReorderable"><thead><tr>${headers}</tr></thead><tbody>${rows||`<tr><td colspan="${summaryOrder.length}" class="salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr>${footer}</tr></tfoot></table></div>`;
- const summaryTable=$('salesDashSummaryTable');bindSalesDashSummaryHeaderInteractions(summaryTable);scheduleTableColumnResize(summaryTable,'sales-dashboard-summary');saveSalesDashboardPrefs();
+ const summaryTable=$('salesDashSummaryTable');bindSalesDashSummaryHeaderInteractions(summaryTable);scheduleTableColumnResize(summaryTable,'sales-dashboard-summary');renderSalesMonthlyOverview();saveSalesDashboardPrefs();
 }
 async function loadSales(force=false){
  if(!canViewSales())return;
