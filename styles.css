@@ -683,3 +683,10 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   .salesMonthlyMatrix .monthCol{width:80px!important;min-width:80px!important;max-width:80px!important}
   .salesMonthlyMatrix .totalCol{width:94px!important;min-width:94px!important;max-width:94px!important}
 }
+
+/* V69 상세 매출목록 관리자 전용 내보내기/출력 */
+.salesPanelHeadLeft{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0;flex:1}
+.salesPanelAdminActions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.salesPanelAdminActions button{white-space:nowrap}
+@media(max-width:800px){.salesPanelHeadLeft{flex-direction:column;align-items:stretch;width:100%}.salesPanelAdminActions{display:grid;grid-template-columns:1fr 1fr;width:100%}.salesPanelAdminActions button{width:100%}}
+@media print{.salesPanelAdminActions{display:none!important}}

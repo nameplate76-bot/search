@@ -373,8 +373,8 @@ function showApp(){
  $('siteCreateBtn')?.classList.toggle('hidden',!canCreateSite());
  $('newUserBtn')?.classList.toggle('hidden',!isAdmin());
  $('salesImport')?.classList.toggle('hidden',!isAdmin());
- $('salesExport')?.classList.toggle('hidden',!canExportSales());
- $('salesPrint')?.classList.toggle('hidden',!canPrintSales());
+ $('salesExport')?.classList.toggle('hidden',!isAdmin());
+ $('salesPrint')?.classList.toggle('hidden',!isAdmin());
  showPage(savedPage(),false);
  if(can('can_view_staff_sites'))refreshDbStatus();
 }
@@ -1536,7 +1536,7 @@ function renderSales(){
  if(salesDashboardInitialized)renderSalesDashboard();
 }
 function exportSales(){
- if(!canExportSales())return alert('매출 엑셀 내보내기 권한이 없습니다.');
+ if(!isAdmin())return alert('매출 엑셀 내보내기는 관리자만 사용할 수 있습니다.');
  try{if(!window.XLSX)throw new Error('엑셀 라이브러리를 불러오지 못했습니다.');const table=$('salesTable');const wb=XLSX.utils.table_to_book(table,{sheet:'매출 관리',raw:true});XLSX.writeFile(wb,`${updateSalesPageTitle()}.xlsx`)}catch(e){alert('엑셀 내보내기 실패\n\n'+e.message)}
 }
 async function importSalesExcel(file){
@@ -1551,7 +1551,7 @@ async function importSalesExcel(file){
  }catch(e){alert('엑셀 가져오기 실패\n\n'+e.message)}
 }
 function printSalesReport(){
- if(!canPrintSales())return alert('매출 출력 권한이 없습니다.');
+ if(!isAdmin())return alert('매출 출력은 관리자만 사용할 수 있습니다.');
  const title=updateSalesPageTitle(),table=$('salesTable');
  if(!table)return alert('출력할 매출 관리표를 찾지 못했습니다.');
  const w=window.open('','sales_print','width=980,height=760');
