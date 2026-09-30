@@ -627,3 +627,59 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .salesMonthlyMatrix .metricAllocated{color:#2457a7}.salesMonthlyMatrix .metricWritten{color:#1849a9}.salesMonthlyMatrix .metricCount{color:#475467}
 .salesMonthlyMatrix tfoot .stickyOwner,.salesMonthlyMatrix tfoot .stickyMetric{background:#f1f6ff;z-index:7}
 @media(max-width:800px){.salesMonthlyTooltip{min-width:190px;font-size:11px}.salesMonthlyMatrix{min-width:1860px!important}.salesMonthlyMatrix .ownerCol{width:96px;min-width:96px;max-width:96px}.salesMonthlyMatrix .metricCol{width:108px;min-width:108px;max-width:108px}.salesMonthlyMatrix .stickyMetric{left:96px}}
+
+
+/* V67 모바일 월별 매출 현황 최적화 */
+.salesMonthlyOverview,.salesMonthlyChartCard,.salesMonthlyTables,.salesMonthlyTableCard,.salesMonthlyTableWrap,.salesMonthlyChart{min-width:0;max-width:100%}
+.salesMonthlyChart,.salesMonthlyTableWrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-gutter:stable;touch-action:pan-x pan-y}
+.salesMonthlySummaryMobile{display:none}
+@media(max-width:900px),(hover:none) and (pointer:coarse){
+  #page-sales{overflow-x:hidden;padding-left:10px;padding-right:10px}
+  .salesMonthlyOverview{padding:10px;gap:10px;border-radius:12px;overflow:hidden}
+  .salesMonthlyHead h3{font-size:20px;line-height:1.28}
+  .salesMonthlyHead p{font-size:12px;line-height:1.5}
+  .salesMonthlyKpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .salesMonthlyKpis>div{padding:10px;border-radius:10px;min-width:0}
+  .salesMonthlyKpis span{font-size:10px}.salesMonthlyKpis b{font-size:14px;word-break:break-all}.salesMonthlyKpis small{font-size:9px}
+  .salesMonthlyChartCard,.salesMonthlyTableCard{padding:9px;border-radius:10px;overflow:hidden}
+  .salesMonthlySectionTitle{display:block;margin-bottom:8px}
+  .salesMonthlySectionTitle strong{font-size:14px}.salesMonthlySectionTitle small{display:block;text-align:left;margin-top:4px;font-size:10px;line-height:1.45}
+  .salesMonthlyChart{position:relative;width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:6px}
+  .salesMonthlyChart::after{content:'← 좌우로 밀어 1월 ~ 12월 확인 →';position:sticky;left:8px;display:block;width:max-content;margin:5px 0 0;padding:4px 8px;border-radius:999px;background:#f0f5ff;color:#315b9a;font-size:10px;font-weight:800;pointer-events:none}
+  .salesMonthlyChart svg{width:820px!important;min-width:820px!important;height:auto!important;max-width:none!important}
+  .salesMonthlyTooltip{position:fixed!important;left:50%!important;top:auto!important;bottom:16px!important;transform:translateX(-50%);width:min(310px,calc(100vw - 28px));min-width:0;white-space:normal;font-size:11px;z-index:1000}
+  .salesMonthlyTooltipRow{gap:10px}.salesMonthlyTooltipRow b{text-align:right;word-break:break-all}
+  .salesMonthlyTables{grid-template-columns:1fr!important;gap:10px;width:100%;min-width:0}
+  .salesMonthlyTableWrap{overflow:auto;width:100%;max-width:100%;border-radius:8px;max-height:62vh;position:relative}
+  .salesMonthlyMatrix{min-width:1450px!important;width:1450px!important}
+  .salesMonthlyMatrix th,.salesMonthlyMatrix td{padding:7px 6px!important;font-size:10px!important}
+  .salesMonthlyMatrix .ownerCol{width:74px!important;min-width:74px!important;max-width:74px!important}
+  .salesMonthlyMatrix .metricCol{width:82px!important;min-width:82px!important;max-width:82px!important;white-space:normal!important;line-height:1.25}
+  .salesMonthlyMatrix .monthCol{width:86px!important;min-width:86px!important;max-width:86px!important}
+  .salesMonthlyMatrix .totalCol{width:100px!important;min-width:100px!important;max-width:100px!important}
+  .salesMonthlyMatrix .stickyMetric{left:74px!important}
+  .salesMonthlyMatrix .stickyOwner,.salesMonthlyMatrix .stickyMetric{background-clip:padding-box!important}
+  .salesMonthlyMatrix thead th{position:sticky!important;top:0!important;z-index:6}
+  .salesMonthlyMatrix thead .stickyOwner{z-index:10!important}.salesMonthlyMatrix thead .stickyMetric{z-index:9!important}
+  .salesMonthlyMatrix tfoot .stickyOwner,.salesMonthlyMatrix tfoot .stickyMetric{z-index:7!important}
+  #salesMonthlyDetail::before{content:'담당자·항목은 고정 · 표를 좌우로 밀어 월별 데이터 확인';position:sticky;left:0;top:0;z-index:12;display:block;width:max-content;max-width:calc(100vw - 44px);margin-bottom:6px;padding:4px 7px;border-radius:6px;background:#fff7e6;color:#9a5b00;font-size:9px;font-weight:800}
+  .salesMonthlySummaryDesktop{display:none!important}
+  .salesMonthlySummaryMobile{display:grid;gap:8px}
+  .salesMonthlySummaryMobileCard{border:1px solid #dfe7f2;border-radius:10px;background:#fff;padding:10px}
+  .salesMonthlySummaryMobileCard.total{background:#f2f7ff;border-color:#bfd2f0}
+  .salesMonthlySummaryMobileCard h4{margin:0 0 8px;font-size:14px;color:#183b6b}
+  .salesMonthlySummaryMobileGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .salesMonthlySummaryMobileGrid>div{min-width:0;background:#f8fafc;border-radius:8px;padding:8px}
+  .salesMonthlySummaryMobileGrid span{display:block;font-size:9px;color:#667085;margin-bottom:3px}
+  .salesMonthlySummaryMobileGrid b{display:block;font-size:11px;line-height:1.3;word-break:break-all}
+}
+@media(max-width:420px){
+  .salesMonthlyKpis{grid-template-columns:1fr 1fr!important}
+  .salesMonthlyChart svg{width:760px!important;min-width:760px!important}
+  .salesMonthlyMatrix{min-width:1360px!important;width:1360px!important}
+  .salesMonthlyMatrix .ownerCol{width:68px!important;min-width:68px!important;max-width:68px!important}
+  .salesMonthlyMatrix .metricCol{width:78px!important;min-width:78px!important;max-width:78px!important}
+  .salesMonthlyMatrix .stickyMetric{left:68px!important}
+  .salesMonthlyMatrix .monthCol{width:80px!important;min-width:80px!important;max-width:80px!important}
+  .salesMonthlyMatrix .totalCol{width:94px!important;min-width:94px!important;max-width:94px!important}
+}
