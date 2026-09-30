@@ -1405,14 +1405,11 @@ function salesMonthlyOverviewData(){
  salesAssignedRows.filter(a=>String(a.allocation_year||'')===String(year)&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{
    const owner=String(a.owner_name||'').trim(),month=Math.max(1,Math.min(12,Number(a.allocation_month)||0));if(!month)return;
    const amount=salesNumber(a.allocation_amount),count=Math.max(0,Math.round(salesNumber(a.assigned_count)));
-   const m=monthMap.get(month),d=ensureDetail(month,owner),s=summaryMap.get(owner);
-   m.allocated+=amount;m.allocatedCount+=count;d.allocated+=amount;d.allocatedCount+=count;if(s){s.allocated+=amount;s.allocatedCount+=count}
- });
- salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year||'')===String(year)&&selected.has(salesOwnerName(r))).forEach(r=>{
-   const owner=salesOwnerName(r),month=Math.max(1,Math.min(12,Number(r.sales_month)||0));if(!month)return;
-   const amount=salesAmount(r),count=1;
-   const m=monthMap.get(month),d=ensureDetail(month,owner),s=summaryMap.get(owner);
-   m.written+=amount;m.writtenCount+=count;d.written+=amount;d.writtenCount+=count;if(s){s.written+=amount;s.writtenCount+=count}
+   const writtenAmount=salesNumber(a.written_amount),writtenCount=Math.max(0,Math.round(salesNumber(a.written_count)));
+   const m=monthMap.get(month),d=ensureDetail(month,owner),sum=summaryMap.get(owner);
+   m.allocated+=amount;m.allocatedCount+=count;m.written+=writtenAmount;m.writtenCount+=writtenCount;
+   d.allocated+=amount;d.allocatedCount+=count;d.written+=writtenAmount;d.writtenCount+=writtenCount;
+   if(sum){sum.allocated+=amount;sum.allocatedCount+=count;sum.written+=writtenAmount;sum.writtenCount+=writtenCount}
  });
  const detailRows=[...detailMap.values()].sort((a,b)=>a.month-b.month||a.owner.localeCompare(b.owner,'ko'));
  const summaryRows=[...summaryMap.values()].filter(x=>x.allocated||x.written||x.allocatedCount||x.writtenCount).sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
@@ -1483,11 +1480,15 @@ function renderSalesMonthlyOverview(){
 function salesDashboardAggregates(){
  const year=$('salesDashYear')?.value||'',month=$('salesDashMonth')?.value||'';
  const selected=new Set(salesDashboardOwners),map=new Map([...selected].map(o=>[o,{owner:o,allocated:0,written:0,allocatedCount:0,writtenCount:0}]));
- const writtenRows=salesRows.filter(r=>salesReportCompleted(r)&&String(r.sales_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(r.sales_month)===Number(month))&&selected.has(salesOwnerName(r)));
- writtenRows.forEach(r=>{const owner=salesOwnerName(r),a=map.get(owner);if(!a)return;a.written+=salesAmount(r);a.writtenCount+=1});
- salesAssignedRows.filter(a=>String(a.allocation_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(a.allocation_month)===Number(month))&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{const item=map.get(String(a.owner_name||'').trim());if(!item)return;item.allocated+=salesNumber(a.allocation_amount);item.allocatedCount+=Math.max(0,Math.round(salesNumber(a.assigned_count)))});
+ salesAssignedRows.filter(a=>String(a.allocation_year)===String(year)&&(salesDashboardPeriod==='annual'||Number(a.allocation_month)===Number(month))&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{
+  const item=map.get(String(a.owner_name||'').trim());if(!item)return;
+  item.allocated+=salesNumber(a.allocation_amount);
+  item.allocatedCount+=Math.max(0,Math.round(salesNumber(a.assigned_count)));
+  item.written+=salesNumber(a.written_amount);
+  item.writtenCount+=Math.max(0,Math.round(salesNumber(a.written_count)));
+ });
  const items=[...map.values()].sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
- return{year,month,writtenRows,items,totalWritten:items.reduce((n,x)=>n+x.written,0),totalAllocated:items.reduce((n,x)=>n+x.allocated,0),totalWrittenCount:items.reduce((n,x)=>n+x.writtenCount,0),totalAllocatedCount:items.reduce((n,x)=>n+x.allocatedCount,0)};
+ return{year,month,writtenRows:[],items,totalWritten:items.reduce((n,x)=>n+x.written,0),totalAllocated:items.reduce((n,x)=>n+x.allocated,0),totalWrittenCount:items.reduce((n,x)=>n+x.writtenCount,0),totalAllocatedCount:items.reduce((n,x)=>n+x.allocatedCount,0)};
 }
 function renderSalesDashboard(){
  if(!salesDashboardInitialized)return;
@@ -1497,7 +1498,7 @@ function renderSalesDashboard(){
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
  const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),maxAmount=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written])),maxCount=Math.max(0,...d.items.flatMap(x=>[x.allocatedCount,x.writtenCount]));
- kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 접수일자 연·월 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
+ kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>접수월과 완료월이 다르면 다음 달로 할당 이월</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
  $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 할당·작성 매출액 및 건수`;
  chart.innerHTML=d.items.map(x=>{
   const ap=maxAmount>0?Math.max(x.allocated>0?1:0,Math.round(x.allocated/maxAmount*1000)/10):0,wp=maxAmount>0?Math.max(x.written>0?1:0,Math.round(x.written/maxAmount*1000)/10):0;
@@ -1516,7 +1517,7 @@ async function loadSales(force=false){
  if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){renderSales();return}
  if(salesLoadPromise&&!force)return salesLoadPromise;
  salesLoadPromise=(async()=>{try{
-  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
+  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count,written_amount,written_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
   salesRows=salesData.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesAssignedRows=allocationData||[];salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
  }catch(e){alert('매출 자료 조회 오류: '+e.message)}finally{salesLoadPromise=null}})();
  return salesLoadPromise;
