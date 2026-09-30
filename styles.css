@@ -690,3 +690,13 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .salesPanelAdminActions button{white-space:nowrap}
 @media(max-width:800px){.salesPanelHeadLeft{flex-direction:column;align-items:stretch;width:100%}.salesPanelAdminActions{display:grid;grid-template-columns:1fr 1fr;width:100%}.salesPanelAdminActions button{width:100%}}
 @media print{.salesPanelAdminActions{display:none!important}}
+
+
+/* V70 PC 상세 매출 목록 헤더 한 줄 정렬 */
+@media(min-width:801px){
+  .salesPanelHead{align-items:center!important;justify-content:space-between!important;gap:16px!important}
+  .salesPanelHeadLeft{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:12px!important;min-width:0!important;flex:1 1 auto!important}
+  .salesPanelHeadLeft .salesPanelToggle{flex:0 0 auto!important}
+  .salesPanelHeadLeft .salesPanelHint{flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;text-align:left!important;line-height:1.4!important}
+  .salesPanelAdminActions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;margin-left:auto!important;flex:0 0 auto!important}
+}
