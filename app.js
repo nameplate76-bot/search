@@ -5,12 +5,12 @@ const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g
 const labels=schema.fields.map(x=>x.label), financialCols=new Set(schema.financial_cols||[46,47,48,49,50,51,52]);
 const dateCols=new Set([8,18,22,23,26,27,28,29,30,32,40,44,45]);
 // 화면에서는 제거하지만 원본 DB/엑셀의 열 위치는 유지합니다.
-// 20(문서작성 진행월)은 매출 할당 월 계산의 핵심 참조값이므로 삭제하지 않고 짧은 이름으로 유지합니다.
-const HIDDEN_UI_FIELD_COLS=new Set([18,30,82,110]);
+// 20(문서작성 진행월)은 더 이상 매출 집계에 사용하지 않으며 화면/엑셀에서 숨김 처리합니다.
+const HIDDEN_UI_FIELD_COLS=new Set([18,20,30,82,110]);
 const COMPACT_FIELD_LABELS={
   3:'점검표(매)',
   10:'성능점검 계약(회)',11:'성능점검 진행(회)',12:'유지관리 계약(회)',13:'유지관리 진행(회)',14:'유지관리자 선임 계약 여부',15:'월점검 계약(회)',
-  19:'문서작성 담당자',20:'작성 진행월',21:'문서작성 완료(월)',22:'제본요청일자',23:'제본입고일자',
+  19:'문서작성 담당자',21:'문서작성 완료(월)',22:'제본요청일자',23:'제본입고일자',
   25:'점검구분',26:'황화일 접수일자',27:'전자파일 접수일자',28:'점검 시작일자',29:'점검 종료일자',
   32:'보고서 작성 완료일자',33:'보고서 관련 메모',34:'제출/유지관리 매뉴얼(부)',35:'제출/계획서(부)',36:'제출/현황표(부)',37:'제출/점검표(부)',38:'제출/보고서(부)',39:'제출/USB(개)',40:'메일 발송일자',
   44:'계약 시작일자',45:'계약 종료일자',46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'문서작성 매출 (VAT 별도)'
@@ -212,7 +212,7 @@ function installTableColumnResize(table,tableName){
  table.classList.add('columnResizeEnabled');applyTableWidth();
 }
 function ownerParts(raw){raw=String(raw||'').trim();const m=raw.match(/^(20\d{2}|\d{2})(.*)$/);if(!m)return{year:null,owner:raw};let y=Number(m[1]);if(y<100)y+=2000;return{year:y,owner:m[2].trim()||raw}}
-function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20]||vals[19])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}
+function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}
 function splitContact(raw){
  raw=String(raw||'').trim();
  const em=raw.match(/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/);
@@ -429,7 +429,7 @@ function showPage(name,save=true){
  if(name==='unwritten')loadUnwrittenDashboard(false);
  if(name==='sales'){applySalesPanelCollapsed(readSalesPanelCollapsed());loadSales(false);}
  if(name==='users')loadUsers(false);
- requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v72');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
+ requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v73');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
 }
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
@@ -717,7 +717,7 @@ function renderSites(){
    root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.siteEdit))});
    bindSiteSelectionControls(root,visible);
    const siteTable=root.querySelector('.desktopSiteTable');bindSiteFreezeControls(root,siteTable);
-   scheduleTableColumnResize(siteTable,'search-v72');setTimeout(()=>scheduleSiteFreezeLayout(siteTable),80);
+   scheduleTableColumnResize(siteTable,'search-v73');setTimeout(()=>scheduleSiteFreezeLayout(siteTable),80);
    return;
  }
  const visible=lastSites.slice(0,600);
@@ -1497,7 +1497,7 @@ function renderSalesDashboard(){
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
  const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),maxAmount=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written])),maxCount=Math.max(0,...d.items.flatMap(x=>[x.allocatedCount,x.writtenCount]));
- kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 연도 + 작성 진행월 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
+ kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 접수일자 연·월 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
  $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 할당·작성 매출액 및 건수`;
  chart.innerHTML=d.items.map(x=>{
   const ap=maxAmount>0?Math.max(x.allocated>0?1:0,Math.round(x.allocated/maxAmount*1000)/10):0,wp=maxAmount>0?Math.max(x.written>0?1:0,Math.round(x.written/maxAmount*1000)/10):0;
@@ -1622,12 +1622,12 @@ async function exportAllSites(){
   const ws=XLSX.utils.aoa_to_sheet(aoa);
   ws['!cols']=headers.map((h,i)=>({
     wch:i===3?32:i===headers.length-4?45:Math.min(24,Math.max(9,String(h).length+2)),
-    hidden:[17,29,81,109].includes(i)
+    hidden:[17,19,29,81,109].includes(i)
   }));
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(headers.length-1)}${aoa.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'전체 현장정보');
   const now=new Date(),pad=n=>String(n).padStart(2,'0'),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','DB 호환을 위해 137개 원본 열 위치는 유지합니다. 화면에서 삭제한 시스템/중복 항목은 숨김 열로 보존하며, 표시 이름은 짧게 정리했습니다.']];
+  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','DB 호환을 위해 137개 원본 열 위치는 유지합니다. 계약만료일·문서작성 진행월·현장점검 종료 등 화면에서 삭제한 항목은 숨김 열로 보존하며, 표시 이름은 짧게 정리했습니다.']];
   const infoWs=XLSX.utils.aoa_to_sheet(info);infoWs['!cols']=[{wch:18},{wch:70}];XLSX.utils.book_append_sheet(wb,infoWs,'내려받기 정보');
   XLSX.writeFile(wb,`사내현장정보_전체_${stamp}.xlsx`,{compression:true});
  }catch(e){alert('전체 엑셀 내려받기 실패\n\n'+(e?.message||e));}
