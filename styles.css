@@ -700,3 +700,27 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   .salesPanelHeadLeft .salesPanelHint{flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;text-align:left!important;line-height:1.4!important}
   .salesPanelAdminActions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;margin-left:auto!important;flex:0 0 auto!important}
 }
+
+
+/* V72 현장정보 항목명 간소화 및 공간 최적화 */
+.siteField select{width:100%;min-width:0;height:42px;border:1px solid #cfd7e5;border-radius:9px;padding:8px 10px;background:#fff;color:var(--text)}
+.siteField select:focus{outline:2px solid #bfdbfe;border-color:#60a5fa}
+@media(min-width:1201px){
+  .siteEditDlg{width:min(1320px,97vw)}
+  .siteEditFields:not(.quantityGrid){grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .detailGrid:not(.quantityGrid){grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+}
+@media(min-width:801px) and (max-width:1200px){
+  .siteEditFields:not(.quantityGrid){grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .detailGrid:not(.quantityGrid){grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+}
+@media(min-width:801px){
+  .siteEditFields:not(.quantityGrid) .siteField>span{font-size:11px;min-height:16px;white-space:normal}
+  .siteEditFields:not(.quantityGrid) .siteField input,.siteEditFields:not(.quantityGrid) .siteField select{height:40px;padding-top:8px;padding-bottom:8px}
+  .detailGrid:not(.quantityGrid) .detailItem{padding:8px}
+  .detailGrid:not(.quantityGrid) .detailItem span{font-size:11px}
+}
+@media(max-width:800px){
+  .siteField select{height:42px}
+  .siteEditFields:not(.quantityGrid) .siteField>span{font-size:11px;line-height:1.25}
+}

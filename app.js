@@ -4,6 +4,17 @@ const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSes
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
 const labels=schema.fields.map(x=>x.label), financialCols=new Set(schema.financial_cols||[46,47,48,49,50,51,52]);
 const dateCols=new Set([8,18,22,23,26,27,28,29,30,32,40,44,45]);
+// 화면에서는 제거하지만 원본 DB/엑셀의 열 위치는 유지합니다.
+// 20(문서작성 진행월)은 매출 할당 월 계산의 핵심 참조값이므로 삭제하지 않고 짧은 이름으로 유지합니다.
+const HIDDEN_UI_FIELD_COLS=new Set([18,30,82,110]);
+const COMPACT_FIELD_LABELS={
+  3:'점검표(매)',
+  10:'성능점검 계약(회)',11:'성능점검 진행(회)',12:'유지관리 계약(회)',13:'유지관리 진행(회)',14:'유지관리자 선임 계약 여부',15:'월점검 계약(회)',
+  19:'문서작성 담당자',20:'작성 진행월',21:'문서작성 완료(월)',22:'제본요청일자',23:'제본입고일자',
+  25:'점검구분',26:'황화일 접수일자',27:'전자파일 접수일자',28:'점검 시작일자',29:'점검 종료일자',
+  32:'보고서 작성 완료일자',33:'보고서 관련 메모',34:'제출/유지관리 매뉴얼(부)',35:'제출/계획서(부)',36:'제출/현황표(부)',37:'제출/점검표(부)',38:'제출/보고서(부)',39:'제출/USB(개)',40:'메일 발송일자',
+  44:'계약 시작일자',45:'계약 종료일자',46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'문서작성 매출 (VAT 별도)'
+};
 let me=null,currentFilter='all',lastSites=[],salesRows=[],salesImported=false;
 let salesAssignedRows=[];
 let selectedUserIds=new Set();
@@ -26,7 +37,7 @@ function activePageName(){return document.querySelector('.page.active')?.id?.rep
 async function refreshActiveData(force=false){const name=activePageName();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force)}
 const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료'];
 let displayFields=[...DEFAULT_DISPLAY_FIELDS];
-function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&String(f.label||'').trim())}
+function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim())}
 function sanitizeDisplayFields(list){const allowed=new Set(selectableDisplayFields().map(f=>f.label));return [...new Set((Array.isArray(list)?list:[]).map(String).filter(x=>allowed.has(x)))]}
 function displayFieldStorageKey(){return `staff_display_fields:${me?.id||'guest'}`}
 function applyDisplayFieldPreference(profile){
@@ -418,7 +429,7 @@ function showPage(name,save=true){
  if(name==='unwritten')loadUnwrittenDashboard(false);
  if(name==='sales'){applySalesPanelCollapsed(readSalesPanelCollapsed());loadSales(false);}
  if(name==='users')loadUsers(false);
- requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
+ requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v72');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
 }
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
@@ -567,7 +578,7 @@ function siteListColumn(key){
  if(key==='no'||key==='actions')return SITE_LIST_SPECIAL_COLUMNS[key];
  if(String(key).startsWith('field_')){
   const col=Number(String(key).slice(6)),field=schema.fields.find(f=>Number(f.col)===col);
-  if(field)return{key,label:field.label,sortable:true,field};
+  if(field)return{key,label:siteCompactFieldLabel(field,'search'),sortable:true,field};
  }
  return SITE_LIST_SPECIAL_COLUMNS.no;
 }
@@ -706,7 +717,7 @@ function renderSites(){
    root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.siteEdit))});
    bindSiteSelectionControls(root,visible);
    const siteTable=root.querySelector('.desktopSiteTable');bindSiteFreezeControls(root,siteTable);
-   scheduleTableColumnResize(siteTable,'search');setTimeout(()=>scheduleSiteFreezeLayout(siteTable),80);
+   scheduleTableColumnResize(siteTable,'search-v72');setTimeout(()=>scheduleSiteFreezeLayout(siteTable),80);
    return;
  }
  const visible=lastSites.slice(0,600);
@@ -731,9 +742,34 @@ async function ensureFullSiteRow(id,row=null){
  const ix=lastSites.findIndex(x=>Number(x.source_id)===Number(id));if(ix>=0)lastSites[ix]=merged;
  return merged;
 }
-function siteMoneyFieldLabel(f){return ({46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'금액 (VAT 별도)',51:'제본비',52:'매출액 대비 제본비 비율'})[Number(f?.col)]||f?.label||''}
+function siteMoneyFieldLabel(f){return ({46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'문서작성 매출 (VAT 별도)',51:'제본비',52:'매출액 대비 제본비 비율'})[Number(f?.col)]||f?.label||''}
 function siteQuantityEquipmentLabel(f){const col=Number(f?.col||0),label=String(f?.label||'').trim();if(!((col>=55&&col<=81)||(col>=83&&col<=109)||(col>=111&&col<=137)))return label;let name=(label.includes('>')?label.split('>').pop():label).trim();name=name.replace(/\s+(?:[A-Z]{1,2}|[ㄱ-ㅎㅏ-ㅣ가-힣])$/u,'').trim();if(name==='펌프(냉난방)')name='펌프';return name}
-function siteDisplayFieldLabel(f){return f?.financial?siteMoneyFieldLabel(f):siteQuantityEquipmentLabel(f)}
+function siteCompactFieldLabel(f,mode='detail'){
+ const col=Number(f?.col||0),raw=String(f?.label||'').trim();
+ if(f?.financial)return siteMoneyFieldLabel(f);
+ const isMaintain=col>=55&&col<=81,isTarget=col>=83&&col<=109,isConfirmed=col>=111&&col<=137;
+ if(isMaintain||isTarget||isConfirmed){
+  const equipment=siteQuantityEquipmentLabel(f);
+  if(mode==='detail')return equipment;
+  if(isMaintain)return `유지관리/${equipment}`;
+  if(isTarget)return `점검대상/${equipment}`;
+  return `점검수량/${equipment}`;
+ }
+ return COMPACT_FIELD_LABELS[col]||raw;
+}
+function siteDisplayFieldLabel(f){return siteCompactFieldLabel(f,'detail')}
+function siteExportFieldLabel(f){return siteCompactFieldLabel(f,'export')}
+function siteDateInputValue(v){
+ const s=String(v??'').trim();if(!s)return'';
+ if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+ let m=s.match(/^(\d{4})[.\/]\s*(\d{1,2})[.\/]\s*(\d{1,2})/);if(m)return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+ m=s.match(/^(\d{2})[.\-/]\s*(\d{1,2})[.\-/]\s*(\d{1,2})/);if(m)return `${2000+Number(m[1])}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+ return'';
+}
+function maintenanceManagerSelectOptions(v){
+ const cur=String(v??'').trim(),base=['','O','X'],vals=base.includes(cur)?base:[...base,cur];
+ return vals.map(x=>`<option value="${esc(x)}" ${x===cur?'selected':''}>${x===''?'선택 안 함':(x===cur&&!base.includes(cur)?`기존값: ${esc(x)}`:esc(x))}</option>`).join('');
+}
 function siteMoneyDisplay(v,col){
  const c=Number(col),raw=String(v??'').trim().replace(/,/g,'');if(!raw)return '-';const n=Number(raw);if(!Number.isFinite(n))return String(v);
  if(c===52){const pct=Math.abs(n)<=1?n*100:n;return pct.toLocaleString('ko-KR',{maximumFractionDigits:4})+'%'}
@@ -798,13 +834,13 @@ function syncPerformanceConfirmed(targetCol,force=false){const rule=PERFORMANCE_
 function seedPerformanceConfirmedBlanks(){Object.entries(PERFORMANCE_CONFIRM_RULES).forEach(([target,rule])=>{if(String(siteEditValues[rule.confirmedCol-1]??'').trim()==='')syncPerformanceConfirmed(Number(target),true)})}
 function resetPerformanceConfirmedToAuto(confirmedCol){const meta=PERFORMANCE_CONFIRM_BY_COL[Number(confirmedCol)];if(!meta)return;sitePerformanceManualCols.delete(Number(confirmedCol));syncPerformanceConfirmed(meta.targetCol,true)}
 const groups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
-async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
+async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('');const render=i=>{const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');const editBar=canEditSite()?`<div class="detailEditBar"><button class="primary smallBtn" data-detail-site-edit="${r.source_id}">현장 정보 수정</button></div>`:'';$('detailBody').innerHTML=editBar+(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const eb=$('detailBody').querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
 const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
 let siteNameSuggestTimer=null,siteNameSuggestRequest=0,siteNameSuggestions=[];
 let siteTemplateSearchRequest=0,siteTemplateSearchRows=[];
-function siteFieldAllowed(f){if(!f?.label?.trim())return false;if(f.label==='관리주체 연락처/이메일')return false;if(f.financial){if(siteEditMode==='create')return canCreateMoney();return canEditMoney()}return true}
+function siteFieldAllowed(f){if(!f?.label?.trim())return false;if(HIDDEN_UI_FIELD_COLS.has(Number(f.col)))return false;if(f.label==='관리주체 연락처/이메일')return false;if(f.financial){if(siteEditMode==='create')return canCreateMoney();return canEditMoney()}return true}
 function siteInputType(col){return dateCols.has(col)?'date':'text'}
 function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
 function renderSiteEditFields(){
@@ -816,15 +852,16 @@ function renderSiteEditFields(){
  fieldsRoot.dataset.groupName=g?.[0]||'';
  fieldsRoot.innerHTML=fields.map(f=>{
   if(f.col===17){const derived=regionFromAddress(siteDraftAddress());if(derived)siteEditValues[16]=derived;const v=siteEditValues[16]??'',locked=!!derived;return `<label class="siteField"><span>지역</span><input data-site-col="17" type="text" value="${esc(v)}"${locked?' readonly aria-readonly="true"':''}><small class="fieldHelp" data-region-help>${locked?`주소 기준 자동 지역: ${esc(derived)}`:'주소가 없는 경우에만 지역을 직접 입력할 수 있습니다.'}</small></label>`}
-  const v=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),req=f.col===4?' required':'',fin=f.financial?' financialField':'';
+  const rawValue=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),v=dateCols.has(Number(f.col))?siteDateInputValue(rawValue)||rawValue:rawValue,req=f.col===4?' required':'',fin=f.financial?' financialField':'';
   if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
   if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(siteDisplayFieldLabel(f))} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장을 선택하면 S/N을 포함한 등록정보를 복사합니다. 복사 후 원하는 항목을 수정해 새 현장으로 저장할 수 있습니다.</small></label>`;
-  let help='';if(f.col===29)help='<small class="fieldHelp">계획 종료 날짜를 입력하면 현장점검 종료에도 같은 날짜가 자동 입력됩니다.</small>';else if(f.col===30)help='<small class="fieldHelp">현장점검 계획 종료일이 입력된 경우 같은 날짜로 자동 연동됩니다.</small>';
+  if(f.col===14)return `<label class="siteField"><span>${esc(siteDisplayFieldLabel(f))}</span><select data-site-col="14" aria-label="${esc(siteDisplayFieldLabel(f))}">${maintenanceManagerSelectOptions(siteEditValues[13])}</select><small class="fieldHelp">O / X / 공란 중 선택합니다.</small></label>`;
+  let help='';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
-  return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}</label>`;
+  return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
@@ -995,7 +1032,7 @@ const UNWRITTEN_LIST_COLUMNS={
  field_inspector:{key:'field_inspector',label:'현장점검원',sortable:true},
  actions:{key:'actions',label:'관리',sortable:false}
 };
-const UNWRITTEN_SELECTABLE_KEYS=['site_name','important','expiry','elapsed','corporation','inspection_type','receipt','field_end','field_inspector'];
+const UNWRITTEN_SELECTABLE_KEYS=['site_name','important','elapsed','corporation','inspection_type','receipt','field_end','field_inspector'];
 const UNWRITTEN_DEFAULT_FIELDS=[...UNWRITTEN_SELECTABLE_KEYS];
 function sanitizeUnwrittenDisplayFields(list){
  const allowed=new Set(UNWRITTEN_SELECTABLE_KEYS);
@@ -1009,7 +1046,7 @@ function applyUnwrittenDisplayFieldPreference(profile){
  try{localStorage.setItem(unwrittenDisplayStorageKey(),JSON.stringify(unwrittenDisplayFields))}catch(e){}
  unwrittenColumnOrder=[];
 }
-const UNWRITTEN_DEFAULT_ORDER=['no','site_name','important','expiry','elapsed','corporation','inspection_type','receipt','field_end','field_inspector','actions'];
+const UNWRITTEN_DEFAULT_ORDER=['no','site_name','important','elapsed','corporation','inspection_type','receipt','field_end','field_inspector','actions'];
 let unwrittenColumnOrder=[];
 let unwrittenSort={key:null,dir:'asc'};
 let suppressUnwrittenSortClick=false;
@@ -1228,7 +1265,7 @@ async function saveUnwrittenFields(){const chosen=sanitizeUnwrittenDisplayFields
 
 function updateFieldSelectionCount(){const total=$('fieldList').querySelectorAll('input[type=checkbox]').length,selected=$('fieldList').querySelectorAll('input[type=checkbox]:checked').length;$('fieldSelectionCount').textContent=`${selected} / ${total}개 선택`}
 function setFieldChecks(mode){const boxes=[...$('fieldList').querySelectorAll('input[type=checkbox]')];if(mode==='all')boxes.forEach(x=>x.checked=true);else if(mode==='none')boxes.forEach(x=>x.checked=false);else{const defs=new Set(DEFAULT_DISPLAY_FIELDS);boxes.forEach(x=>x.checked=defs.has(x.value))}updateFieldSelectionCount()}
-function setupFields(){const safe=selectableDisplayFields();$('fieldList').innerHTML=safe.map(f=>`<label><input type="checkbox" value="${esc(f.label)}" ${displayFields.includes(f.label)?'checked':''}>${esc(f.label)}</label>`).join('');$('fieldList').querySelectorAll('input[type=checkbox]').forEach(x=>x.onchange=updateFieldSelectionCount);updateFieldSelectionCount();$('fieldsDlg').showModal()}
+function setupFields(){const safe=selectableDisplayFields();$('fieldList').innerHTML=safe.map(f=>`<label><input type="checkbox" value="${esc(f.label)}" ${displayFields.includes(f.label)?'checked':''}>${esc(siteCompactFieldLabel(f,'search'))}</label>`).join('');$('fieldList').querySelectorAll('input[type=checkbox]').forEach(x=>x.onchange=updateFieldSelectionCount);updateFieldSelectionCount();$('fieldsDlg').showModal()}
 async function saveFields(){
  const chosen=sanitizeDisplayFields([...$('fieldList').querySelectorAll('input:checked')].map(x=>x.value));
  if(!chosen.length)return alert('검색 결과에 표시할 항목을 하나 이상 선택해 주세요.');
@@ -1460,7 +1497,7 @@ function renderSalesDashboard(){
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
  const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),maxAmount=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written])),maxCount=Math.max(0,...d.items.flatMap(x=>[x.allocatedCount,x.writtenCount]));
- kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 연도 + 문서작성 진행월 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
+ kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>황화일 연도 + 작성 진행월 기준</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
  $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 할당·작성 매출액 및 건수`;
  chart.innerHTML=d.items.map(x=>{
   const ap=maxAmount>0?Math.max(x.allocated>0?1:0,Math.round(x.allocated/maxAmount*1000)/10):0,wp=maxAmount>0?Math.max(x.written>0?1:0,Math.round(x.written/maxAmount*1000)/10):0;
@@ -1574,7 +1611,7 @@ async function exportAllSites(){
   const rows=await fetchPaged('staff_site_source','id,excel_row,source_file,site_name,client_phone,client_email,site_address,full_values',q=>q.order('excel_row',{ascending:true}));
   if(!rows.length)return alert('내려받을 현장정보가 없습니다.');
   const extraHeaders=['관리주체 전화번호(분리)','관리주체 이메일(분리)','주소','등록구분','DB ID','원본파일'];
-  const headers=[...labels,...extraHeaders];
+  const headers=[...schema.fields.map(siteExportFieldLabel),...extraHeaders];
   const aoa=[headers];
   for(const r of rows){
     let vals=Array.isArray(r.full_values)?[...r.full_values]:Array(137).fill('');
@@ -1583,11 +1620,14 @@ async function exportAllSites(){
     aoa.push([...vals,formatPhoneList(r.client_phone||''),String(r.client_email||''),String(r.site_address||''),Number(r.excel_row)<0?'직접등록':'Excel/DB',r.id,String(r.source_file||'')]);
   }
   const ws=XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols']=headers.map((h,i)=>({wch:i===3?32:i===headers.length-4?45:Math.min(28,Math.max(10,String(h).length+2))}));
+  ws['!cols']=headers.map((h,i)=>({
+    wch:i===3?32:i===headers.length-4?45:Math.min(24,Math.max(9,String(h).length+2)),
+    hidden:[17,29,81,109].includes(i)
+  }));
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(headers.length-1)}${aoa.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'전체 현장정보');
   const now=new Date(),pad=n=>String(n).padStart(2,'0'),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','DB에 등록된 전체 현장정보(137개 원본 항목 + 분리 연락처·주소)를 포함합니다.']];
+  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','DB 호환을 위해 137개 원본 열 위치는 유지합니다. 화면에서 삭제한 시스템/중복 항목은 숨김 열로 보존하며, 표시 이름은 짧게 정리했습니다.']];
   const infoWs=XLSX.utils.aoa_to_sheet(info);infoWs['!cols']=[{wch:18},{wch:70}];XLSX.utils.book_append_sheet(wb,infoWs,'내려받기 정보');
   XLSX.writeFile(wb,`사내현장정보_전체_${stamp}.xlsx`,{compression:true});
  }catch(e){alert('전체 엑셀 내려받기 실패\n\n'+(e?.message||e));}
