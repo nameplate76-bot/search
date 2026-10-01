@@ -792,6 +792,31 @@ function siteFinancialRawInput(v,col){
  return v;
 }
 function siteMoneyNumber(v){const raw=String(v??'').trim().replace(/[,원\s]/g,'');if(raw==='')return null;const n=Number(raw);return Number.isFinite(n)?n:null}
+function calculatedInspectionType(){
+ const hasCount=col=>{const raw=String(siteEditValues[col-1]??'').trim().replace(/,/g,'');return raw!==''&&Number.isFinite(Number(raw))};
+ const performance=hasCount(10),maintenance=hasCount(12),manager=String(siteEditValues[13]??'').trim()!=='';
+ if(performance&&maintenance&&manager)return '성능+유지+유지선임';
+ if(performance&&maintenance)return '성능 + 유지';
+ return [performance?'성능':'',maintenance?'유지':'',manager?'유지 선임':''].filter(Boolean).join(' + ');
+}
+function syncInspectionType(updateInput=true){
+ const value=calculatedInspectionType();siteEditValues[24]=value;
+ if(updateInput){const input=$('siteEditFields')?.querySelector('[data-site-col="25"]');if(input)input.value=value}
+ return value;
+}
+function calculatedContractAmount(){
+ const values=[45,46,47].map(index=>siteEditValues[index]);
+ if(values.every(value=>String(value??'').trim()===''))return '';
+ const numbers=values.map(value=>String(value??'').trim()===''?0:siteMoneyNumber(value));
+ if(numbers.some(value=>value===null))return '';
+ const total=numbers.reduce((sum,value)=>sum+value,0);return Number.isFinite(total)?String(Math.round((total+Number.EPSILON)*100)/100):'';
+}
+function syncContractAmount(updateInput=true){
+ if(!(siteEditMode==='create'?canCreateMoney():canEditMoney()))return siteEditValues[48]??'';
+ const value=calculatedContractAmount();siteEditValues[48]=value;
+ if(updateInput){const input=$('siteEditFields')?.querySelector('[data-site-col="49"]');if(input)input.value=siteMoneyInput(value,49)}
+ return value;
+}
 function calculatedBindingRatio(){const amount=siteMoneyNumber(siteEditValues[49]),binding=siteMoneyNumber(siteEditValues[50]);if(amount===null||amount===0||binding===null)return '';return String(binding/amount)}
 function syncBindingRatioFromAmounts(updateInput=true){const ratio=calculatedBindingRatio();siteEditValues[51]=ratio;if(updateInput){const inp=$('siteEditFields')?.querySelector('[data-site-col="52"]');if(inp)inp.value=siteMoneyInput(ratio,52)}return ratio}
 function regionFromAddress(address){
@@ -818,7 +843,7 @@ function syncElectronicReceiptFromYellowFile(value){
  if(input)input.value=siteDateInputValue(siteEditValues[26])||'';
 }
 // 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
-const SITE_TEMPLATE_CLEAR_COLS=[21,22,23,26,27,28,29,30,31,32,33,50,51,52];
+const SITE_TEMPLATE_CLEAR_COLS=[2,3,16,19,21,22,23,26,27,28,29,30,31,32,33,50,51,52];
 function clearSiteTemplateWorkValues(){
  SITE_TEMPLATE_CLEAR_COLS.forEach(col=>{siteEditValues[col-1]=''});
 }
@@ -917,6 +942,7 @@ function siteFieldAllowed(f){if(!f?.label?.trim())return false;if(HIDDEN_UI_FIEL
 function siteInputType(col){return dateCols.has(col)?'date':'text'}
 function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
 function renderSiteEditFields(){
+ syncInspectionType(false);syncContractAmount(false);
  const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];
  const fields=siteFieldsForGroup(g).filter(siteFieldAllowed);
  const fieldsRoot=$('siteEditFields');
@@ -930,6 +956,7 @@ function renderSiteEditFields(){
   if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(siteDisplayFieldLabel(f))} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장정보를 복사하되 접수·점검·작성·제본 이력과 문서작성 매출은 비워 둡니다. 새 업무 내용을 입력해 등록하세요.</small></label>`;
   if(f.col===14)return `<label class="siteField"><span>${esc(siteDisplayFieldLabel(f))}</span><select data-site-col="14" aria-label="${esc(siteDisplayFieldLabel(f))}">${maintenanceManagerSelectOptions(siteEditValues[13])}</select><small class="fieldHelp">O / X / 공란 중 선택합니다.</small></label>`;
   let help=f.col===26?'<small class="fieldHelp">입력하거나 변경하면 전자파일 접수일자에 같은 날짜가 자동 입력됩니다.</small>':'';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
+  if(f.col===25||f.col===49){const help=f.col===25?'계약 횟수와 선임 계약 여부 기준 자동입력':'성능점검 + 유지점검 + 유지관리자 선임 금액 자동합계';return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="${f.col}" type="text" value="${esc(v)}" readonly aria-readonly="true"><small class="fieldHelp">${help}</small></label>`}
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
@@ -939,6 +966,8 @@ function renderSiteEditFields(){
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
   siteEditValues[col-1]=inp.value;
+  if([10,12,14].includes(col))syncInspectionType(true);
+  if([46,47,48].includes(col))syncContractAmount(true);
   if(col===26)syncElectronicReceiptFromYellowFile(inp.value);
   if(col===50||col===51)syncBindingRatioFromAmounts(true);
   if(PERFORMANCE_CONFIRM_BY_COL[col])sitePerformanceManualCols.add(col);
@@ -946,7 +975,7 @@ function renderSiteEditFields(){
   if(col===29){if(inp.value)siteEditValues[29]=inp.value;else if(String(siteEditValues[29]??'')===before)siteEditValues[29]='';syncFieldEndFromPlan()}
   if(siteEditMode==='create'&&col===4)scheduleSiteNameSuggestions(inp.value);
  });
- $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if(col===50||col===51)syncBindingRatioFromAmounts(true)});
+ $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if([46,47,48].includes(col))syncContractAmount(true);if(col===50||col===51)syncBindingRatioFromAmounts(true)});
  $('siteEditFields').querySelectorAll('[data-performance-auto]').forEach(btn=>btn.onclick=()=>{const col=Number(btn.dataset.performanceAuto);resetPerformanceConfirmedToAuto(col);renderSiteEditFields()});
  const nextBtn=$('applyNextSnBtn');if(nextBtn)nextBtn.onclick=()=>applyNextSiteSn(true);
  const nameInput=$('siteNameLookupInput');if(nameInput){nameInput.onfocus=()=>{if(String(nameInput.value||'').trim())scheduleSiteNameSuggestions(nameInput.value,true)};nameInput.onblur=()=>setTimeout(hideSiteNameSuggestions,180)}
@@ -1042,7 +1071,7 @@ function searchSiteAddress(){const q=String($('siteAddressQuery').value||'').tri
 function resetSiteEditor(){siteEditValues=Array(137).fill('');sitePerformanceManualCols.clear();siteEditRow=null;siteEditGroupIndex=0;$('siteEditSourceId').value='';$('siteFormPhone').value='';$('siteFormEmail').value='';$('siteFormAddress').value='';$('siteFormAddressDetail').value='';$('siteAddressQuery').value='';resetSiteTemplateSearch();setSiteAddressMode('search');notify($('siteAddressMsg'),'검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.',true);notify($('siteEditMsg'),'')}
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal();setTimeout(()=>{$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';resetSiteEditor();siteEditRow=r;$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
-function sitePayload(){syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
+function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  setTimeout(()=>{$('siteEditDlg').close()},350);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
