@@ -16,6 +16,8 @@ const COMPACT_FIELD_LABELS={
   44:'계약 시작일자',45:'계약 종료일자',46:'성능점검 (VAT 별도)',47:'유지점검 (VAT 별도)',48:'유지관리자 선임 (VAT 별도)',49:'계약금액 (VAT 별도)',50:'문서작성 매출 (VAT 별도)'
 };
 let me=null,currentFilter='all',lastSites=[],salesRows=[],salesImported=false;
+let salesListSort={key:null,dir:'asc'},salesListColumnOrder=[];
+let salesFreezeSelectMode=false,salesFreezeLayoutFrame=0,suppressSalesSortClick=false;
 let salesAssignedRows=[];
 let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
@@ -161,6 +163,8 @@ function saveTableColumnWidths(tableName,widths){try{localStorage.setItem(tableC
 function cleanResizableTableClone(table){
  const clone=table.cloneNode(true);clone.classList.remove('columnResizeEnabled');clone.removeAttribute('style');
  clone.querySelectorAll('.columnResizer').forEach(x=>x.remove());
+ clone.querySelectorAll('.salesFreezeCell').forEach(cell=>{cell.classList.remove('salesFreezeCell','salesFreezeCorner','salesFreezeBoundaryRight','salesFreezeBoundaryBottom');cell.style.removeProperty('left');cell.style.removeProperty('top');cell.style.removeProperty('z-index')});clone.classList.remove('salesFreezeActive','salesFreezePicking');
+ clone.querySelectorAll('th[data-sales-col-key]').forEach(th=>{const key=th.dataset.salesColKey,c=typeof SALES_LIST_COLUMNS!=='undefined'?SALES_LIST_COLUMNS[key]:null;if(c)th.innerHTML=c.label;th.classList.remove('sortActive','dragging','dragBefore','dragAfter')});
  clone.querySelectorAll('col').forEach(col=>{const original=col.dataset.originalStyle;if(original!==undefined){if(original)col.setAttribute('style',original);else col.removeAttribute('style');delete col.dataset.originalStyle}});
  return clone;
 }
@@ -203,8 +207,8 @@ function installTableColumnResize(table,tableName){
    const startX=e.clientX,startW=parseFloat(col.style.width)||rectWidth,oldDraggable=th.getAttribute('draggable');
    th.setAttribute('draggable','false');document.body.classList.add('columnResizing');handle.classList.add('active');
    try{handle.setPointerCapture(e.pointerId)}catch(err){}
-   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth();if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table)};
-   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false},80)};
+   const move=ev=>{ev.preventDefault();ev.stopPropagation();const width=Math.max(min,Math.round(startW+(ev.clientX-startX)));col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;applyTableWidth();if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table);if(table.id==='salesTable')scheduleSalesFreezeLayout(table)};
+   const up=ev=>{if(ev){ev.preventDefault();ev.stopPropagation()}window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',up,true);window.removeEventListener('pointercancel',up,true);document.body.classList.remove('columnResizing');handle.classList.remove('active');if(oldDraggable===null)th.removeAttribute('draggable');else th.setAttribute('draggable',oldDraggable);saveTableColumnWidths(tableName,resolved);if(table.classList.contains('desktopSiteTable'))scheduleSiteFreezeLayout(table);if(table.classList.contains('unwrittenTable'))scheduleUnwrittenFreezeLayout(table);if(table.id==='salesTable')scheduleSalesFreezeLayout(table);setTimeout(()=>{suppressSiteSortClick=false;suppressUnwrittenSortClick=false;suppressSalesSortClick=false},80)};
    window.addEventListener('pointermove',move,true);window.addEventListener('pointerup',up,true);window.addEventListener('pointercancel',up,true);applyTableWidth();
   });
   th.appendChild(handle);
@@ -429,7 +433,7 @@ function showPage(name,save=true){
  if(name==='unwritten')loadUnwrittenDashboard(false);
  if(name==='sales'){applySalesPanelCollapsed(readSalesPanelCollapsed());loadSales(false);}
  if(name==='users')loadUsers(false);
- requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v73');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales')scheduleTableColumnResize($('salesTable'),'sales');if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
+ requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v73');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales'){scheduleTableColumnResize($('salesTable'),'sales');scheduleSalesFreezeLayout($('salesTable'))};if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
 }
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
 async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const size=1000;for(;;){let q=sb.from(table).select(select).range(from,from+size-1);if(mutator)q=mutator(q);const{data,error}=await q;if(error)throw error;all.push(...(data||[]));if(!data||data.length<size)break;from+=size}return all}
@@ -1552,6 +1556,111 @@ function updateSalesTitleFromDashboard(){
  const m=salesDashboardPeriod==='monthly'?($('salesDashMonth')?.value||''):'all';
  updateSalesPageTitle(y,m,'all');
 }
+const SALES_LIST_KEYS=['no','site','contractType','inspector','contractAmount','managerAmount','salesAmount','remark'];
+const SALES_LIST_COLUMNS={
+ no:{label:'No.',sortable:false,width:4},
+ site:{label:'현장명',sortable:true,width:31},
+ contractType:{label:'계약 구분<br>(유지/성능/유지선임)',plain:'계약 구분',sortable:true,width:14},
+ inspector:{label:'점검참여자',sortable:true,width:14},
+ contractAmount:{label:'계약 금액<br>(VAT 별도)',plain:'계약 금액 (VAT 별도)',sortable:true,width:10},
+ managerAmount:{label:'유지관리자<br>선임비(VAT 별도)',plain:'유지관리자 선임비(VAT 별도)',sortable:true,width:10},
+ salesAmount:{label:'매출액<br>(VAT 별도)',plain:'매출액 (VAT 별도)',sortable:true,width:10},
+ remark:{label:'비고',sortable:true,width:7}
+};
+function salesListOrderStorageKey(){return `staff_sales_list_column_order:${me?.id||'guest'}`}
+function salesListSortStorageKey(){return `staff_sales_list_sort:${me?.id||'guest'}`}
+function ensureSalesListColumnOrder(){
+ let saved=[];try{saved=JSON.parse(localStorage.getItem(salesListOrderStorageKey())||'[]')}catch(e){}
+ const seen=new Set(),out=[];(Array.isArray(saved)?saved:[]).forEach(k=>{k=String(k);if(SALES_LIST_KEYS.includes(k)&&!seen.has(k)){seen.add(k);out.push(k)}});SALES_LIST_KEYS.forEach(k=>{if(!seen.has(k))out.push(k)});
+ // No.는 행 번호이므로 항상 첫 열에 유지하고 나머지 정보열만 자유롭게 이동합니다.
+ salesListColumnOrder=['no',...out.filter(k=>k!=='no')];
+ if(!salesListSort.key){try{const st=JSON.parse(localStorage.getItem(salesListSortStorageKey())||'null');if(st&&SALES_LIST_COLUMNS[st.key]?.sortable&&['asc','desc'].includes(st.dir))salesListSort=st}catch(e){}}
+ return salesListColumnOrder;
+}
+function salesListSortValue(r,key){
+ if(key==='site')return r.site_name||'';
+ if(key==='contractType')return salesContractType(r);
+ if(key==='inspector')return r.field_inspector||'';
+ if(key==='contractAmount')return salesContractAmount(r);
+ if(key==='managerAmount')return salesNumber(r.manager_amount);
+ if(key==='salesAmount')return salesAmount(r);
+ if(key==='remark')return salesRemark(r).text;
+ return '';
+}
+function sortedSalesListRows(rows){
+ if(!salesListSort.key)return rows;
+ const key=salesListSort.key,dir=salesListSort.dir==='desc'?-1:1;
+ return [...rows].sort((a,b)=>{const cmp=compareSiteListValues(salesListSortValue(a,key),salesListSortValue(b,key));if(cmp)return cmp*dir;return String(a.site_name||'').localeCompare(String(b.site_name||''),'ko')});
+}
+function toggleSalesListSort(key){
+ if(!SALES_LIST_COLUMNS[key]?.sortable)return;
+ if(salesListSort.key===key)salesListSort.dir=salesListSort.dir==='asc'?'desc':'asc';else salesListSort={key,dir:'asc'};
+ try{localStorage.setItem(salesListSortStorageKey(),JSON.stringify(salesListSort))}catch(e){}
+ renderSales();
+}
+function moveSalesListColumn(from,target,after=false){
+ ensureSalesListColumnOrder();if(!from||!target||from===target||from==='no'||target==='no')return;
+ const next=salesListColumnOrder.filter(k=>k!==from),idx=next.indexOf(target);if(idx<0)return;next.splice(idx+(after?1:0),0,from);salesListColumnOrder=['no',...next.filter(k=>k!=='no')];
+ try{localStorage.setItem(salesListOrderStorageKey(),JSON.stringify(salesListColumnOrder))}catch(e){};renderSales();
+}
+function salesListHeaderHtml(key){
+ const c=SALES_LIST_COLUMNS[key],active=salesListSort.key===key,arrow=active?(salesListSort.dir==='asc'?' ▲':' ▼'):'';
+ const movable=key!=='no';return `<th data-sales-col-key="${key}" data-col-key="${key}" data-sortable="${c.sortable?'1':'0'}" class="sales-col-${key} ${c.sortable?'sortableHeader':''} ${active?'sortActive':''}" draggable="${movable?'true':'false'}" title="${c.sortable?'클릭: 오름/내림차순 정렬 · ':''}${movable?'드래그: 열 이동':'행 번호 열'}"><span>${c.label}${arrow}</span></th>`;
+}
+function salesListCellHtml(r,key,index){
+ const remark=salesRemark(r);
+ if(key==='no')return `<td class="center sales-col-no">${index+1}</td>`;
+ if(key==='site')return `<td class="sales-col-site">${esc(r.site_name||'')}</td>`;
+ if(key==='contractType')return `<td class="center sales-col-contractType">${esc(salesContractType(r))}</td>`;
+ if(key==='inspector')return `<td class="sales-col-inspector">${esc(r.field_inspector||'-')}</td>`;
+ if(key==='contractAmount')return `<td class="num sales-col-contractAmount">${salesMoney(salesContractAmount(r))}</td>`;
+ if(key==='managerAmount')return `<td class="num sales-col-managerAmount">${salesMoney(salesNumber(r.manager_amount))}</td>`;
+ if(key==='salesAmount')return `<td class="num sales-col-salesAmount">${salesMoney(salesAmount(r))}</td>`;
+ if(key==='remark')return `<td class="sales-col-remark ${remark.done?'salesDone':''}">${esc(remark.text)}</td>`;
+ return '<td></td>';
+}
+function salesListTotalCell(key,totals){
+ if(key==='site')return '<td class="center salesTotalLabel">매출 합계</td>';
+ if(key==='contractAmount')return `<td class="num">${salesMoney(totals.contract)}</td>`;
+ if(key==='managerAmount')return `<td class="num">${salesMoney(totals.manager)}</td>`;
+ if(key==='salesAmount')return `<td class="num">${salesMoney(totals.sales)}</td>`;
+ return '<td></td>';
+}
+function bindSalesListHeaderInteractions(table){
+ if(!table)return;let dragKey=null;
+ const clear=()=>table.querySelectorAll('thead th').forEach(x=>x.classList.remove('dragging','dragBefore','dragAfter'));
+ table.querySelectorAll('thead th[data-sales-col-key]').forEach(th=>{
+  const key=th.dataset.salesColKey;
+  th.onclick=e=>{if(suppressSalesSortClick||e.target.closest('.columnResizer'))return;if(th.dataset.sortable==='1')toggleSalesListSort(key)};
+  if(key==='no')return;
+  th.ondragstart=e=>{if(e.target.closest('.columnResizer')){e.preventDefault();return}suppressSalesSortClick=true;dragKey=key;th.classList.add('dragging');try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',key)}catch(err){}};
+  th.ondragover=e=>{if(!dragKey||key==='no')return;e.preventDefault();const rect=th.getBoundingClientRect();th.classList.toggle('dragBefore',e.clientX<=rect.left+rect.width/2);th.classList.toggle('dragAfter',e.clientX>rect.left+rect.width/2)};
+  th.ondragleave=()=>th.classList.remove('dragBefore','dragAfter');
+  th.ondrop=e=>{e.preventDefault();const rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;clear();const from=dragKey;dragKey=null;setTimeout(()=>{suppressSalesSortClick=false},120);moveSalesListColumn(from,key,after)};
+  th.ondragend=()=>{clear();dragKey=null;setTimeout(()=>{suppressSalesSortClick=false},120)};
+ });
+}
+function salesFreezeStorageKey(){return `staff_sales_freeze_panes:${me?.id||'guest'}`}
+function readSalesFreezePanes(){try{const v=JSON.parse(localStorage.getItem(salesFreezeStorageKey())||'{}');return{rows:Math.max(0,Number(v?.rows)||0),cols:Math.max(0,Number(v?.cols)||0)}}catch(e){return{rows:0,cols:0}}}
+function saveSalesFreezePanes(rows,cols){try{localStorage.setItem(salesFreezeStorageKey(),JSON.stringify({rows:Math.max(0,rows|0),cols:Math.max(0,cols|0)}))}catch(e){}}
+function salesFreezeStatusText(){const f=readSalesFreezePanes();if(salesFreezeSelectMode)return '표에서 기준 셀을 클릭하세요. 클릭한 셀의 위쪽 행과 왼쪽 열이 고정됩니다.';if(!f.rows&&!f.cols)return '고정 안 됨';const a=[];if(f.rows)a.push(f.rows===1?'제목행':`제목행 + 위쪽 ${f.rows-1}개 현장행`);if(f.cols)a.push(`왼쪽 ${f.cols}개 열`);return a.join(' · ')+' 고정 중'}
+function updateSalesFreezeControls(){const a=$('salesFreezeSelectBtn'),b=$('salesFreezeClearBtn'),st=$('salesFreezeStatus');if(a){a.classList.toggle('active',salesFreezeSelectMode);a.textContent=salesFreezeSelectMode?'📍 고정할 셀을 클릭하세요':'📌 틀 고정 위치 선택'}const f=readSalesFreezePanes();if(b)b.disabled=!f.rows&&!f.cols;if(st)st.textContent=salesFreezeStatusText()}
+function resetSalesFreezeStyles(table){if(!table)return;table.querySelectorAll('th,td').forEach(cell=>{cell.classList.remove('salesFreezeCell','salesFreezeCorner','salesFreezeBoundaryRight','salesFreezeBoundaryBottom');cell.style.removeProperty('left');cell.style.removeProperty('top');cell.style.removeProperty('z-index')});table.classList.remove('salesFreezeActive')}
+function applySalesFreezePanes(table){
+ if(!table||!window.matchMedia('(min-width:801px)').matches)return;resetSalesFreezeStyles(table);const f=readSalesFreezePanes(),allRows=[...table.rows];if(!allRows.length||(!f.rows&&!f.cols)){updateSalesFreezeControls();return}
+ const rowCount=Math.min(f.rows,allRows.length),maxCols=Math.max(...allRows.map(r=>r.cells.length)),colCount=Math.min(f.cols,maxCols);if(!rowCount&&!colCount){updateSalesFreezeControls();return}table.classList.add('salesFreezeActive');
+ const colLeft=[];let left=0;for(let c=0;c<colCount;c++){colLeft[c]=left;const ref=allRows[0]?.cells?.[c];left+=ref?ref.getBoundingClientRect().width:0}
+ const rowTop=[];let top=0;for(let r=0;r<rowCount;r++){rowTop[r]=top;top+=allRows[r]?.getBoundingClientRect().height||0}
+ allRows.forEach((row,r)=>[...row.cells].forEach((cell,c)=>{const fr=r<rowCount,fc=c<colCount;if(!fr&&!fc)return;cell.classList.add('salesFreezeCell');if(fc)cell.style.left=`${Math.round(colLeft[c]||0)}px`;if(fr)cell.style.top=`${Math.round(rowTop[r]||0)}px`;cell.style.zIndex=fr&&fc?'8':fr?'6':'5';if(fc&&c===colCount-1)cell.classList.add('salesFreezeBoundaryRight');if(fr&&r===rowCount-1)cell.classList.add('salesFreezeBoundaryBottom');if(fr&&fc)cell.classList.add('salesFreezeCorner') }));updateSalesFreezeControls();
+}
+function scheduleSalesFreezeLayout(table){if(!table||!window.matchMedia('(min-width:801px)').matches)return;if(salesFreezeLayoutFrame)cancelAnimationFrame(salesFreezeLayoutFrame);salesFreezeLayoutFrame=requestAnimationFrame(()=>{salesFreezeLayoutFrame=0;applySalesFreezePanes(table)})}
+function clearSalesFreezePanes(){salesFreezeSelectMode=false;saveSalesFreezePanes(0,0);const t=$('salesTable');if(t){t.classList.remove('salesFreezePicking');applySalesFreezePanes(t)}updateSalesFreezeControls()}
+function selectSalesFreezeCell(cell){const table=cell?.closest?.('#salesTable');if(!table)return;const row=cell.parentElement,rowIndex=[...table.rows].indexOf(row),colIndex=[...row.cells].indexOf(cell);if(rowIndex<0||colIndex<0)return;saveSalesFreezePanes(rowIndex,colIndex);salesFreezeSelectMode=false;table.classList.remove('salesFreezePicking');applySalesFreezePanes(table);updateSalesFreezeControls()}
+function bindSalesFreezeControls(table){
+ if(!table)return;const a=$('salesFreezeSelectBtn'),b=$('salesFreezeClearBtn');if(a)a.onclick=()=>{salesFreezeSelectMode=!salesFreezeSelectMode;table.classList.toggle('salesFreezePicking',salesFreezeSelectMode);updateSalesFreezeControls()};if(b)b.onclick=()=>clearSalesFreezePanes();
+ if(table.dataset.salesFreezeBound!=='1'){table.dataset.salesFreezeBound='1';table.addEventListener('click',e=>{if(!salesFreezeSelectMode)return;const cell=e.target.closest('th,td');if(!cell||!table.contains(cell))return;e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();selectSalesFreezeCell(cell)},true)}
+ updateSalesFreezeControls();scheduleSalesFreezeLayout(table);
+}
 function filteredSales(){
  const y=$('salesYear').value,m=$('salesMonth').value,o=$('salesOwner').value;
  $('salesMonth').dataset.last=m;
@@ -1559,23 +1668,19 @@ function filteredSales(){
 }
 function renderSales(){
  salesImported=false;
- const y=$('salesYear').value,m=$('salesMonth').value,o=$('salesOwner').value,rows=filteredSales();
- let tc=0,tm=0,ts=0;
- const body=rows.map((r,i)=>{
-  const c=salesContractAmount(r),manager=salesNumber(r.manager_amount),sale=salesAmount(r),remark=salesRemark(r);
-  tc+=c;tm+=manager;ts+=sale;
-  return `<tr><td class="center">${i+1}</td><td>${esc(r.site_name||'')}</td><td class="center">${esc(salesContractType(r))}</td><td>${esc(r.field_inspector||'-')}</td><td class="num">${salesMoney(c)}</td><td class="num">${salesMoney(manager)}</td><td class="num">${salesMoney(sale)}</td><td class="${remark.done?'salesDone':''}">${esc(remark.text)}</td></tr>`;
- }).join('');
- const totalRow=`<tr class="totalrow"><td colspan="4" class="center">매출 합계</td><td class="num">${salesMoney(tc)}</td><td class="num">${salesMoney(tm)}</td><td class="num">${salesMoney(ts)}</td><td></td></tr>`;
- $('salesBody').innerHTML=body?body+totalRow:'<tr><td colspan="8" class="emptyrow">선택한 조건에 해당하는 보고서 작성 완료 건이 없습니다.</td></tr>';
- $('salesFoot').innerHTML='';
- updateSalesPageTitle(y,m,o);
- scheduleTableColumnResize($('salesTable'),'sales');
+ const y=$('salesYear').value,m=$('salesMonth').value,o=$('salesOwner').value,order=ensureSalesListColumnOrder(),rows=sortedSalesListRows(filteredSales());
+ let tc=0,tm=0,ts=0;rows.forEach(r=>{tc+=salesContractAmount(r);tm+=salesNumber(r.manager_amount);ts+=salesAmount(r)});
+ const table=$('salesTable'),head=$('salesHead'),body=$('salesBody'),foot=$('salesFoot');
+ const cg=table.querySelector(':scope > colgroup');if(cg)cg.innerHTML=order.map(k=>`<col style="width:${SALES_LIST_COLUMNS[k].width}%">`).join('');
+ head.innerHTML=`<tr>${order.map(salesListHeaderHtml).join('')}</tr>`;
+ body.innerHTML=rows.length?rows.map((r,i)=>`<tr>${order.map(k=>salesListCellHtml(r,k,i)).join('')}</tr>`).join('')+`<tr class="totalrow">${order.map(k=>salesListTotalCell(k,{contract:tc,manager:tm,sales:ts})).join('')}</tr>`:`<tr><td colspan="${order.length}" class="emptyrow">선택한 조건에 해당하는 보고서 작성 완료 건이 없습니다.</td></tr>`;
+ foot.innerHTML='';updateSalesPageTitle(y,m,o);
+ bindSalesListHeaderInteractions(table);bindSalesFreezeControls(table);scheduleTableColumnResize(table,'sales');setTimeout(()=>scheduleSalesFreezeLayout(table),80);
  if(salesDashboardInitialized)renderSalesDashboard();
 }
 function exportSales(){
  if(!isAdmin())return alert('매출 엑셀 내보내기는 관리자만 사용할 수 있습니다.');
- try{if(!window.XLSX)throw new Error('엑셀 라이브러리를 불러오지 못했습니다.');const table=$('salesTable');const wb=XLSX.utils.table_to_book(table,{sheet:'매출 관리',raw:true});XLSX.writeFile(wb,`${updateSalesPageTitle()}.xlsx`)}catch(e){alert('엑셀 내보내기 실패\n\n'+e.message)}
+ try{if(!window.XLSX)throw new Error('엑셀 라이브러리를 불러오지 못했습니다.');const table=$('salesTable'),exportTable=cleanResizableTableClone(table);const wb=XLSX.utils.table_to_book(exportTable,{sheet:'매출 관리',raw:true});XLSX.writeFile(wb,`${updateSalesPageTitle()}.xlsx`)}catch(e){alert('엑셀 내보내기 실패\n\n'+e.message)}
 }
 async function importSalesExcel(file){
  if(!file)return;if(!isAdmin())return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');
