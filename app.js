@@ -1446,6 +1446,33 @@ function salesContractAmount(r){const v=salesNumber(r.contract_amount);return v|
 function salesAmount(r){return salesNumber(r.sales_amount)||salesContractAmount(r)}
 function salesReportCompleted(r){return String(r?.report_complete_date??'').trim()!==''}
 function salesOwnerName(r){return normalizeReportOwnerName(r?.document_owner||r?.document_owner_raw||'')}
+// V90: 기존 원본 DB를 페이지별로 조회하여 집계합니다. 추가 집계 뷰가 필요하지 않습니다.
+function salesMonthIndex(value,col){
+ const d=parseLocalDate(value,col);
+ return d?d.getFullYear()*12+d.getMonth():null;
+}
+function buildSalesAssignments(rows,now=new Date()){
+ const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'numeric'}).formatToParts(now);
+ const current=Number(parts.find(p=>p.type==='year').value)*12+Number(parts.find(p=>p.type==='month').value)-1;
+ const totals=new Map();
+ const add=(month,owner,amount,written)=>{
+  const key=JSON.stringify([month,owner]);
+  if(!totals.has(key))totals.set(key,{allocation_year:Math.floor(month/12),allocation_month:month%12+1,owner_name:owner,allocation_amount:0,assigned_count:0,written_amount:0,written_count:0});
+  const row=totals.get(key);
+  if(written){row.written_amount+=amount;row.written_count++}else{row.allocation_amount+=amount;row.assigned_count++}
+ };
+ for(const r of rows){
+  const owner=salesOwnerName(r);if(!owner||owner==='미배정')continue;
+  const receipt=salesMonthIndex(salesRaw(r,26),26),completed=salesMonthIndex(r.report_complete_date,32),amount=salesAmount(r);
+  if(receipt!==null){
+   const end=Math.min(completed??current,current);
+   for(let month=receipt;month<=end;month++)add(month,owner,amount,false);
+   if(completed!==null&&completed>current&&completed>=receipt)add(completed,owner,amount,false);
+  }
+  if(completed!==null)add(completed,owner,amount,true);
+ }
+ return [...totals.values()].sort((a,b)=>b.allocation_year-a.allocation_year||b.allocation_month-a.allocation_month||a.owner_name.localeCompare(b.owner_name,'ko'));
+}
 function salesPanelStorageKey(){return `staff_sales_panel_collapsed:${me?.id||'guest'}`}
 function readSalesPanelCollapsed(){
  try{return localStorage.getItem(salesPanelStorageKey())==='1'}catch(e){return false}
@@ -1666,8 +1693,8 @@ async function loadSales(force=false){
  if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){renderSales();return}
  if(salesLoadPromise&&!force)return salesLoadPromise;
  salesLoadPromise=(async()=>{try{
-  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary_v89','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count,written_amount,written_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
-  salesRows=salesData.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesAssignedRows=allocationData||[];salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
+  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_site_source','id,excel_row,document_owner,document_owner_raw,full_values,report_complete_date,sales_amount,contract_amount,performance_amount,maintenance_amount,manager_amount',q=>q.order('excel_row',{ascending:true}).order('id',{ascending:true}))]);
+  salesRows=salesData.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesAssignedRows=buildSalesAssignments(allocationData||[]);salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
  }catch(e){alert('매출 자료 조회 오류: '+e.message)}finally{salesLoadPromise=null}})();
  return salesLoadPromise;
 }
