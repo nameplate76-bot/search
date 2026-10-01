@@ -812,6 +812,16 @@ function syncRegionFromSiteAddress(){
  else if(inp){inp.readOnly=false;inp.removeAttribute('aria-readonly');if(help)help.textContent='주소가 없는 경우에만 지역을 직접 입력할 수 있습니다.'}
  return region;
 }
+function syncElectronicReceiptFromYellowFile(value){
+ siteEditValues[26]=String(value??'');
+ const input=$('siteEditFields')?.querySelector('[data-site-col="27"]');
+ if(input)input.value=siteDateInputValue(siteEditValues[26])||'';
+}
+// 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
+const SITE_TEMPLATE_CLEAR_COLS=[21,22,23,26,27,28,29,30,31,32,33,50,51,52];
+function clearSiteTemplateWorkValues(){
+ SITE_TEMPLATE_CLEAR_COLS.forEach(col=>{siteEditValues[col-1]=''});
+}
 function syncFieldEndFromPlan(){
  const plan=String(siteEditValues[28]??'').trim(),end=$('siteEditFields')?.querySelector('[data-site-col="30"]');
  if(plan)siteEditValues[29]=plan;
@@ -917,9 +927,9 @@ function renderSiteEditFields(){
   if(f.col===17){const derived=regionFromAddress(siteDraftAddress());if(derived)siteEditValues[16]=derived;const v=siteEditValues[16]??'',locked=!!derived;return `<label class="siteField"><span>지역</span><input data-site-col="17" type="text" value="${esc(v)}"${locked?' readonly aria-readonly="true"':''}><small class="fieldHelp" data-region-help>${locked?`주소 기준 자동 지역: ${esc(derived)}`:'주소가 없는 경우에만 지역을 직접 입력할 수 있습니다.'}</small></label>`}
   const rawValue=f.financial?siteMoneyInput(siteEditValues[f.col-1]??'',f.col):normalizeCell(siteEditValues[f.col-1]??'',f.col),v=dateCols.has(Number(f.col))?siteDateInputValue(rawValue)||rawValue:rawValue,req=f.col===4?' required':'',fin=f.financial?' financialField':'';
   if(f.col===1&&siteEditMode==='create')return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="siteSnInputRow"><input data-site-col="1" type="text" value="${esc(v)}"><button type="button" class="ghost smallBtn" id="applyNextSnBtn">다음 S/N 적용</button></div><small class="fieldHelp">신규등록 시 현재 DB의 마지막 숫자형 S/N 다음 번호를 자동 표시합니다.</small></label>`;
-  if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(siteDisplayFieldLabel(f))} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장을 선택하면 S/N을 포함한 등록정보를 복사합니다. 복사 후 원하는 항목을 수정해 새 현장으로 저장할 수 있습니다.</small></label>`;
+  if(f.col===4&&siteEditMode==='create')return `<label class="siteField siteNameLookupField${fin}"><span>${esc(siteDisplayFieldLabel(f))} *</span><div class="siteNameLookupWrap"><input data-site-col="4" id="siteNameLookupInput" type="text" value="${esc(v)}" required autocomplete="off" placeholder="현장명 일부를 입력하면 기존 현장을 검색합니다"><div id="siteNameSuggestions" class="siteNameSuggestions hidden"></div></div><small class="fieldHelp">기존 현장정보를 복사하되 접수·점검·작성·제본 이력과 문서작성 매출은 비워 둡니다. 새 업무 내용을 입력해 등록하세요.</small></label>`;
   if(f.col===14)return `<label class="siteField"><span>${esc(siteDisplayFieldLabel(f))}</span><select data-site-col="14" aria-label="${esc(siteDisplayFieldLabel(f))}">${maintenanceManagerSelectOptions(siteEditValues[13])}</select><small class="fieldHelp">O / X / 공란 중 선택합니다.</small></label>`;
-  let help='';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
+  let help=f.col===26?'<small class="fieldHelp">입력하거나 변경하면 전자파일 접수일자에 같은 날짜가 자동 입력됩니다.</small>':'';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
@@ -929,6 +939,7 @@ function renderSiteEditFields(){
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
   siteEditValues[col-1]=inp.value;
+  if(col===26)syncElectronicReceiptFromYellowFile(inp.value);
   if(col===50||col===51)syncBindingRatioFromAmounts(true);
   if(PERFORMANCE_CONFIRM_BY_COL[col])sitePerformanceManualCols.add(col);
   if(PERFORMANCE_CONFIRM_RULES[col])syncPerformanceConfirmed(col,false);
@@ -979,6 +990,7 @@ async function applySiteTemplate(sourceId,options={}){
   const{data,error}=await sb.rpc('staff_site_template',{p_source_id:Number(sourceId)});if(error)throw error;
   let vals=Array.isArray(data?.values)?[...data.values]:Array(137).fill('');while(vals.length<137)vals.push('');
   siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));
+  clearSiteTemplateWorkValues();
   sitePerformanceManualCols.clear();seedPerformanceConfirmedBlanks();
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
   $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
@@ -987,10 +999,10 @@ async function applySiteTemplate(sourceId,options={}){
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
    $('siteEditHint').textContent=`유사 현장 “${copiedName}” 정보를 불러왔습니다. 신규 S/N은 ${siteEditValues[0]||'-'}으로 유지됩니다. 필요한 내용을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'유사 현장 정보를 불러왔습니다. 필요한 항목을 수정한 뒤 신규등록하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 불러왔습니다. 접수·점검·작성·제본 이력과 문서작성 매출은 초기화했습니다. 새 내용을 입력한 뒤 신규등록하세요.',true);
   }else{
    $('siteEditHint').textContent=`기존 현장 “${copiedName}” 정보를 복사했습니다. S/N을 포함해 필요한 항목을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'기존 현장정보를 복사했습니다. 필요한 내용을 수정한 뒤 저장하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 복사하고 접수·점검·작성·제본 이력과 문서작성 매출을 초기화했습니다. 새 내용을 입력한 뒤 저장하세요.',true);
   }
  }catch(e){notify($('siteEditMsg'),'기존 현장정보 불러오기 실패: '+e.message)}
 }
@@ -1016,7 +1028,7 @@ async function searchSimilarSiteTemplates(){
   if(error)throw error;if(seq!==siteTemplateSearchRequest)return;
   siteTemplateSearchRows=data||[];
   if(!siteTemplateSearchRows.length){results.innerHTML='<div class="siteTemplateSearchState">검색된 유사 현장이 없습니다. 다른 현장명·S/N·지역으로 검색해 보세요.</div>';return}
-  results.innerHTML=`<div class="siteTemplateResultMeta">검색결과 ${siteTemplateSearchRows.length.toLocaleString()}건 · 선택하면 신규 S/N은 유지되고 나머지 정보를 불러옵니다.</div><div class="siteTemplateResultList">${siteTemplateSearchRows.map(r=>`<article class="siteTemplateResultItem"><div class="siteTemplateResultInfo"><strong>${esc(r.site_name||'-')}</strong>${r.previous_name?`<span>변경 전: ${esc(r.previous_name)}</span>`:''}<small>S/N ${esc(r.sn||'-')} · ${esc(r.region||'지역 없음')} · ${esc(r.report_grade||'등급 없음')}</small></div><button type="button" class="primary smallBtn" data-similar-template="${Number(r.source_id)}">이 현장 불러오기</button></article>`).join('')}</div>`;
+  results.innerHTML=`<div class="siteTemplateResultMeta">검색결과 ${siteTemplateSearchRows.length.toLocaleString()}건 · 선택하면 신규 S/N은 유지되고 현장정보를 불러옵니다. 접수·점검·작성·제본 이력과 문서작성 매출은 비워 둡니다.</div><div class="siteTemplateResultList">${siteTemplateSearchRows.map(r=>`<article class="siteTemplateResultItem"><div class="siteTemplateResultInfo"><strong>${esc(r.site_name||'-')}</strong>${r.previous_name?`<span>변경 전: ${esc(r.previous_name)}</span>`:''}<small>S/N ${esc(r.sn||'-')} · ${esc(r.region||'지역 없음')} · ${esc(r.report_grade||'등급 없음')}</small></div><button type="button" class="primary smallBtn" data-similar-template="${Number(r.source_id)}">이 현장 불러오기</button></article>`).join('')}</div>`;
   results.querySelectorAll('[data-similar-template]').forEach(b=>b.onclick=async()=>{
    const id=Number(b.dataset.similarTemplate),row=siteTemplateSearchRows.find(x=>Number(x.source_id)===id);
    await applySiteTemplate(id,{keepSn:true,fromSearch:true});
