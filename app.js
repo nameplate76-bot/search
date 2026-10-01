@@ -1647,7 +1647,7 @@ function renderSalesDashboard(){
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
  const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),maxAmount=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written])),maxCount=Math.max(0,...d.items.flatMap(x=>[x.allocatedCount,x.writtenCount]));
- kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>당월 접수 전체 + 전월 미완료 이월 추가</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
+ kpi.innerHTML=`<div><span>조회 기간</span><b>${esc(periodLabel)}</b></div><div><span>선택 담당자</span><b>${d.items.length.toLocaleString()}명</b></div><div><span>할당 매출 합계</span><b>${esc(salesDashboardMoney(d.totalAllocated))}</b><small>접수월부터 완료월까지 · 미완료는 현재월까지만 이월</small></div><div><span>작성 매출 합계</span><b>${esc(salesDashboardMoney(d.totalWritten))}</b></div><div><span>할당/작성 건수</span><b>${d.totalAllocatedCount.toLocaleString()}건 / ${d.totalWrittenCount.toLocaleString()}건</b></div><div><span>할당 대비 작성률</span><b>${totalRate===null?'-':totalRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div>`;
  $('salesDashChartTitle').textContent=`${periodLabel} 담당자별 할당·작성 매출액 및 건수`;
  chart.innerHTML=d.items.map(x=>{
   const ap=maxAmount>0?Math.max(x.allocated>0?1:0,Math.round(x.allocated/maxAmount*1000)/10):0,wp=maxAmount>0?Math.max(x.written>0?1:0,Math.round(x.written/maxAmount*1000)/10):0;
@@ -1666,7 +1666,7 @@ async function loadSales(force=false){
  if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){renderSales();return}
  if(salesLoadPromise&&!force)return salesLoadPromise;
  salesLoadPromise=(async()=>{try{
-  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count,written_amount,written_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
+  const [salesData,allocationData]=await Promise.all([fetchPaged('staff_sales_fast','*',q=>q.order('sales_year',{ascending:false}).order('sales_month',{ascending:false})),fetchPaged('staff_sales_assignment_summary_v89','allocation_year,allocation_month,owner_name,allocation_amount,assigned_count,written_amount,written_count',q=>q.order('allocation_year',{ascending:false}).order('allocation_month',{ascending:false}))]);
   salesRows=salesData.filter(r=>r.sales_year&&r.sales_month&&String(r.document_owner||'').trim()&&salesReportCompleted(r));salesAssignedRows=allocationData||[];salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
  }catch(e){alert('매출 자료 조회 오류: '+e.message)}finally{salesLoadPromise=null}})();
  return salesLoadPromise;
