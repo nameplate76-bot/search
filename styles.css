@@ -754,3 +754,15 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V85 현장 목록 열 필터 */
 .siteColumnFilterToolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 4px;color:#334155}.siteColumnFilterToolbar label{display:flex;align-items:center;gap:8px}.siteColumnFilterToolbar select{max-width:250px;padding:7px}.siteColumnFilterToolbar span{font-size:12px}.siteColumnFilterBtn{display:inline-flex;align-items:center;justify-content:center;margin-left:4px;padding:2px 4px;min-width:24px;min-height:26px;border:1px solid #b9cbe5;border-radius:4px;background:white;color:#1d4ed8;font-size:11px;cursor:pointer}.siteColumnFilterBtn.filterActive{background:#1d4ed8;color:white}.siteColumnFilterDlg{width:min(440px,94vw);max-height:88vh;border:1px solid #cbd5e1;border-radius:12px;padding:16px}.siteFilterHead,.siteFilterTools,.siteFilterFoot{display:flex;align-items:center;justify-content:space-between;gap:8px}.siteFilterHead h3{margin:0 0 12px;font-size:17px}.siteColumnFilterDlg input[type=search]{width:100%;padding:10px;margin:8px 0}.siteFilterValues{max-height:48vh;overflow:auto;margin:10px 0;border:1px solid #e2e8f0;padding:6px}.siteFilterValues label{display:flex;align-items:center;gap:9px;padding:7px;cursor:pointer}.siteFilterValues input[type=checkbox]{width:18px;height:18px;flex-shrink:0}.siteFilterValues span{flex:1;overflow-wrap:anywhere}.siteFilterValues small{color:#64748b;white-space:nowrap}.siteFilterTools button,.siteFilterFoot button,.siteFilterHead button{padding:8px;font-size:13px}
+
+/* V87 현장 목록 버튼 배치: 선택 / 틀 고정 / 필터 */
+@media(min-width:801px){
+ #page-search .siteListActionRow{display:flex;align-items:center;gap:18px;width:100%;margin:8px 0;flex-wrap:wrap}
+ #page-search .siteListActionRow .siteSelectionBar{flex:1 1 360px;min-width:0;margin:0;padding:9px 10px}
+ #page-search .siteListActionRow .siteFreezeToolbar{flex:1 1 420px;min-width:0;margin:0;padding:9px 10px}
+ #page-search .siteListActionRow .siteFreezeButtons{flex-shrink:0;flex-wrap:nowrap}
+ #page-search .siteListActionRow .siteFreezeStatus{min-width:0;text-align:right;font-size:11px;overflow-wrap:anywhere}
+ #page-search .siteListActionRow .siteColumnFilterToolbar{flex:0 0 auto;margin:0 0 0 auto;padding:0;max-width:380px}
+ #page-search .siteListActionRow .siteColumnFilterToolbar>button{white-space:nowrap}
+ #page-search .siteListActionRow .siteColumnFilterToolbar>label,#page-search .siteListActionRow .siteColumnFilterToolbar>span{flex-basis:100%}
+}
