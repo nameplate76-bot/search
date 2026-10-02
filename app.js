@@ -1879,7 +1879,102 @@ function printSalesReport(){
  });
  w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4 portrait;margin:10mm 8mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,'Malgun Gothic',sans-serif;color:#111}h1{text-align:center;font-size:15pt;margin:0 0 6mm}.salesReportTable{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.5pt}.salesReportTable thead{display:table-header-group}.salesReportTable tr{break-inside:avoid;page-break-inside:avoid}.salesReportTable th{background:#0877bd!important;color:#fff!important;font-weight:900;text-align:center;border:1px solid #fff;padding:5px 3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable td{border:1px solid #aeb7c2;padding:5px 3px;vertical-align:middle;word-break:break-word}.salesReportTable td.num{text-align:right}.salesReportTable td.center{text-align:center}.salesReportTable .totalrow td{font-weight:900;background:#0877bd!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable .totalrow td.num,.salesReportTable .totalrow td:last-child{background:#fff!important;color:#111!important}.salesReportTable .totalrow td.printTotalNumber{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;letter-spacing:-.15px;padding-left:1px!important;padding-right:2px!important;font-variant-numeric:tabular-nums;line-height:1.05}.salesReportTable .salesDone{color:#a7adb5}.salesReportTable .emptyrow{text-align:center;color:#68768a;padding:20px}</style></head><body><h1>${esc(title)}</h1>${printTable.outerHTML}</body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300);
 }
-async function importWorkbook(file){if(!canImportSites())return alert('엑셀 DB 등록 권한이 없습니다.');if(!confirm('선택한 엑셀의 진행중 시트 전체를 서버 DB와 동기화합니다. 계속할까요?'))return;const overlay=$('importOverlay'),bar=$('importBar'),text=$('importText');overlay.classList.remove('hidden');bar.style.width='2%';text.textContent='엑셀 파일 읽는 중...';try{const buf=await file.arrayBuffer(),wb=XLSX.read(buf,{type:'array',cellDates:false}),ws=wb.Sheets['진행중']||wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});const token=uuid(),batch=[];let count=0,total=0;for(let ri=3;ri<rows.length;ri++)if(String(rows[ri]?.[3]||'').trim())total++;const flush=async()=>{if(!batch.length)return;const payload=batch.splice(0);const{error}=await sb.from('staff_site_source').upsert(payload,{onConflict:'excel_row'});if(error)throw error;count+=payload.length;const pct=Math.min(94,5+Math.round(count/Math.max(total,1)*89));bar.style.width=pct+'%';text.textContent=`현장 DB 등록 중 ${count.toLocaleString()} / ${total.toLocaleString()}건`};for(let ri=3;ri<rows.length;ri++){const a=rows[ri]||[],site=String(a[3]||'').trim();if(!site)continue;const vals=Array.from({length:137},(_,i)=>normalizeCell(a[i],i+1));const safe=vals.map((v,i)=>financialCols.has(i+1)?null:v),op=ownerParts(vals[18]),ym=inferYearMonth(vals,op),num=i=>vals[i]===''?null:(Number.isFinite(Number(vals[i]))?Number(vals[i]):null);batch.push({excel_row:ri+1,source_file:file.name,sn:String(vals[0]||''),site_name:site,previous_name:String(vals[4]||''),report_grade:String(vals[1]||''),region:String(vals[16]||''),area:num(5),households:String(vals[6]||''),approval_date:String(vals[7]||''),inspection_stage:String(vals[8]||''),document_owner_raw:String(vals[18]||''),document_owner:op.owner,document_progress_month:String(vals[19]||''),document_complete_month:String(vals[20]||''),field_plan_start:String(vals[27]||''),field_plan_end:String(vals[28]||''),field_end:String(vals[29]||''),field_inspector:String(vals[30]||''),report_complete_date:String(vals[31]||''),report_status:String(vals[32]||''),sales_manager:String(vals[40]||''),client_manager:String(vals[41]||''),client_contact:String(vals[42]||''),contract_start:String(vals[43]||''),contract_end:String(vals[44]||''),performance_amount:num(45),maintenance_amount:num(46),manager_amount:num(47),contract_amount:num(48),sales_amount:num(49),binding_cost:num(50),binding_ratio:num(51),sales_year:ym.year,sales_month:ym.month,full_values:vals,safe_values:safe,import_token:token});if(batch.length>=100)await flush()}await flush();text.textContent='이전 DB와 동기화 중...';const{error:delErr}=await sb.from('staff_site_source').delete().neq('import_token',token);if(delErr)throw delErr;let aux={sheet_names:wb.SheetNames};const auxWs=wb.Sheets['Sheet1'];if(auxWs)aux.Sheet1=XLSX.utils.sheet_to_json(auxWs,{header:1,defval:'',raw:false});const{error:metaErr}=await sb.from('staff_workbook_meta').insert({source_file:file.name,source_sheet:'진행중',field_schema:schema.fields,auxiliary_sheets:aux,record_count:count,imported_by:me.id});if(metaErr)throw metaErr;bar.style.width='100%';text.textContent=`완료: ${count.toLocaleString()}개 현장을 서버 DB에 저장했습니다.`;setTimeout(()=>overlay.classList.add('hidden'),900);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);alert(`${count.toLocaleString()}개 현장을 전체 DB와 동기화했습니다.`)}catch(e){overlay.classList.add('hidden');throw e}}
+function workbookImportNumber(value,label){
+ if(value===null||value===undefined||String(value).trim()==='')return null;
+ const text=String(value).trim().replace(/,/g,'');
+ const percent=text.endsWith('%');const n=Number(percent?text.slice(0,-1):text);
+ if(!Number.isFinite(n))throw new Error(`${label}: 숫자로 읽을 수 없는 값입니다 (${value}).`);
+ return percent?n/100:n;
+}
+function prepareWorkbookImport(wb,existingRows){
+ const exported=!!wb.Sheets['전체 현장정보'];
+ const ws=exported?wb.Sheets['전체 현장정보']:wb.Sheets['진행중'];
+ if(!ws)throw new Error('전체 현장정보 또는 진행중 시트가 필요합니다.');
+ const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+ if(exported){
+  const headers=rows[0]||[];
+  for(const f of schema.fields){
+   if(String(headers[f.col-1]||'').trim()!==String(siteExportFieldLabel(f)).trim()&&String(headers[f.col-1]||'').trim()!==String(f.label).trim())throw new Error(`${f.col}번째 열 제목이 일치하지 않습니다. 내려받은 137개 원본 열의 제목과 위치를 유지해 주세요.`);
+  }
+  const extra=['관리주체 전화번호(분리)','관리주체 이메일(분리)','주소','등록구분','DB ID','원본파일'];
+  for(let i=0;i<extra.length;i++)if(String(headers[137+i]||'').trim()!==extra[i])throw new Error(`추가 열 ${extra[i]}의 제목과 위치를 유지해 주세요.`);
+ }
+ const byId=new Map(existingRows.map(r=>[String(r.id),r])),byRow=new Map(existingRows.map(r=>[Number(r.excel_row),r]));
+ const seen=new Set(),records=[];
+ let nextDirect=Math.min(0,...existingRows.map(r=>Number(r.excel_row)||0))-1;
+ let nextExcel=Math.max(3,...existingRows.map(r=>Number(r.excel_row)||0))+1;
+ for(let ri=exported?1:3;ri<rows.length;ri++){
+  const a=rows[ri]||[],site=String(a[3]??'').trim();
+  if(!site){if(a.some(v=>v!==''&&v!==null&&v!==undefined))throw new Error(`${ri+1}행: 현장명이 없습니다. 삭제할 현장은 행 전체를 삭제해 주세요.`);continue}
+  let existing=null;
+  if(exported){
+   const id=String(a[141]??'').trim();
+   if(id){existing=byId.get(id);if(!existing)throw new Error(`${ri+1}행: DB ID ${id}가 현재 DB에 없습니다. 최신 파일을 내려받아 주세요.`)}
+  }else existing=byRow.get(ri+1)||null;
+  if(existing){const id=String(existing.id);if(seen.has(id))throw new Error(`${ri+1}행: DB ID가 중복됩니다. 새 현장은 DB ID를 비워 주세요.`);seen.add(id)}
+  const vals=Array.from({length:137},(_,i)=>normalizeCell(a[i],i+1));
+  for(const col of [6,46,47,48,49,50,51,52])if(vals[col-1]!==''){
+   try{vals[col-1]=workbookImportNumber(vals[col-1],`${ri+1}행 ${col}열`)}catch(e){
+    // 여러 동의 면적 설명과 기존 제본비 메모는 원문 그대로 보존합니다.
+    if(col!==6&&String(existing?.full_values?.[col-1]??'')!==String(vals[col-1]))throw e;
+   }
+  }
+  const direct=exported&&String(a[140]||'').trim()==='직접등록';
+  records.push({ri,a,site,vals,existing,excelRow:existing?existing.excel_row:(direct?nextDirect--:nextExcel++)});
+ }
+ if(!records.length)throw new Error('등록할 현장이 없습니다. 빈 파일로 전체 DB를 삭제할 수 없습니다.');
+ const deleted=existingRows.filter(r=>!seen.has(String(r.id)));
+ return{exported,records,deleted,added:records.filter(r=>!r.existing).length};
+}
+async function importWorkbook(file){
+ if(!canImportSites())return alert('엑셀 DB 등록 권한이 없습니다.');
+ const overlay=$('importOverlay'),bar=$('importBar'),text=$('importText');
+ overlay.classList.remove('hidden');bar.style.width='2%';text.textContent='엑셀 전체 검증 및 DB 비교 중...';
+ let writing=false;
+ try{
+  const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:false});
+  const existingRows=await fetchPaged('staff_site_source','*',q=>q.order('excel_row',{ascending:true}).order('id',{ascending:true}));
+  const plan=prepareWorkbookImport(wb,existingRows),token=uuid(),updates=[],inserts=[];
+  let unchanged=0;
+  for(const record of plan.records){
+   const {ri,vals,site,a}=record;
+   const safe=vals.map((v,i)=>financialCols.has(i+1)?null:v),op=ownerParts(vals[18]),ym=inferYearMonth(vals,op);
+   const num=i=>{try{return workbookImportNumber(vals[i],`${ri+1}행 ${i+1}열`)}catch(e){
+    if(i===5)return null;
+    const key={45:'performance_amount',46:'maintenance_amount',47:'manager_amount',48:'contract_amount',49:'sales_amount',50:'binding_cost',51:'binding_ratio'}[i];
+    return record.existing?.[key]??null;
+   }};
+   const payload={excel_row:record.excelRow,source_file:record.existing?.source_file||file.name,sn:String(vals[0]||''),site_name:site,previous_name:String(vals[4]||''),report_grade:String(vals[1]||''),region:String(vals[16]||''),area:num(5),households:String(vals[6]||''),approval_date:String(vals[7]||''),inspection_stage:String(vals[8]||''),document_owner_raw:String(vals[18]||''),document_owner:op.owner,document_progress_month:String(vals[19]||''),document_complete_month:String(vals[20]||''),field_plan_start:String(vals[27]||''),field_plan_end:String(vals[28]||''),field_end:String(vals[29]||''),field_inspector:String(vals[30]||''),report_complete_date:String(vals[31]||''),report_status:String(vals[32]||''),sales_manager:String(vals[40]||''),client_manager:String(vals[41]||''),client_contact:String(vals[42]||''),contract_start:String(vals[43]||''),contract_end:String(vals[44]||''),performance_amount:num(45),maintenance_amount:num(46),manager_amount:num(47),contract_amount:num(48),sales_amount:num(49),binding_cost:num(50),binding_ratio:num(51),sales_year:ym.year,sales_month:ym.month,full_values:vals,safe_values:safe,import_token:token};
+   if(plan.exported){payload.client_phone=formatPhoneList(a[137]||'');payload.client_email=String(a[138]||'').trim();payload.site_address=String(a[139]||'').trim()}
+   if(record.existing){
+    payload.id=record.existing.id;
+    const compareKeys=Object.keys(payload).filter(k=>!['id','import_token','source_file'].includes(k));
+    const equal=compareKeys.every(k=>JSON.stringify(record.existing[k]??null)===JSON.stringify(payload[k]??null));
+    if(equal)unchanged++;else updates.push(payload);
+   }else inserts.push(payload);
+  }
+  overlay.classList.add('hidden');
+  if(!confirm(`전체 DB 엑셀 갱신 검증 완료\n\n파일 현장: ${plan.records.length.toLocaleString()}건\n신규: ${inserts.length.toLocaleString()}건\n수정: ${updates.length.toLocaleString()}건\n변경 없음: ${unchanged.toLocaleString()}건\n삭제: ${plan.deleted.length.toLocaleString()}건\n\n파일에서 빠진 기존 현장은 삭제됩니다. 현재 DB와 파일을 비교한 결과입니다. 계속하시겠습니까?`))return;
+  // 쓰기 전에 현재 자료를 자동으로 내려받습니다. 실패하면 갱신하지 않습니다.
+  const backupWb=XLSX.utils.book_new(),backupHeaders=[...schema.fields.map(siteExportFieldLabel),'관리주체 전화번호(분리)','관리주체 이메일(분리)','주소','등록구분','DB ID','원본파일'];
+  const backupRows=existingRows.map(r=>[...Array.from({length:137},(_,i)=>r.full_values?.[i]??''),r.client_phone||'',r.client_email||'',r.site_address||'',Number(r.excel_row)<0?'직접등록':'Excel/DB',r.id,r.source_file||'']);
+  XLSX.utils.book_append_sheet(backupWb,XLSX.utils.aoa_to_sheet([backupHeaders,...backupRows]),'전체 현장정보');
+  XLSX.writeFile(backupWb,`사내현장정보_갱신전백업_${Date.now()}.xlsx`,{compression:true});
+  overlay.classList.remove('hidden');writing=true;
+  const total=updates.length+inserts.length+plan.deleted.length;let done=0;
+  const progress=()=>{bar.style.width=`${5+Math.round(done/Math.max(total,1)*85)}%`;text.textContent=`DB 반영 중 ${done.toLocaleString()} / ${total.toLocaleString()}건`};
+  for(let i=0;i<updates.length;i+=100){const batch=updates.slice(i,i+100);const{data,error}=await sb.from('staff_site_source').upsert(batch,{onConflict:'id'}).select('id');if(error)throw error;if(data?.length!==batch.length)throw new Error('수정 결과 건수가 일치하지 않습니다. 권한을 확인해 주세요.');done+=batch.length;progress()}
+  for(let i=0;i<inserts.length;i+=100){const batch=inserts.slice(i,i+100);const{data,error}=await sb.from('staff_site_source').insert(batch).select('id');if(error)throw error;if(data?.length!==batch.length)throw new Error('신규 등록 결과 건수가 일치하지 않습니다.');done+=batch.length;progress()}
+  // 검증 당시 파일에서 빠졌던 ID만 삭제합니다. 새로 생성된 다른 자료를 토큰으로 삭제하지 않습니다.
+  for(let i=0;i<plan.deleted.length;i+=100){const ids=plan.deleted.slice(i,i+100).map(r=>r.id);const{data,error}=await sb.from('staff_site_source').delete().in('id',ids).select('id');if(error)throw error;if(data?.length!==ids.length)throw new Error('삭제 결과 건수가 일치하지 않습니다.');done+=ids.length;progress()}
+  let aux={sheet_names:wb.SheetNames};if(wb.Sheets['Sheet1'])aux.Sheet1=XLSX.utils.sheet_to_json(wb.Sheets['Sheet1'],{header:1,defval:'',raw:false});
+  const{error:metaErr}=await sb.from('staff_workbook_meta').insert({source_file:file.name,source_sheet:plan.exported?'전체 현장정보':'진행중',field_schema:schema.fields,auxiliary_sheets:aux,record_count:plan.records.length,imported_by:me.id});
+  invalidateDataCaches('sites');bar.style.width='100%';text.textContent='갱신 완료';
+  await Promise.all([refreshDbStatus(),refreshActiveData(true)]);
+  alert(`전체 DB 갱신 완료: ${plan.records.length.toLocaleString()}건\n신규 ${inserts.length} / 수정 ${updates.length} / 삭제 ${plan.deleted.length}건${metaErr?'\n현장 갱신은 완료했지만 갱신이력 저장은 실패했습니다: '+metaErr.message:''}`);
+ }catch(e){if(writing){invalidateDataCaches('sites');throw new Error((e?.message||e)+'\n일부 작업이 반영되었을 수 있습니다. 갱신전백업과 현재 DB를 비교해 주세요.')}throw e}
+ finally{overlay.classList.add('hidden')}
+}
 async function exportAllSites(){
  if(!canExportAllSites())return alert('전체 현장정보 엑셀 내려받기 권한이 없습니다.');
  if(!window.XLSX)return alert('엑셀 라이브러리를 불러오지 못했습니다.');
@@ -1905,7 +2000,7 @@ async function exportAllSites(){
   ws['!autofilter']={ref:`A1:${XLSX.utils.encode_col(headers.length-1)}${aoa.length}`};
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'전체 현장정보');
   const now=new Date(),pad=n=>String(n).padStart(2,'0'),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','DB 호환을 위해 137개 원본 열 위치는 유지합니다. 계약만료일·문서작성 진행월·현장점검 종료 등 화면에서 삭제한 항목은 숨김 열로 보존하며, 표시 이름은 짧게 정리했습니다.']];
+  const info=[['항목','내용'],['내려받은 일시',`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`],['현장 수',rows.length],['내려받은 사용자',me?.name||me?.user_id||''],['안내','V91부터 이 파일을 수정 후 전체 DB 엑셀 갱신에 사용할 수 있습니다. 열 제목·순서·숨김 열을 유지하세요. 기존 현장 DB ID는 유지하고 새 현장은 DB ID를 비우세요. 파일에서 삭제한 행은 DB에서도 삭제됩니다.']];
   const infoWs=XLSX.utils.aoa_to_sheet(info);infoWs['!cols']=[{wch:18},{wch:70}];XLSX.utils.book_append_sheet(wb,infoWs,'내려받기 정보');
   XLSX.writeFile(wb,`사내현장정보_전체_${stamp}.xlsx`,{compression:true});
  }catch(e){alert('전체 엑셀 내려받기 실패\n\n'+(e?.message||e));}
