@@ -984,6 +984,20 @@ let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,si
 let siteNameSuggestTimer=null,siteNameSuggestRequest=0,siteNameSuggestions=[];
 let siteTemplateSearchRequest=0,siteTemplateSearchRows=[];
 function siteFieldAllowed(f){if(!f?.label?.trim())return false;if(HIDDEN_UI_FIELD_COLS.has(Number(f.col)))return false;if(f.label==='관리주체 연락처/이메일')return false;if(f.financial){if(siteEditMode==='create')return canCreateMoney();return canEditMoney()}return true}
+// 브라우저 입력 언어 힌트: OS IME의 한/영 상태를 강제로 전환하지 않습니다.
+const SITE_KOREAN_INPUT_COLS=new Set([4,5,16,17,19,24,25,31,33,41,42]);
+function applySiteInputLanguageHints(root){
+ if(!root)return;
+ root.querySelectorAll('[data-site-col]').forEach(input=>{
+  const col=Number(input.dataset.siteCol);
+  if(SITE_KOREAN_INPUT_COLS.has(col)){
+   input.setAttribute('lang','ko');input.setAttribute('inputmode','text');
+  }else if(col===43){
+   input.setAttribute('lang','en');input.setAttribute('inputmode','email');
+   input.setAttribute('autocapitalize','none');input.setAttribute('autocorrect','off');input.setAttribute('spellcheck','false');
+  }
+ });
+}
 function siteInputType(col){return dateCols.has(col)?'date':'text'}
 function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
 function renderSiteEditFields(){
@@ -1008,6 +1022,7 @@ function renderSiteEditFields(){
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
   return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
+ applySiteInputLanguageHints(fieldsRoot);
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
   siteEditValues[col-1]=inp.value;
