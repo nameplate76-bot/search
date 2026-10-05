@@ -1447,7 +1447,7 @@ function salesRaw(r,col){
  return direct[Number(col)]?(r?.[direct[Number(col)]]??''):'';
 }
 function salesNumber(v){const n=Number(String(v??'').replace(/,/g,''));return Number.isFinite(n)?n:0}
-function salesMoney(v){const n=salesNumber(v);return n?Math.round(n).toLocaleString('ko-KR'):'-'}
+function salesMoney(v){if(v===null||v===undefined||String(v).trim()==='')return '-';return Math.round(salesNumber(v)).toLocaleString('ko-KR')}
 function salesRemark(r){
  const remain=[];
  const perf=Math.max(0,salesNumber(salesRaw(r,10))-salesNumber(salesRaw(r,11)));
@@ -1458,7 +1458,8 @@ function salesRemark(r){
 }
 function salesContractType(r){return String(salesRaw(r,25)||r.report_grade||'-').trim()||'-'}
 function salesContractAmount(r){const v=salesNumber(r.contract_amount);return v||salesNumber(r.performance_amount)+salesNumber(r.maintenance_amount)+salesNumber(r.manager_amount)}
-function salesAmount(r){return salesNumber(r.sales_amount)||salesContractAmount(r)}
+// 문서작성 매출만 사용합니다. 0원/공란을 계약금액으로 대체하지 않습니다.
+function salesAmount(r){return salesNumber(r?.sales_amount)}
 function salesReportCompleted(r){return String(r?.report_complete_date??'').trim()!==''}
 function salesOwnerName(r){return normalizeReportOwnerName(r?.document_owner||r?.document_owner_raw||'')}
 // V90: 기존 원본 DB를 페이지별로 조회하여 집계합니다. 추가 집계 뷰가 필요하지 않습니다.
