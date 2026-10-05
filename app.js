@@ -1660,13 +1660,23 @@ function renderSalesMonthlyOverviewTables(data){
  summary.innerHTML=`<div class="salesMonthlySummaryDesktop"><table id="salesMonthlySummaryTable" class="salesMonthlyTable"><thead><tr><th>담당자</th><th class="num">할당 매출액</th><th class="num">작성 매출액</th><th class="num">달성률</th><th class="num">할당 건수</th><th class="num">작성 건수</th><th class="num">달성률</th></tr></thead><tbody>${summaryRows||`<tr><td colspan="7" class="center salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr><th>합계</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</th><th class="num">${esc(salesMonthlyOverviewMoney(data.totals.written))}</th><th class="num">${monthFooterRate===null?'-':monthFooterRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th><th class="num">${data.totals.allocatedCount.toLocaleString()}</th><th class="num">${data.totals.writtenCount.toLocaleString()}</th><th class="num">${totalCountRate===null?'-':totalCountRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</th></tr></tfoot></table></div><div class="salesMonthlySummaryMobile">${summaryCards||'<div class="salesDashEmpty">자료가 없습니다.</div>'}${summaryCards?totalCard:''}</div>`;
  scheduleTableColumnResize($('salesMonthlySummaryTable'),'sales-monthly-summary');
 }
+function salesAllOwnerAnnualWritten(year){
+ const seen=new Set();let amount=0,count=0;
+ for(const row of salesRows){
+  if(String(row.sales_year)!==String(year)||!salesReportCompleted(row))continue;
+  if(row.id!==null&&row.id!==undefined){const key=String(row.id);if(seen.has(key))continue;seen.add(key)}
+  amount+=salesAmount(row);count++;
+ }
+ return{amount,count};
+}
 function renderSalesMonthlyOverview(){
  const title=$('salesMonthlyTitle'),kpis=$('salesMonthlyKpis');if(!title||!kpis)return;
  const data=salesMonthlyOverviewData(); const year=data.year||'연도';
+ const allWritten=salesAllOwnerAnnualWritten(data.year);
  title.textContent=`${year}년 월별 담당자별 매출 현황`;
  const rate=salesMonthlyOverviewRate(data.totals.written,data.totals.allocated);
  const countRate=salesMonthlyOverviewRate(data.totals.writtenCount,data.totals.allocatedCount);
- kpis.innerHTML=`<div><span>연간 할당 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</b><small>1월~12월 할당 매출액 합계</small></div><div><span>연간 작성 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.written))}</b><small>할당 대비 ${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div><div><span>연간 할당 건수</span><b>${data.totals.allocatedCount.toLocaleString()}건</b><small>1월~12월 할당 건수 합계</small></div><div><span>연간 작성 건수</span><b>${data.totals.writtenCount.toLocaleString()}건</b><small>할당 대비 ${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div>`;
+ kpis.innerHTML=`<div><span>전체 담당자 연간 작성 매출</span><b>${esc(salesMonthlyOverviewMoney(allWritten.amount))}</b><small>완료일 연도 기준 · 담당자 선택과 무관</small></div><div><span>전체 담당자 연간 작성 건수</span><b>${allWritten.count.toLocaleString()}건</b><small>현장 DB ID별 1건 · 0원 완료 포함</small></div><div><span>선택 담당자 연간 할당 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.allocated))}</b><small>1월~12월 할당 매출액 합계</small></div><div><span>선택 담당자 연간 작성 매출 합계</span><b>${esc(salesMonthlyOverviewMoney(data.totals.written))}</b><small>할당 대비 ${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div><div><span>선택 담당자 연간 할당 건수</span><b>${data.totals.allocatedCount.toLocaleString()}건</b><small>1월~12월 할당 건수 합계</small></div><div><span>선택 담당자 연간 작성 건수</span><b>${data.totals.writtenCount.toLocaleString()}건</b><small>할당 대비 ${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</small></div>`;
  renderSalesMonthlyOverviewChart(data); renderSalesMonthlyOverviewTables(data);
 }
 function salesDashboardAggregates(){
