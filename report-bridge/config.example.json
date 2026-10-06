@@ -1,0 +1,13 @@
+{
+  "port": 8787,
+  "nas_root": "Z:\\VOL1",
+  "database": "./private/report-links.sqlite",
+  "allowed_origins": [
+    "https://YOUR-PORTAL-DOMAIN"
+  ],
+  "supabase_url": "https://spkxyjmtbcnkxafrksao.supabase.co",
+  "supabase_key": "COPY_PUBLISHABLE_KEY_FROM_PORTAL_CONFIG",
+  "max_depth": 10,
+  "max_scan_files": 10000,
+  "max_download_bytes": 209715200
+}
