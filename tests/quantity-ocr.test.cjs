@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict');require('../quantity-ocr.js');
+const q=global.QuantityOCR;
+assert.equal(q.parse('냉 동 기 4대')[0].value,'4');
+assert.equal(q.parse('AHU 6대')[0].index,12);
+assert.equal(q.parse('팬코일유닛 1,200대')[0].value,'1200');
+assert.equal(q.parse('펌프 12 3')[0].value,'');
+assert.equal(q.parse('냉동기 합계 8').length,0);
+assert.equal(q.parse('보일러 42 kW 2대')[0].ambiguous,true);
+assert.equal(q.parse('냉동기 냉각탑 4')[0].index,-1);
+const allowed=new Set(Array.from({length:27},(_,i)=>55+i));
+assert.deepEqual(q.plan([{checked:true,index:0,value:'0'}],55,allowed),[{col:55,value:'0'}]);
+for(const value of ['-1','1.2','','1e2','9007199254740993'])assert.throws(()=>q.plan([{checked:true,index:0,value}],55,allowed));
+assert.throws(()=>q.plan([{checked:true,index:0,value:'2'},{checked:true,index:0,value:'4'}],55,allowed));
+assert.throws(()=>q.plan([{checked:true,index:27,value:'2'}],55,allowed));
+assert.throws(()=>q.plan([{checked:true,index:0,value:'2'}],55,new Set([56])));
+assert.throws(()=>q.plan([{checked:false,index:0,value:'2'}],55,allowed));
+assert.equal(q.plan([{checked:true,index:26,value:'3'}],83,new Set([109]))[0].col,109);
+console.log('PASS: quantity OCR parsing and safe selective application');

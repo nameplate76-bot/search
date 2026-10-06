@@ -766,3 +766,5 @@ body{width:100%;max-width:100%;overflow-x:hidden}
  #page-search .siteListActionRow .siteColumnFilterToolbar>button{white-space:nowrap}
  #page-search .siteListActionRow .siteColumnFilterToolbar>label,#page-search .siteListActionRow .siteColumnFilterToolbar>span{flex-basis:100%}
 }
+
+.quantityOcrBar{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px;background:#eef6ff;border-radius:8px}.quantityOcrDialog{width:min(1100px,96vw);max-height:92vh;overflow:auto}.quantityOcrDialog::backdrop{background:#0008}.quantityOcrDialog [data-preview]{max-width:100%;max-height:350px;object-fit:contain;display:block;margin:12px auto}.quantityOcrDialog [data-preview][hidden]{display:none}.quantityOcrDialog textarea{width:100%;margin:8px 0}.quantityOcrResults{overflow-x:auto;margin:12px 0}.quantityOcrResults table{min-width:640px;width:100%;border-collapse:collapse}.quantityOcrResults th,.quantityOcrResults td{padding:8px;border:1px solid #d5dde7}.quantityOcrResults small{display:block;color:#9a4d00}.quantityOcrResults input[data-value]{width:95px}.quantityOcrResults select{max-width:220px}.quantityOcrDialog [data-status]{white-space:pre-wrap} 

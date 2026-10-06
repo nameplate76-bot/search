@@ -1022,6 +1022,17 @@ function renderSiteEditFields(){
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
   return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
+ if((siteEditGroupIndex===2||siteEditGroupIndex===3)&&window.QuantityOCR){
+  const bar=document.createElement('div');bar.className='quantityOcrBar';fieldsRoot.prepend(bar);
+  const base=siteEditGroupIndex===2?55:83;
+  window.QuantityOCR.mount(bar,{title:g[0],siteName:siteEditValues[3],base,
+   fields:fields.filter(f=>f.col>=base&&f.col<base+27).map(f=>({col:f.col,name:siteDisplayFieldLabel(f)})),
+   getValue:col=>siteEditValues[col-1],apply:changes=>{
+    const permitted=siteEditMode==='create'?canCreateSite():canEditSite();if(!permitted)throw new Error('현장 입력·수정 권한이 없습니다.');
+    changes.forEach(({col,value})=>{siteEditValues[col-1]=value;if(PERFORMANCE_CONFIRM_RULES[col])syncPerformanceConfirmed(col,false)});
+    renderSiteEditFields();notify($('siteEditMsg'),'사진 수량이 입력 칸에 반영되었습니다. 저장 버튼을 눌러 완료하세요.',true);
+   }});
+ }
  applySiteInputLanguageHints(fieldsRoot);
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
