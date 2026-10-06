@@ -887,7 +887,7 @@ function syncElectronicReceiptFromYellowFile(value){
  if(input)input.value=siteDateInputValue(siteEditValues[26])||'';
 }
 // 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
-const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31,32,33,50,51,52];
+const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31,32,33,40,50,51,52];
 function clearSiteTemplateWorkValues(){
  SITE_TEMPLATE_CLEAR_COLS.forEach(col=>{siteEditValues[col-1]=''});
  if(/^x$/i.test(String(siteEditValues[13]??'').trim()))siteEditValues[13]='';
