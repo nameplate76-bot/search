@@ -779,3 +779,20 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:600px){.reportFilesDialog{width:calc(100vw - 20px);max-height:calc(100dvh - 20px);padding:18px 16px}.reportFilesDialog .reportMapping{padding:18px 14px}.reportFilesDialog .dlgHead{gap:10px}.reportFilesDialog [data-nas-guide]{padding:12px}.reportFilesDialog [data-save]{width:100%}}
 
 .reportMapping [data-save-status]{margin:12px 0;padding:14px 16px;border:1px solid #bbd5e7;border-radius:10px;background:#eef7ff;color:#163b55;line-height:1.65;overflow-wrap:anywhere}.reportMapping [data-save-status][data-error=true]{background:#fff0f0;border-color:#e6b5b5;color:#a01919}
+
+/* V105: compact actions below the field detail tabs */
+#detailDlg .detailEditBar{margin:0;justify-content:flex-end;min-width:0}
+#detailDlg .detailActionStack{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px;min-width:0;width:auto;max-width:100%}
+#detailDlg .detailActionStack button{width:auto;min-height:34px;padding:6px 12px;border-radius:9px;font-size:12px;font-weight:700;line-height:20px;white-space:nowrap}
+#detailDlg .detailActionStack [data-report-files]{background:#eef4ff;border-color:#b8ceff;color:#1d4ed8}
+#detailDlg .detailActionStack [data-report-files]:hover{background:#e3edff}
+#detailDlg .detailActionStack .quantityOutputBtn{background:#fff;border-color:var(--line);color:var(--text)}
+#detailDlg .detailActionStack .quantityOutputBtn:hover{background:#f8fafc}
+@media(max-width:800px){
+ #detailDlg .detailActionStack{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:6px}
+ #detailDlg .detailActionStack button{width:100%;min-width:0;padding:6px 4px;font-size:11px}
+}
+@media(max-width:340px){
+ #detailDlg .detailActionStack{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #detailDlg .detailActionStack button{white-space:normal}
+}
