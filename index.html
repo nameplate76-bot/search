@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261008-1145-v111">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261008-1430-v112">
 <script>
 (function(){
-  const BUILD='20261008-1145-v111';
+  const BUILD='20261008-1430-v112';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -60,7 +60,7 @@
 </section>
 <section id="page-unwritten" class="page unwrittenPage">
   <div class="pageTitle">
-    <div><h2>보고서 미작성 대시보드</h2><p>현장점검이 종료되었지만 보고서 작성 완료일이 없는 현장을 문서작성 담당자별로 집계합니다. 관리자만 조회·수정할 수 있습니다.</p></div>
+    <div><h2>보고서 미작성 대시보드</h2><p>현장점검이 종료되었지만 보고서 작성 완료일이 없는 현장을 문서작성 담당자별로 집계합니다. 보고서 미작성 조회 권한이 있는 직원이 조회할 수 있습니다. 현장 수정은 별도 수정 권한이 필요합니다.</p></div>
     <div class="actions"><button id="unwrittenFieldBtn" class="ghost">표시 항목 설정</button><button id="unwrittenRefresh" class="ghost">새로고침</button></div>
   </div>
   <div id="unwrittenSummary" class="unwrittenSummary"></div>
@@ -149,7 +149,7 @@
 </section>
 <section id="page-users" class="page">
   <div class="pageTitle userPageTitle"><div><h2>사용자 관리</h2><p>직원을 선택해 일괄 삭제하거나, 행을 클릭해 직원 상세정보를 확인하고 권한을 관리합니다.</p></div><div class="actions userTopActions"><button id="newUserBtn" class="primary">직원 등록</button><button id="usersSelectAllBtn" class="ghost">전체선택</button><button id="usersClearSelectionBtn" class="ghost">선택해제</button><button id="usersDeleteSelectedBtn" class="danger">선택삭제</button><span id="usersSelectedCount" class="usersSelectedCount">0명 선택</span></div></div>
-  <div class="tableWrap"><table id="userTable"><thead><tr><th class="userSelectCol">선택</th><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>현장등록</th><th>현장수정</th><th>금액조회</th><th>금액입력</th><th>금액수정</th><th>전체엑셀</th><th>매출조회</th><th>매출내보내기</th><th>매출출력</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
+  <div class="tableWrap"><table id="userTable"><thead><tr><th class="userSelectCol">선택</th><th>사원명</th><th>ID</th><th>전화번호</th><th>구분</th><th>승인</th><th>포털사용</th><th>현장검색</th><th>미작성조회</th><th>현장등록</th><th>현장수정</th><th>금액조회</th><th>금액입력</th><th>금액수정</th><th>전체엑셀</th><th>매출조회</th><th>매출내보내기</th><th>매출출력</th><th>엑셀DB등록</th><th>사용자관리</th><th>관리</th></tr></thead><tbody></tbody></table></div>
   <p class="hint">권한을 선택한 뒤 각 사용자 행의 <strong>권한 저장</strong> 버튼을 눌러 적용합니다. 직원 행의 빈 영역이나 사원명·ID를 클릭하면 상세정보를 확인할 수 있습니다. 현재 로그인한 계정은 일괄삭제 대상에서 제외됩니다.</p>
 </section>
 </main></div>
@@ -161,7 +161,7 @@
 <dialog id="userDlg"><div class="dlgHead"><h3>회사 직원 등록</h3><button class="iconBtn" id="userClose">×</button></div><form id="userForm" class="formGrid">
 <label>사원명<input id="empName" required></label><label>ID<input id="empId" required placeholder="영문/숫자 3자 이상"></label><label>비밀번호<input id="empPw" type="password" required minlength="8" placeholder="8자 이상"></label><label>전화번호<input id="empPhone" required placeholder="010-0000-0000"></label>
 <label>사용자 구분<select id="empRole"><option value="viewer">일반 사용자</option><option value="admin">관리자</option></select></label><label class="inline"><input id="empApproved" type="checkbox" checked> 승인</label>
-<fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permSiteCreate" type="checkbox"> 현장 직접등록</label><label class="inline"><input id="permSiteEdit" type="checkbox"> 현장 수정</label><label class="inline"><input id="permMoneyView" type="checkbox"> 금액 조회</label><label class="inline"><input id="permMoneyCreate" type="checkbox"> 금액 입력</label><label class="inline"><input id="permMoneyEdit" type="checkbox"> 금액 수정</label><label class="inline"><input id="permAllSitesExport" type="checkbox"> 전체 현장정보 엑셀 내려받기</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
+<fieldset><legend>사내포털 권한</legend><label class="inline"><input id="permPortal" type="checkbox" checked> 포털 사용</label><label class="inline"><input id="permSites" type="checkbox" checked> 현장 검색</label><label class="inline"><input id="permUnwritten" type="checkbox"> 보고서 미작성 조회</label><label class="inline"><input id="permSiteCreate" type="checkbox"> 현장 직접등록</label><label class="inline"><input id="permSiteEdit" type="checkbox"> 현장 수정</label><label class="inline"><input id="permMoneyView" type="checkbox"> 금액 조회</label><label class="inline"><input id="permMoneyCreate" type="checkbox"> 금액 입력</label><label class="inline"><input id="permMoneyEdit" type="checkbox"> 금액 수정</label><label class="inline"><input id="permAllSitesExport" type="checkbox"> 전체 현장정보 엑셀 내려받기</label><label class="inline"><input id="permSales" type="checkbox"> 매출 조회</label><label class="inline"><input id="permSalesExport" type="checkbox"> 매출 엑셀 내보내기</label><label class="inline"><input id="permSalesPrint" type="checkbox"> 매출 출력</label><label class="inline"><input id="permImport" type="checkbox"> 엑셀 DB 등록</label><label class="inline"><input id="permUsers" type="checkbox"> 사용자 관리</label></fieldset>
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
 
 <dialog id="siteEditDlg" class="siteEditDlg"><div class="dlgHead"><div><h3 id="siteEditTitle">현장 직접등록</h3><small id="siteEditHint">권한이 있는 사용자만 등록·수정할 수 있습니다.</small></div><button class="iconBtn" id="siteEditClose">×</button></div>
@@ -199,4 +199,4 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261008-1145-v111"></script><script src="fields.js?v=20261008-1145-v111"></script><script src="quantity-ocr.js?v=20261008-1145-v111"></script><script src="report-files.js?v=20261008-1145-v111"></script><script src="app.js?v=20261008-1145-v111"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261008-1430-v112"></script><script src="fields.js?v=20261008-1430-v112"></script><script src="quantity-ocr.js?v=20261008-1430-v112"></script><script src="report-files.js?v=20261008-1430-v112"></script><script src="app.js?v=20261008-1430-v112"></script></body></html>
