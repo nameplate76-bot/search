@@ -404,7 +404,20 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media (min-width:1001px) and (max-width:1200px){
   .salesDashKpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
-\n\n/* V45 - 본인/관리자 비밀번호 변경 */\n.userPasswordSection{margin-top:16px;padding-top:16px;border-top:1px solid #dbe3ef}\n.userPasswordSection h4{margin:0 0 4px;font-size:15px}\n.userPasswordHelp{margin:0 0 10px;color:#64748b;font-size:12px}\n.userPasswordEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end}\n.userPasswordEdit label{display:grid;gap:5px;font-size:12px;color:#475569}\n.userPasswordEdit input{width:100%;min-width:0}\n.userPasswordEdit button{min-height:40px;white-space:nowrap}\n.userPasswordMsg{display:block;min-height:18px;margin-top:7px;color:#166534}\n.userPasswordMsg.error{color:#b91c1c}\n@media(max-width:700px){.userPasswordEdit{grid-template-columns:1fr}.userPasswordEdit button{width:100%}}\n
+
+
+/* V45 - 본인/관리자 비밀번호 변경 */
+.userPasswordSection{margin-top:16px;padding-top:16px;border-top:1px solid #dbe3ef}
+.userPasswordSection h4{margin:0 0 4px;font-size:15px}
+.userPasswordHelp{margin:0 0 10px;color:#64748b;font-size:12px}
+.userPasswordEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.userPasswordEdit label{display:grid;gap:5px;font-size:12px;color:#475569}
+.userPasswordEdit input{width:100%;min-width:0}
+.userPasswordEdit button{min-height:40px;white-space:nowrap}
+.userPasswordMsg{display:block;min-height:18px;margin-top:7px;color:#166534}
+.userPasswordMsg.error{color:#b91c1c}
+@media(max-width:700px){.userPasswordEdit{grid-template-columns:1fr}.userPasswordEdit button{width:100%}}
+
 
 /* V47 매출 상세목록 접기/펼치기 */
 .salesPanelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
@@ -787,3 +800,15 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #detailTabs>.detailActionChip:first-of-type{margin-left:0}
 
 .salesListConditionHelp{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0}.salesListConditionHelp span{font-size:13px;color:var(--muted)}
+
+/* V110: password fields match staff information cards */
+.userInfoBody .userPasswordSection{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}
+.userInfoBody .userPasswordSection h4{margin:0 0 6px;font-size:15px}
+.userInfoBody .userPasswordHelp{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.6}
+.userInfoBody .userPasswordEdit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end}
+.userInfoBody .userPasswordEdit label{display:grid;gap:7px;min-width:0;margin:0;color:#475467;font-size:12px;font-weight:700}
+.userInfoBody .userPasswordEdit input{width:100%;min-width:0;min-height:40px;padding:9px 10px;border:1px solid #cdd8e7;border-radius:8px;background:#fff;font:inherit;font-size:14px;font-weight:400}
+.userInfoBody .userPasswordEdit input:focus{outline:2px solid #bfdbfe;outline-offset:1px;border-color:#60a5fa}
+.userInfoBody .userPasswordEdit button{min-height:40px;padding:9px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap}
+.userInfoBody .userPasswordMsg{display:block;min-height:18px;margin-top:10px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:700px){.userInfoBody .userPasswordEdit{grid-template-columns:1fr}.userInfoBody .userPasswordEdit button{width:100%}.userInfoBody .userPasswordEdit input{font-size:16px}}
