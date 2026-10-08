@@ -982,7 +982,9 @@ function runQuantityPrint(){if(!quantityPrintRow)return;const w=window.open('','
 async function getSharedReportApi(){
  const {data,error}=await sb.from('staff_report_settings').select('api_url').eq('id','shared').maybeSingle();
  if(error)throw new Error('공통 보고서 접속주소 조회 오류: '+error.message);
- return data?.api_url||'';
+ if(data?.api_url)return data.api_url;
+ let previous='';try{previous=localStorage.getItem('staff-report-api-v1:'+String(cfg.supabaseUrl||''))||''}catch(e){}
+ return previous||cfg.reportApiUrl||'';
 }
 async function saveSharedReportApi(value){
  if(!isAdmin())throw new Error('관리자만 공통 주소를 변경할 수 있습니다.');
