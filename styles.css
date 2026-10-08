@@ -785,3 +785,5 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #detailTabs>.chip{white-space:nowrap;flex:0 0 auto}
 #detailTabs>.detailActionChip{font-weight:400}
 #detailTabs>.detailActionChip:first-of-type{margin-left:0}
+
+.salesListConditionHelp{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0}.salesListConditionHelp span{font-size:13px;color:var(--muted)}
