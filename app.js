@@ -979,11 +979,24 @@ function quantityPrintCss(){return `*{box-sizing:border-box}body{margin:0;backgr
 function openQuantityPrint(row){quantityPrintRow=row;$('quantityPrintTitle').textContent=`확정수량 출력 - ${row?.site_name||''}`;$('quantityPrintPreview').innerHTML=quantityPrintSheetHtml(row);$('quantityPrintDlg').showModal()}
 function runQuantityPrint(){if(!quantityPrintRow)return;const w=window.open('','_blank','width=1000,height=900');if(!w)return alert('출력 창을 열 수 없습니다. 팝업 차단을 해제해 주세요.');const title=`확정수량_${String(quantityPrintRow?.site_name||'현장').replace(/[\\/:*?"<>|]/g,'_')}`;w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${quantityPrintCss()}</style></head><body>${quantityPrintSheetHtml(quantityPrintRow)}<script>window.addEventListener('load',()=>setTimeout(()=>{window.focus();window.print()},250));<\/script></body></html>`);w.document.close()}
 
+async function getSharedReportApi(){
+ const {data,error}=await sb.from('staff_report_settings').select('api_url').eq('id','shared').maybeSingle();
+ if(error)throw new Error('공통 보고서 접속주소 조회 오류: '+error.message);
+ return data?.api_url||'';
+}
+async function saveSharedReportApi(value){
+ if(!isAdmin())throw new Error('관리자만 공통 주소를 변경할 수 있습니다.');
+ const {error}=await sb.from('staff_report_settings').upsert({id:'shared',api_url:value,updated_at:new Date().toISOString()},{onConflict:'id'});
+ if(error)throw new Error('공통 주소 저장 오류: '+error.message);
+ const actual=await getSharedReportApi();if(actual!==value)throw new Error('공통 주소 저장 확인에 실패했습니다. 다시 조회해 주세요.');
+}
 async function openSiteReports(id){
  try{const row=await ensureFullSiteRow(id);if(!row)throw new Error('현장을 찾을 수 없습니다.');
- window.ReportFiles.open({row,admin:!!isAdmin(),config:cfg,session:async()=>{const {data:{session}}=await sb.auth.getSession();return session}});
+ const reportApiUrl=await getSharedReportApi();
+ window.ReportFiles.open({row,admin:!!isAdmin(),config:{...cfg,reportApiUrl},getApi:getSharedReportApi,saveApi:saveSharedReportApi,session:async()=>{const {data:{session}}=await sb.auth.getSession();return session}});
  }catch(e){alert('보고서 조회: '+e.message)}
 }
+
 async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('')+`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button><button class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>${canEditSite()?`<button class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;const render=i=>{const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');$('detailBody').innerHTML=(i===0||i===1?contactCards(r):'')+fields.map(f=>`<div class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');bindContactActions(r);const rb=tabs.querySelector('[data-report-files]');if(rb)rb.onclick=()=>openSiteReports(Number(rb.dataset.reportFiles));const qb=tabs.querySelector('[data-quantity-print]');if(qb)qb.onclick=()=>openQuantityPrint(r);const eb=tabs.querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{$('detailDlg').close();openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);$('detailDlg').showModal()}
 
 const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];

@@ -1,6 +1,7 @@
 const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const source=fs.readFileSync(path.join(__dirname,'../report-files.js'),'utf8');
-function setup(mode='ok',override=''){
+function setup(mode='ok',override='',shared=false){
+ let sharedUrl='https://shared.trycloudflare.com';
  const nodes=new Map();
  function node(sel){if(!nodes.has(sel))nodes.set(sel,{value:'',textContent:'',dataset:{},disabled:false,hidden:false,innerHTML:'',addEventListener(event,fn){this[event]=fn},querySelectorAll(){return []}});return nodes.get(sel)}
  const dialog={showModal(){},close(){},remove(){},querySelector:node,querySelectorAll(sel){return sel.split(',').filter(x=>!x.includes('file-id')).map(node)}};
@@ -14,8 +15,8 @@ function setup(mode='ok',override=''){
   return new Response(JSON.stringify({mapping:mode==='mismatch'?{folder:'other/folder'}:saved}));
  }};
  vm.runInNewContext(source,context);
- context.window.ReportFiles.open({admin:true,row:{site_name:'테스트',source_id:7523},config:{supabaseUrl:'https://example.supabase.co',reportApiUrl:'https://current.trycloudflare.com'},session:async()=>({access_token:'test-token'})});
- return {node,calls,releaseMapping:()=>releaseMapping(),releaseReports:()=>releaseReports()};
+ context.window.ReportFiles.open({...(shared?{getApi:async()=>sharedUrl,saveApi:async value=>{sharedUrl=value}}:{}),admin:true,row:{site_name:'테스트',source_id:7523},config:{supabaseUrl:'https://example.supabase.co',reportApiUrl:'https://current.trycloudflare.com'},session:async()=>({access_token:'test-token'})});
+ return {node,calls,setShared:value=>{sharedUrl=value},releaseMapping:()=>releaseMapping(),releaseReports:()=>releaseReports()};
 }
 const tick=()=>new Promise(r=>setImmediate(r));
 (async()=>{
@@ -25,5 +26,7 @@ const tick=()=>new Promise(r=>setImmediate(r));
  t.releaseReports();await saving;await tick();assert.ok(t.node('[data-save-status]').textContent.includes('저장 완료'));assert.equal(t.calls.filter(x=>x.method==='PUT').length,1);assert.equal(t.calls.filter(x=>x.url.endsWith('/mapping')).length,3);assert.equal(t.calls.filter(x=>x.url.endsWith('/reports')).length,2);
  for(const mode of ['denied','mismatch']){t=setup(mode);await tick();t.releaseMapping();t.releaseReports();await tick();t.node('[data-folder]').value='학교/상록중학교';await t.node('[data-save]').onclick();const result=t.node('[data-save-status]');assert.equal(result.dataset.error,'true');assert.ok(result.textContent.includes(mode==='denied'?'HTTP 403':'저장 내용을 확인하지 못했습니다'));assert.ok(!result.textContent.includes('저장 완료'));assert.equal(t.node('[data-save]').disabled,false)}
  t=setup('ok','https://replacement.trycloudflare.com');await tick();assert.ok(t.calls.every(x=>x.url.startsWith('https://replacement.trycloudflare.com/')));t.releaseMapping();t.releaseReports();await tick();
+ t=setup('ok','https://stale.trycloudflare.com',true);await tick();assert.ok(t.calls.every(x=>x.url.startsWith('https://shared.trycloudflare.com/')));t.releaseMapping();t.releaseReports();await tick();t.setShared('https://updated.trycloudflare.com');await t.node('[data-refresh]').onclick();assert.ok(t.calls.at(-1).url.startsWith('https://updated.trycloudflare.com/'));t.node('[data-api]').value='https://admin-saved.trycloudflare.com';await t.node('[data-api-save]').onclick();await tick();assert.ok(t.calls.at(-1).url.startsWith('https://admin-saved.trycloudflare.com/'));
+ console.log('PASS shared address overrides stale browser storage; refresh reads latest; administrator save shared address');
  console.log('PASS: delayed mapping preserves input; save queues during initial query; PUT/GET verifies storage; automatic report refresh; visible HTTP 403; readback mismatch; persistent HTTPS override');
 })().catch(e=>{console.error(e);process.exitCode=1});
