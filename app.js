@@ -969,9 +969,16 @@ function quantityPrintWithUnit(v,unit){
  }
  return numberText?`${numberText} ${unit}`:'';
 }
+function quantityPrintSiteName(value){
+ let text=String(value??'');
+ // Remove balanced parenthetical notes, including nested notes.
+ let previous;
+ do{previous=text;text=text.replace(/\([^()]*\)|（[^（）]*）/g,'')}while(text!==previous);
+ return text.replace(/\s+/g,' ').trim();
+}
 function quantityPrintSheetHtml(row){
  const vals=Array.isArray(row?.safe_values)?row.safe_values:[];
- const site=quantityPrintRaw(vals,3)||row?.site_name||'';
+ const site=quantityPrintSiteName(quantityPrintRaw(vals,3)||row?.site_name||'');
  const area=quantityPrintRaw(vals,5),households=quantityPrintRaw(vals,6),approval=quantityPrintRaw(vals,7);
  const rows=QUANTITY_PRINT_EQUIPMENT.map((e,i)=>{
    const maintenance=quantityPrintRaw(vals,54+e.db),target=quantityPrintRaw(vals,82+e.db),confirmed=quantityPrintRaw(vals,110+e.db);
