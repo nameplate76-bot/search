@@ -962,6 +962,11 @@ function quantityPrintWithUnit(v,unit){
  const raw=String(v??'').trim();
  if(!raw||raw==='-'||raw==='—')return raw;
  const numberText=raw.replace(unit==='㎡'?/\s*(?:㎡|m²|m2)\s*$/i:/\s*세대\s*$/,'').trim();
+ if(unit==='㎡'){
+  const normalized=numberText.replace(/,/g,'').trim();
+  const n=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized)?Number(normalized):NaN;
+  if(Number.isFinite(n))return `${n.toLocaleString('ko-KR',{minimumFractionDigits:2,maximumFractionDigits:2})} ${unit}`;
+ }
  return numberText?`${numberText} ${unit}`:'';
 }
 function quantityPrintSheetHtml(row){
