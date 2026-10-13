@@ -253,6 +253,11 @@ function schoolPhoneSaveNote(siteName,phone,previousPhone='',created=false){
  if(!current.length||(!created&&JSON.stringify(current)===JSON.stringify(previous)))return'';
  return ' 학교 일반전화번호를 같은 학교명의 관련 현장에 자동 반영했습니다. 각 현장의 휴대폰 번호는 유지됩니다.';
 }
+function schoolEmailSaveNote(siteName,email,previousEmail='',created=false){
+ const base=String(siteName||'').replace(/[\(（].*$/,'').trim(),value=String(email||'').trim();
+ if(!base.includes('학교')||!value||(!created&&value===String(previousEmail||'').trim()))return'';
+ return ' 관리주체 이메일을 같은 학교명의 관련 현장에 자동 반영했습니다.';
+}
 function callPhone(phone){
  const n=cleanPhone(phone);if(!n)return alert('등록된 전화번호가 없습니다.');
  // 사용자 클릭 이벤트 안에서 직접 tel: 스킴을 호출해야 iOS/Android 전화 앱이 가장 안정적으로 실행됩니다.
@@ -337,7 +342,9 @@ async function saveContact(e){
  const syncResult=await syncAddressToSameSiteName(id,siteName,fullAddress,$('contactEditMsg'));
  const phoneSync=savedContact?.school_phone;
  const phoneNote=phoneSync?.synced&&Number(phoneSync.matched)>0?` 같은 학교 ${Number(phoneSync.matched).toLocaleString()}건에 일반 전화번호를 반영했습니다. 기존 휴대폰 번호는 유지됩니다.`:'';
- notify($('contactEditMsg'),(syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.')+phoneNote,true);
+ const emailSync=savedContact?.school_email;
+ const emailNote=emailSync?.synced&&Number(emailSync.matched)>0?` 같은 학교 ${Number(emailSync.matched).toLocaleString()}건에 관리주체 이메일을 반영했습니다.`:'';
+ notify($('contactEditMsg'),(syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.')+phoneNote+emailNote,true);
  invalidateDataCaches('sites');
  await refreshActiveData(true).catch(()=>{});
  setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
@@ -1191,6 +1198,7 @@ function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncR
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
+ const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);
  setTimeout(()=>{$('siteEditDlg').close()},350);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
