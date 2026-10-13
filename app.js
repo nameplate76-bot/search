@@ -245,6 +245,14 @@ function splitPhoneNumbers(v){
 }
 function normalizePhoneList(v){return splitPhoneNumbers(v).join(' / ')}
 function formatPhoneList(v){const a=splitPhoneNumbers(v);return a.length?a.join(' / '):String(v||'').trim()}
+function schoolPhoneSaveNote(siteName,phone,previousPhone='',created=false){
+ const base=String(siteName||'').replace(/[\(（].*$/,'').trim();
+ if(!base.includes('학교'))return'';
+ const lines=v=>splitPhoneNumbers(v).filter(n=>/^(02\d{7,8}|0(?:31|32|33|41|42|43|44|51|52|53|54|55|61|62|63|64)\d{7,8}|070\d{8})$/.test(cleanPhone(n))).sort();
+ const current=lines(phone),previous=lines(previousPhone);
+ if(!current.length||(!created&&JSON.stringify(current)===JSON.stringify(previous)))return'';
+ return ' 학교 일반전화번호를 같은 학교명의 관련 현장에 자동 반영했습니다. 각 현장의 휴대폰 번호는 유지됩니다.';
+}
 function callPhone(phone){
  const n=cleanPhone(phone);if(!n)return alert('등록된 전화번호가 없습니다.');
  // 사용자 클릭 이벤트 안에서 직접 tel: 스킴을 호출해야 iOS/Android 전화 앱이 가장 안정적으로 실행됩니다.
@@ -323,11 +331,13 @@ async function saveContact(e){
  if(!fullAddress)return notify($('contactEditMsg'),'주소를 검색해 선택하거나 직접입력해 주세요.');
  const id=Number($('contactSourceId').value),autoRegion=regionFromAddress(fullAddress),patch={client_phone:normalizePhoneList($('contactPhone').value.trim()),client_email:$('contactEmail').value.trim(),site_address:fullAddress,...(autoRegion?{region:autoRegion}:{})};
  notify($('contactEditMsg'),'저장 중...',true);
- const{error}=await sb.from('staff_site_source').update(patch).eq('id',id);if(error)return notify($('contactEditMsg'),'저장 실패: '+error.message);
+ const{data:savedContact,error}=await sb.rpc('staff_update_site_contact',{p_source_id:id,p_phone:patch.client_phone,p_email:patch.client_email,p_address:fullAddress});if(error)return notify($('contactEditMsg'),'저장 실패: '+error.message);
  const row=lastSites.find(x=>Number(x.source_id)===id);if(row)Object.assign(row,patch);
  const siteName=String($('contactSiteName').value||row?.site_name||'').trim();
  const syncResult=await syncAddressToSameSiteName(id,siteName,fullAddress,$('contactEditMsg'));
- notify($('contactEditMsg'),syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.',true);
+ const phoneSync=savedContact?.school_phone;
+ const phoneNote=phoneSync?.synced&&Number(phoneSync.matched)>0?` 같은 학교 ${Number(phoneSync.matched).toLocaleString()}건에 일반 전화번호를 반영했습니다. 기존 휴대폰 번호는 유지됩니다.`:'';
+ notify($('contactEditMsg'),(syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.')+phoneNote,true);
  invalidateDataCaches('sites');
  await refreshActiveData(true).catch(()=>{});
  setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
@@ -1177,9 +1187,10 @@ function searchSiteAddress(){const q=String($('siteAddressQuery').value||'').tri
 function resetSiteEditor(){siteEditValues=Array(137).fill('');sitePerformanceManualCols.clear();siteEditRow=null;siteEditGroupIndex=0;$('siteEditSourceId').value='';$('siteFormPhone').value='';$('siteFormEmail').value='';$('siteFormAddress').value='';$('siteFormAddressDetail').value='';$('siteAddressQuery').value='';resetSiteTemplateSearch();setSiteAddressMode('search');notify($('siteAddressMsg'),'검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.',true);notify($('siteEditMsg'),'')}
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal();setTimeout(()=>{$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';resetSiteEditor();siteEditRow=r;$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
-function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();return{values:siteEditValues,client_phone:normalizePhoneList($('siteFormPhone').value||''),client_email:String($('siteFormEmail').value||'').trim(),site_address:[base,detail].filter(Boolean).join(' ').trim()}}
+function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc('staff_create_site',{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc('staff_update_site',{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
+ const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
  setTimeout(()=>{$('siteEditDlg').close()},350);invalidateDataCaches('sites');await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
