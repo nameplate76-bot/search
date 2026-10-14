@@ -98,6 +98,14 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V13 - 복수 관리주체 전화번호 분리 표시 및 번호별 전화걸기 */
 .formGrid textarea{width:100%;border:1px solid #cfd7e5;border-radius:10px;padding:12px;background:#fff;font:inherit;resize:vertical;min-height:62px}
+/* V121: 현장 수정 연락처 입력칸의 높이와 모양을 통일합니다. 전화번호는 여러 줄 입력을 유지합니다. */
+.siteContactGrid{align-items:start}
+.siteContactGrid label{min-width:0;grid-template-rows:auto 42px auto;align-content:start}
+.siteContactGrid input,.siteContactGrid textarea{width:100%;min-width:0;height:42px;min-height:42px;max-height:42px;box-sizing:border-box;border:1px solid #cfd7e5;border-radius:9px;padding:10px 11px;background:#fff;font:inherit;line-height:20px;color:var(--text)}
+.siteContactGrid textarea{resize:none;overflow:auto}
+.siteContactGrid input:focus,.siteContactGrid textarea:focus{outline:2px solid #bfdbfe;border-color:#60a5fa}
+.siteContactGrid input:disabled,.siteContactGrid textarea:disabled{background:#f2f4f7;color:#667085}
+.siteContactGrid .fieldHelp{margin:0;line-height:1.5}
 .fieldHelp{display:block;margin-top:-7px;margin-bottom:12px;color:var(--muted);font-size:12px;font-weight:400}
 .phoneLinkList{display:flex;flex-direction:column;align-items:flex-start;gap:7px;width:100%}
 .phoneLinkItem{display:inline-flex;align-items:center;min-height:40px;padding:8px 11px;border:1px solid #bfd2ff;border-radius:10px;background:#f5f8ff;text-decoration:none!important}
