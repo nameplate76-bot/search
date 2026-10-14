@@ -7,7 +7,7 @@ create function public.staff_is_admin() returns boolean language sql stable as $
 create function public.staff_can_manage_users() returns boolean language sql stable as $$select exists(select 1 from public.pjt_profiles where id=auth.uid() and approved and (role='admin' or can_manage_staff_users))$$;
 insert into public.pjt_profiles(id,role,can_use_staff_portal,name) values ('00000000-0000-0000-0000-000000000001','admin',true,'관리자'),('00000000-0000-0000-0000-000000000002','viewer',true,'조회자'),('00000000-0000-0000-0000-000000000003','viewer',true,'수정자'),('00000000-0000-0000-0000-000000000004','viewer',true,'권한없음');
 insert into public.staff_site_source values(1,'상록중학교(성능 실시기준일 26.04.18)','A1','황선구, 이승건');`);
-const migration=fs.readFileSync(require('node:path').join(__dirname,'../database/V121_점검일정_전체적용.sql'),'utf8');await db.exec(migration);await db.exec(migration);
+const migration=fs.readFileSync(require('node:path').join(__dirname,'../database/V122_점검일정_전체적용.sql'),'utf8');await db.exec(migration);await db.exec(migration);
 await db.exec(`update pjt_profiles set can_view_staff_schedule=true where id='00000000-0000-0000-0000-000000000002';update pjt_profiles set can_view_staff_schedule=true,can_edit_staff_schedule=true where id='00000000-0000-0000-0000-000000000003';`);
 async function as(id){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')}
 const id=n=>'00000000-0000-0000-0000-'+String(n).padStart(12,'0');
