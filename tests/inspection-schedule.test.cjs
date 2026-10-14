@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');const core=require('../inspection-schedule.js');global.window=global;require('../schedule-holidays.js');const h=global.STAFF_SCHEDULE_HOLIDAYS['2026'];
+const row={source_id:1,site_name:'상록중학교(성능 실시기준일 26.04.18)',plan_start:'2026-05-12',plan_end:'2026-05-13',inspectors:'황선구, 이승건'};
+assert.equal(core.onDay([row],'2026-05-11').length,0);assert.equal(core.onDay([row],'2026-05-12').length,1);assert.equal(core.onDay([row],'2026-05-13').length,1);assert.equal(core.onDay([row],'2026-05-14').length,0);
+assert.equal(core.stats([row],2026,5,h).count,1);assert.equal(core.stats([row],2026,5,h).covered,2);
+assert.ok(h['2026-05-01']);assert.ok(h['2026-05-25']);assert.ok(h['2026-06-03']);assert.ok(h['2026-07-17']);
+assert.equal(core.stats([],2026,5,h).tone,'empty');assert.equal(core.stats([row],2026,5,h).tone,'low');
+const all={...row,plan_start:'2026-05-01',plan_end:'2026-05-31'};assert.equal(core.stats([all],2026,5,h).tone,'full');assert.equal(core.stats([all],2026,5,h).work,18);
+const weekdays=Array.from({length:31},(_,i)=>core.key(2026,5,i+1)).filter(k=>{const w=new Date(k).getUTCDay();return w>0&&w<6&&!h[k]});
+const singles=weekdays.map(k=>({...row,plan_start:k,plan_end:k}));assert.equal(core.stats(singles.slice(0,9),2026,5,h).ratio,.5);assert.equal(core.stats(singles.slice(0,9),2026,5,h).tone,'low');assert.equal(core.stats(singles.slice(0,10),2026,5,h).tone,'high');assert.equal(core.stats(singles,2026,5,h).count,1);
+const weekend={...row,plan_start:'2026-05-09',plan_end:'2026-05-10'};assert.equal(core.stats([weekend],2026,5,h).covered,0);assert.equal(core.stats([weekend],2026,5,h).count,1);
+const cross={...row,plan_start:'2026-12-31',plan_end:'2027-01-02'};assert.equal(core.stats([cross],2026,12,h).count,1);assert.equal(core.stats([cross],2027,1,{}).count,1);
+assert.equal(core.monthDays(2028,2),29);assert.equal(core.monthDays(2026,2),28);assert.equal(core.grid(2026,6)[0],'2026-06-01');assert.equal(core.grid(2026,2)[6],'2026-02-01');assert.equal(core.grid(2028,2).filter(Boolean).length,29);
+console.log('PASS: inclusive ranges, unique counts, 0/50/>50/100%, holiday exclusions, weekends, year crossing, leap year, Monday-first calendar');

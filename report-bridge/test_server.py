@@ -1,4 +1,5 @@
 import json, tempfile, threading, unittest
+from unittest.mock import patch
 from pathlib import Path
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError
@@ -29,6 +30,30 @@ class Tests(unittest.TestCase):
   self.assertEqual(self.b.files(999),([],False))
   self.b.save(11,{'folder':'missing'})
   with self.assertRaises(Failure):self.b.files(11)
+ def test_transient_nas_reconnect(self):
+  self.b.save(12,{'folder':'학교/상록중학교','reference_date':'2025-04-18'})
+  from server import probe_directory
+  calls=[]
+  def transient(path):
+   calls.append(str(path))
+   if len(calls)==2:raise FileNotFoundError('transient share reconnect')
+   return probe_directory(path)
+  with patch('server.probe_directory',side_effect=transient),patch('server.time.sleep') as delay:
+   files,connected=self.b.files(12)
+   self.assertTrue(connected);self.assertEqual(len(files),1)
+   self.assertEqual(delay.call_count,1)
+  self.assertEqual(self.b.mapping(12)['folder'],'학교/상록중학교')
+ def test_nas_errors_are_not_missing_folders(self):
+  with patch('server.probe_directory',side_effect=PermissionError('denied')),patch('server.time.sleep') as delay:
+   with self.assertRaises(Failure) as e:self.b.files(10)
+   self.assertEqual(e.exception.status,503);self.assertIn('권한',e.exception.message);delay.assert_not_called()
+  with patch('server.probe_directory',side_effect=OSError('network unavailable')),patch('server.time.sleep') as delay:
+   with self.assertRaises(Failure) as e:self.b.files(10)
+   self.assertEqual(e.exception.status,503);self.assertEqual(delay.call_count,2)
+ def test_diagnostic_content(self):
+  result=self.b.diagnostics(10)
+  self.assertEqual(result['bridge_version'],'R4');self.assertEqual(result['file_count'],1)
+  self.assertEqual(result['nas_root'],str(self.nas));self.assertNotIn('supabase_key',result)
  def test_authorization(self):
   with self.assertRaises(Failure):self.b.authorize('',10)
   def remote(path,token):
@@ -48,6 +73,10 @@ class Tests(unittest.TestCase):
    with self.assertRaises(HTTPError) as e:call('reports',token='');self.assertEqual(e.exception.code,401)
    with self.assertRaises(HTTPError) as e:call('reports',origin='https://evil.test');self.assertEqual(e.exception.code,403)
    with self.assertRaises(HTTPError) as e:call('mapping',body=self.payload);self.assertEqual(e.exception.code,403)
+   with self.assertRaises(HTTPError) as e:call('diagnostics');self.assertEqual(e.exception.code,403)
+   with call('diagnostics',token='admin') as r:
+    result=json.load(r);self.assertEqual(result['bridge_version'],'R4');self.assertEqual(result['site_id'],10)
+    self.assertEqual(result['file_count'],1);self.assertNotIn('supabase_key',result)
    with call('mapping',token='admin',body=self.payload) as r:self.assertEqual(r.status,200)
    with call('reports') as r:
     result=json.load(r);self.assertTrue(result['connected']);self.assertNotIn('_path',result['files'][0]);file_id=result['files'][0]['id']

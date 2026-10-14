@@ -7,6 +7,7 @@ from urllib.parse import urlsplit, urlencode, quote
 from urllib.error import HTTPError
 
 EXTENSIONS={'.pdf','.hwp','.hwpx','.xlsx','.xls','.docx','.doc','.zip'}
+BRIDGE_VERSION='R4'
 class Failure(Exception):
     def __init__(self,status,message): self.status,self.message=status,message
 
@@ -31,6 +32,11 @@ def date_tokens(value):
     except ValueError: raise Failure(400,'실시기준일은 YYYY-MM-DD로 입력하세요.')
     return [date.strftime('%Y%m%d'),date.strftime('%y%m%d')]
 
+def probe_directory(path):
+    # is_dir() can hide unavailable-share/access errors as a missing directory.
+    with os.scandir(path) as entries:
+        next(entries,None)
+
 class Bridge:
     def __init__(self,config):
         self.config=config
@@ -51,12 +57,31 @@ class Bridge:
         result={'folder':folder,'reference_date':date,'preferred_file':preferred}
         with self.connect() as c:c.execute('INSERT INTO mappings VALUES (?,?) ON CONFLICT(site_id) DO UPDATE SET payload=excluded.payload',(site_id,json.dumps(result,ensure_ascii=False)))
         return result
+    def report_anchor(self,folder):
+        stage='root';last_error=None
+        for attempt in range(3):
+            try:
+                stage='root';probe_directory(self.root)
+                stage='folder';anchor=inside(self.root,self.root/relative_path(folder))
+                probe_directory(anchor)
+                return anchor
+            except PermissionError:
+                raise Failure(503,'NAS 폴더 접근 권한이 없습니다. 연결 프로그램을 실행한 계정의 NAS 접근 권한을 확인하세요.')
+            except OSError as error:
+                last_error=error
+                if attempt<2:time.sleep((0.5,1.0)[attempt])
+        if stage=='root':
+            raise Failure(503,'NAS 기준 폴더에 접근할 수 없습니다. NAS 재부팅·재연결 상태와 연결 프로그램 PC의 NAS 연결을 확인하세요.')
+        # A dropped connection between the root and folder checks is not a missing folder.
+        try:probe_directory(self.root)
+        except OSError:raise Failure(503,'NAS 연결이 일시적으로 끊겼습니다. 연결 복구 후 다시 조회하세요. 폴더 연결정보를 다시 등록할 필요는 없습니다.')
+        if isinstance(last_error,(FileNotFoundError,NotADirectoryError)):
+            raise Failure(404,'연결한 현장 폴더가 없습니다. 관리자에게 현장 폴더 위치 수정을 요청하세요.')
+        raise Failure(503,'NAS 현장 폴더를 읽을 수 없습니다. 연결 프로그램 PC의 NAS 연결 상태와 접근 권한을 확인하세요.')
     def files(self,site_id):
         mapping=self.mapping(site_id)
         if not mapping: return [],False
-        if not self.root.is_dir(): raise Failure(503,'NAS 기준 폴더에 접근할 수 없습니다. 연결 프로그램을 실행한 PC의 NAS 연결을 확인하세요.')
-        anchor=inside(self.root,self.root/mapping['folder'])
-        if not anchor.is_dir(): raise Failure(404,'연결한 현장 폴더가 없습니다. 관리자에게 현장 폴더 위치 수정을 요청하세요.')
+        anchor=self.report_anchor(mapping['folder'])
         tokens=date_tokens(mapping.get('reference_date',''));found=[];visited=0;deadline=time.monotonic()+15
         def walk_error(error): raise Failure(503,'일부 보고서 폴더를 읽을 수 없습니다. NAS 권한을 확인하세요.')
         for current,dirs,names in os.walk(anchor,followlinks=False,onerror=walk_error):
@@ -76,6 +101,17 @@ class Bridge:
                 if len(found)>500:raise Failure(413,'보고서 후보가 너무 많습니다. 실시기준일을 설정하세요.')
         found.sort(key=lambda r:(not r['preferred'],r['name'],r['folder']))
         return found,True
+    def diagnostics(self,site_id):
+        mapping=self.mapping(site_id)
+        result={'bridge_version':BRIDGE_VERSION,'process_id':os.getpid(),'nas_root':str(self.root),'source_file':str(Path(__file__).resolve()),'site_id':site_id,'mapping':mapping}
+        try:
+            files,connected=self.files(site_id)
+            result.update(connected=connected,http_status=200,file_count=len(files),message='실행 중인 연결 프로그램에서 보고서 검색 성공' if connected else '이 현장에 폴더 연결정보가 없습니다.')
+        except Failure as error:
+            result.update(connected=bool(mapping),http_status=error.status,file_count=0,message=error.message)
+        except OSError:
+            result.update(connected=bool(mapping),http_status=503,file_count=0,message='실행 중인 프로그램에서 NAS 파일을 읽을 수 없습니다.')
+        return result
     def remote(self,path,token):
         base=self.config['supabase_url'].rstrip('/')
         req=Request(base+path,headers={'apikey':self.config['supabase_key'],'Authorization':'Bearer '+token})
@@ -120,11 +156,18 @@ class Handler(BaseHTTPRequestHandler):
         origin=None
         try:
             origin=self.cors();url=urlsplit(self.path)
-            m=re.fullmatch(r'/api/sites/([1-9][0-9]*)/(reports|mapping|files/([a-f0-9]{64}))',url.path)
+            m=re.fullmatch(r'/api/sites/([1-9][0-9]*)/(reports|mapping|diagnostics|files/([a-f0-9]{64}))',url.path)
             if not m:raise Failure(404,'존재하지 않는 요청입니다.')
             site_id=int(m[1]);operation=m[2];bridge=self.server.bridge
             auth=self.headers.get('Authorization','');token=auth[7:] if auth.startswith('Bearer ') else ''
             profile=bridge.authorize(token,site_id)
+            if operation=='diagnostics':
+                if profile.get('role')!='admin':raise Failure(403,'연결 상태 확인은 관리자만 사용할 수 있습니다.')
+                if self.command!='GET':raise Failure(405,'읽기 전용 기능입니다.')
+                if not bridge.lock.acquire(blocking=False):raise Failure(503,'다른 보고서 검색을 처리 중입니다. 잠시 후 다시 확인하세요.')
+                try:result=bridge.diagnostics(site_id)
+                finally:bridge.lock.release()
+                return self.json_reply(200,result,origin)
             if operation=='mapping':
                 if profile.get('role')!='admin':raise Failure(403,'폴더 연결 설정은 관리자만 변경할 수 있습니다.')
                 if self.command=='GET':return self.json_reply(200,{'mapping':bridge.mapping(site_id)},origin)
@@ -162,5 +205,5 @@ def main():
     config=json.loads(Path(args.config).read_text(encoding='utf-8-sig'))
     if not config.get('allowed_origins') or not config.get('nas_root') or not config.get('supabase_url','').startswith('https://'):raise SystemExit('config.json의 포털 주소, NAS 기준 폴더, 인증 설정을 확인하세요.')
     server=ThreadingHTTPServer(('127.0.0.1',int(config.get('port',8787))),Handler);server.bridge=Bridge(config)
-    print('Report bridge listening on loopback. HTTPS reverse proxy is required for portal access.');server.serve_forever()
+    print('Report bridge '+BRIDGE_VERSION+' listening on loopback. PID '+str(os.getpid())+'. HTTPS reverse proxy is required for portal access.',flush=True);server.serve_forever()
 if __name__=='__main__':main()

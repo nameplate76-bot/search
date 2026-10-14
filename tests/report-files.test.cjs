@@ -9,7 +9,8 @@ function setup(mode='ok',override='',shared=false){
  let releaseMapping,releaseReports,saved=null,mappingReady=false,reportsReady=false;const calls=[];
  const context={window:{},URL,Date,Number,String,Error,TypeError,JSON,Set,Promise,AbortController,setTimeout,clearTimeout,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},document:{createElement:()=>dialog,body:{append(){}}},fetch:async(url,options)=>{
   calls.push({url,method:options.method||'GET'});
-  if(url.endsWith('/reports')){if(!reportsReady)await new Promise(r=>releaseReports=()=>{reportsReady=true;r()});return new Response(JSON.stringify({connected:!!saved,files:[]}))}
+  if(url.endsWith('/diagnostics')){if(mode==='diag404')return new Response(JSON.stringify({error:'존재하지 않는 요청입니다.'}),{status:404});return new Response(JSON.stringify({bridge_version:'R4',process_id:1234,site_id:7523,nas_root:'F:\\VOL1',mapping:{folder:'학교/테스트',reference_date:'2025-04-18'},http_status:200,file_count:2,message:'실행 중인 연결 프로그램에서 보고서 검색 성공'}))}
+  if(url.endsWith('/reports')){if(!reportsReady)await new Promise(r=>releaseReports=()=>{reportsReady=true;r()});if(mode==='folder404')return new Response(JSON.stringify({error:'연결한 현장 폴더가 없습니다. 관리자에게 현장 폴더 위치 수정을 요청하세요.'}),{status:404});if(mode==='site404')return new Response(JSON.stringify({error:'조회할 현장이 없습니다.'}),{status:404});if(mode==='gateway404')return new Response('<html>not found</html>',{status:404});return new Response(JSON.stringify({connected:!!saved,files:[]}))}
   if(options.method==='PUT'){if(mode==='denied')return new Response(JSON.stringify({error:'관리자만 변경할 수 있습니다.'}),{status:403});saved=JSON.parse(options.body);return new Response(JSON.stringify({mapping:saved}))}
   if(!mappingReady){await new Promise(r=>releaseMapping=()=>{mappingReady=true;r()});return new Response(JSON.stringify({mapping:{folder:'old/folder'}}))}
   return new Response(JSON.stringify({mapping:mode==='mismatch'?{folder:'other/folder'}:saved}));
@@ -28,5 +29,17 @@ const tick=()=>new Promise(r=>setImmediate(r));
  t=setup('ok','https://replacement.trycloudflare.com');await tick();assert.ok(t.calls.every(x=>x.url.startsWith('https://replacement.trycloudflare.com/')));t.releaseMapping();t.releaseReports();await tick();
  t=setup('ok','https://stale.trycloudflare.com',true);await tick();assert.ok(t.calls.every(x=>x.url.startsWith('https://shared.trycloudflare.com/')));t.releaseMapping();t.releaseReports();await tick();t.setShared('https://updated.trycloudflare.com');await t.node('[data-refresh]').onclick();assert.ok(t.calls.at(-1).url.startsWith('https://updated.trycloudflare.com/'));t.node('[data-api]').value='https://admin-saved.trycloudflare.com';await t.node('[data-api-save]').onclick();await tick();assert.ok(t.calls.at(-1).url.startsWith('https://admin-saved.trycloudflare.com/'));
  console.log('PASS shared address overrides stale browser storage; refresh reads latest; administrator save shared address');
+ for(const mode of ['folder404','site404','gateway404']){
+  t=setup(mode);await tick();t.releaseMapping();t.releaseReports();await tick();
+  const message=t.node('[data-status]').textContent;
+  assert.match(message,/HTTP 404/);assert.match(message,/현장 ID 7523/);
+  if(mode==='folder404'){assert.match(message,/연결한 현장 폴더가 없습니다/);assert.match(message,/old\/folder/)}
+  else{assert.match(message,/이 응답만으로 NAS 폴더 문제라고 판단할 수 없습니다/);assert.ok(!message.includes('연결한 현장 폴더가 없습니다'));if(mode==='site404')assert.match(message,/조회할 현장이 없습니다/)}
+ }
+ console.log('PASS original backend errors distinguish missing folders, missing sites, and non-JSON 404 responses');
+ t=setup();await tick();t.releaseMapping();t.releaseReports();await tick();await t.node('[data-diagnose]').onclick();
+ assert.match(t.node('[data-diagnostics]').innerHTML,/R4/);assert.match(t.node('[data-diagnostics]').innerHTML,/F:\\VOL1/);assert.match(t.node('[data-diagnostics]').innerHTML,/2개 파일/);assert.match(t.node('[data-status]').textContent,/보고서 다시 조회/);
+ t=setup('diag404');await tick();t.releaseMapping();t.releaseReports();await tick();await t.node('[data-diagnose]').onclick();assert.match(t.node('[data-status]').textContent,/연결 상태 확인 요청의 404/);assert.ok(!t.node('[data-status]').textContent.includes('연결한 현장 폴더가 없습니다'));
+ console.log('PASS live administrator diagnostics display R4, running NAS root, and file count; older bridge is not mislabeled as missing folder');
  console.log('PASS: delayed mapping preserves input; save queues during initial query; PUT/GET verifies storage; automatic report refresh; visible HTTP 403; readback mismatch; persistent HTTPS override');
 })().catch(e=>{console.error(e);process.exitCode=1});
