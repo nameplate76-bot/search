@@ -7,7 +7,11 @@ create function public.staff_is_admin() returns boolean language sql stable as $
 create function public.staff_can_manage_users() returns boolean language sql stable as $$select exists(select 1 from public.pjt_profiles where id=auth.uid() and approved and (role='admin' or can_manage_staff_users))$$;
 insert into public.pjt_profiles(id,role,can_use_staff_portal,name) values ('00000000-0000-0000-0000-000000000001','admin',true,'관리자'),('00000000-0000-0000-0000-000000000002','viewer',true,'조회자'),('00000000-0000-0000-0000-000000000003','viewer',true,'수정자'),('00000000-0000-0000-0000-000000000004','viewer',true,'권한없음');
 insert into public.staff_site_source values(1,'상록중학교(성능 실시기준일 26.04.18)','A1','황선구, 이승건');`);
-const migration=fs.readFileSync(require('node:path').join(__dirname,'../database/V122_점검일정_전체적용.sql'),'utf8');await db.exec(migration);await db.exec(migration);
+await db.exec(`create function staff_can_edit_sites() returns boolean language sql stable as $$select exists(select 1 from pjt_profiles where id=auth.uid() and approved and (role='admin' or can_edit_staff_sites))$$;
+create function staff_can_create_sites() returns boolean language sql stable as $$select exists(select 1 from pjt_profiles where id=auth.uid() and approved and (role='admin' or can_create_staff_sites))$$;
+create function staff_update_site(p_source_id bigint,p_data jsonb) returns bigint language plpgsql security definer as $$begin if not staff_can_edit_sites() then raise exception 'denied';end if;update staff_site_source set site_name=coalesce(p_data->>'site_name',site_name) where id=p_source_id;return p_source_id;end$$;
+create function staff_create_site(p_data jsonb) returns bigint language plpgsql security definer as $$begin if not staff_can_create_sites() then raise exception 'denied';end if;insert into staff_site_source(id,site_name) values(2,p_data->>'site_name');return 2;end$$;`);
+const migration=fs.readFileSync(require('node:path').join(__dirname,'../database/V123_점검일정_양방향연동_전체적용.sql'),'utf8');await db.exec(migration);await db.exec(migration);
 await db.exec(`update pjt_profiles set can_view_staff_schedule=true where id='00000000-0000-0000-0000-000000000002';update pjt_profiles set can_view_staff_schedule=true,can_edit_staff_schedule=true where id='00000000-0000-0000-0000-000000000003';`);
 async function as(id){await db.exec('reset role');await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]);await db.exec('set role authenticated')}
 const id=n=>'00000000-0000-0000-0000-'+String(n).padStart(12,'0');
@@ -18,4 +22,12 @@ await as(id(4));assert.equal((await db.query('select * from staff_inspection_sch
 await as(id(1));await db.query("select staff_save_user_permissions($1,'{\"can_edit_staff_schedule\":true}')",[id(4)]);const users=(await db.query('select staff_user_admin_list() as result')).rows[0].result;assert.equal(users.find(p=>p.id===id(4)).can_edit_staff_schedule,true);assert.equal(users.find(p=>p.id===id(4)).can_view_staff_schedule,true);
 await db.exec('reset role');await db.exec("update pjt_profiles set approved=false where id='"+id(4)+"'");await as(id(4));await assert.rejects(db.query('select staff_schedule_list(2026)'));
 await db.exec('reset role');await db.exec('set role anon');await assert.rejects(db.query('select staff_schedule_list(2026)'));await assert.rejects(db.query('select * from staff_inspection_schedule'));
+await as(id(1));await db.query("select staff_update_site_with_schedule(1,'{\"site_name\":\"동기화학교\"}','2026-06-10','2026-06-12','홍길동')");
+assert.equal((await db.query('select staff_schedule_get(1) as p')).rows[0].p.plan_start,'2026-06-10');
+await db.query("select staff_schedule_save(1,'2026-07-01','2026-07-02','홍길동')");assert.equal((await db.query('select staff_schedule_get(1) as p')).rows[0].p.plan_start,'2026-07-01');
+await assert.rejects(db.query("select staff_update_site_with_schedule(1,'{\"site_name\":\"되돌림필요\"}','2026-07-03','2026-07-04',$1)",['x'.repeat(501)]));
+await db.exec('reset role');assert.equal((await db.query('select site_name from staff_site_source where id=1')).rows[0].site_name,'동기화학교');
+await as(id(1));await db.query("select staff_create_site_with_schedule('{\"site_name\":\"새학교\"}','2026-08-01','2026-08-02','김점검')");assert.equal((await db.query('select staff_schedule_get(2) as p')).rows[0].p.plan_end,'2026-08-02');
+await db.query("select staff_update_site_with_schedule(1,'{}',null,null,'')");assert.equal((await db.query('select staff_schedule_get(1) as p')).rows[0].p,null);
+console.log('PASS: bidirectional shared read/save, atomic metadata rollback, new site with plan, clearing dates deletes schedule');
 console.log('PASS: PostgreSQL migration twice, allow/deny by role, RLS read filtering, write grants, ordered dates, holiday save/read, permission persistence, unapproved and anon denied');await db.close();})().catch(e=>{console.error(e);process.exit(1)});
