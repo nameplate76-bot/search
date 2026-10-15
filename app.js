@@ -474,7 +474,7 @@ async function searchSites(force=false){
  const requestId=++searchRequestSeq;$('searchMeta').textContent='검색 중...';
  try{
   const rows=await fetchPaged('staff_site_search_list','*',query=>{query=query.order('excel_row',{ascending:true}).order('source_id',{ascending:true});if(q){const term=q.replace(/[%_,()]/g,' ').trim();query=query.or(`site_name.ilike.%${term}%,previous_name.ilike.%${term}%,region.ilike.%${term}%,sn.ilike.%${term}%,document_owner.ilike.%${term}%,field_inspector.ilike.%${term}%,sales_manager.ilike.%${term}%`)}return query});
-  if(canViewSchedule()){const plans=await fetchPaged('staff_inspection_schedule','source_id,plan_start,plan_end');const map=new Map(plans.map(p=>[Number(p.source_id),p]));rows.forEach(r=>{const plan=map.get(Number(r.source_id));r.schedule_plan_start=plan?.plan_start||'';r.schedule_plan_end=plan?.plan_end||''})}
+  if(canViewSchedule()){const plans=await fetchSitePlanDates();const map=new Map(plans.map(p=>[Number(p.source_id),p]));rows.forEach(r=>{const plan=map.get(Number(r.source_id));r.schedule_plan_start=plan?.plan_start||'';r.schedule_plan_end=plan?.plan_end||''})}
   if(requestId!==searchRequestSeq)return;
   searchSourceRows=rows;searchCacheQuery=q;searchCacheReady=true;searchLoadedAt=Date.now();applySearchCache();
  }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML=''}
@@ -813,9 +813,10 @@ function renderSites(){
  root.querySelectorAll('[data-site-edit]').forEach(b=>b.onclick=()=>openSiteEditor(Number(b.dataset.siteEdit)));
  bindSiteSelectionControls(root,visible);bindSiteColumnFilters(root);
 }
+async function fetchSitePlanDates(id=null){const{data,error}=await sb.rpc('staff_site_plan_dates',{p_source_id:id});if(error)throw new Error('계획일자 조회 실패: '+error.message+' · V145 계획일자 공통조회 SQL을 적용해 주세요.');return Array.isArray(data)?data:[]}
 async function ensureFullSiteRow(id,row=null){
  let r=row||lastSites.find(x=>Number(x.source_id)===Number(id))||searchSourceRows.find(x=>Number(x.source_id)===Number(id))||{};
- if(canViewSchedule()){const{data:plan,error:planError}=await sb.rpc('staff_schedule_get',{p_source_id:Number(id)});if(planError)throw planError;r={...r,schedule_plan_start:plan?.plan_start||'',schedule_plan_end:plan?.plan_end||'',schedule_inspectors:plan?.inspectors||''}}
+ if(canViewSchedule()){const{data:plan,error:planError}=await sb.rpc('staff_schedule_get',{p_source_id:Number(id)});if(planError)throw planError;const dates=(await fetchSitePlanDates(Number(id)))[0];r={...r,schedule_plan_start:dates?.plan_start||'',schedule_plan_end:dates?.plan_end||'',schedule_inspectors:plan?.inspectors||''}}
  if(r?._secureDetailLoaded)return r;
  const{data,error}=await sb.rpc('staff_site_secure_detail',{p_source_id:Number(id)});if(error)throw error;if(!data)return Object.keys(r).length?r:null;
  const vals=Array.isArray(data?.values)?data.values:[];
@@ -2335,7 +2336,7 @@ $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login(
 async function refreshSearchScheduleDates(){
  if(!me||activePageName()!=='search'||!can('can_view_staff_sites')||!canViewSchedule()||!searchCacheReady)return;
  const request=searchRequestSeq;
- try{const plans=await fetchPaged('staff_inspection_schedule','source_id,plan_start,plan_end');if(request!==searchRequestSeq||!canViewSchedule())return;const map=new Map(plans.map(p=>[Number(p.source_id),p]));let changed=false;for(const r of [...searchSourceRows,...lastSites]){const p=map.get(Number(r.source_id)),start=p?.plan_start||'',end=p?.plan_end||'';if(r.schedule_plan_start!==start||r.schedule_plan_end!==end)changed=true;r.schedule_plan_start=start;r.schedule_plan_end=end}if(changed)renderSites()}catch(e){console.warn('계획일자 갱신 실패',e)}
+ try{const plans=await fetchSitePlanDates();if(request!==searchRequestSeq||!canViewSchedule())return;const map=new Map(plans.map(p=>[Number(p.source_id),p]));let changed=false;for(const r of [...searchSourceRows,...lastSites]){const p=map.get(Number(r.source_id)),start=p?.plan_start||'',end=p?.plan_end||'';if(r.schedule_plan_start!==start||r.schedule_plan_end!==end)changed=true;r.schedule_plan_start=start;r.schedule_plan_end=end}if(changed)renderSites()}catch(e){console.warn('계획일자 갱신 실패',e)}
 }
 setInterval(refreshSearchScheduleDates,60000);
 window.addEventListener('focus',refreshSearchScheduleDates);
