@@ -59,7 +59,7 @@ const can=k=>!!me?.[k],isAdmin=()=>me?.role==='admin'&&me?.approved;
 const canCreateSite=()=>isAdmin()||can('can_create_staff_sites');
 const canEditSite=()=>isAdmin()||can('can_edit_staff_sites');
 const canExportAllSites=()=>isAdmin()||can('can_export_staff_sites');
-const canViewAllSchedule=()=>isAdmin()||can('can_view_staff_schedule')||can('can_edit_staff_schedule');
+const canViewAllSchedule=()=>isAdmin()||can('can_view_staff_schedule');
 const canViewSchedule=()=>!!me?.approved&&!!me?.can_use_staff_portal;
 const canEditSchedule=()=>isAdmin()||can('can_edit_staff_schedule');
 const canViewUnwritten=()=>isAdmin()||can('can_view_staff_unwritten');
@@ -2168,8 +2168,6 @@ function userPermissionKeys(){return ['approved','can_use_staff_portal','can_vie
 function syncUserRowDependencies(tr,changedKey=''){
  const get=k=>tr.querySelector(`[data-k="${k}"]`),role=get('role')?.value||'viewer';
  const boxes=Object.fromEntries(userPermissionKeys().map(k=>[k,get(k)]));
- if(changedKey==='can_edit_staff_schedule'&&boxes.can_edit_staff_schedule?.checked)boxes.can_view_staff_schedule.checked=true;
- if(changedKey==='can_view_staff_schedule'&&!boxes.can_view_staff_schedule?.checked)boxes.can_edit_staff_schedule.checked=false;
  if(role==='admin'){
   Object.values(boxes).forEach(el=>{if(el)el.checked=true});
  }else{
@@ -2345,7 +2343,7 @@ function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEdi
 async function loadSchedule(){return window.STAFF_SCHEDULE_UI?.load()}
 function openSchedulePage(){window.STAFF_SCHEDULE_UI?.open()}
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
- access:scheduleAccess,rpc:async(name,args)=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==135)throw new Error('직원별 일정 권한 SQL(V135)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
+ access:scheduleAccess,rpc:async(name,args)=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==137)throw new Error('일정 권한 분리 SQL(V137)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
  changed:()=>{invalidateDataCaches('sites');searchSourceRows=[];lastSites=[]},
  pageActive:()=>activePageName()==='schedule'
 });
