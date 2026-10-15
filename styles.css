@@ -915,3 +915,16 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleDashboardTable{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}.scheduleDashboardTable th,.scheduleDashboardTable td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:center}
 .scheduleDashboardTable thead th{position:sticky;top:0;background:#eaf2ff;z-index:1}.scheduleDashboardTable tbody th{text-align:left}.scheduleDashboardTable tfoot{background:#f4f8ff;font-weight:800}
 @media(max-width:650px){.scheduleDashboardCards{grid-template-columns:1fr}.scheduleDashboardCards article{flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0}.scheduleDashboardCards strong{font-size:23px}.scheduleChartRow{grid-template-columns:80px 1fr 60px;gap:6px}.scheduleTabs{flex-wrap:wrap}}
+
+/* V140: desktop chart/table side by side, scroll within panels */
+.scheduleDashboardSplit{display:grid;grid-template-columns:minmax(280px,0.85fr) minmax(0,1.65fr);gap:16px;align-items:start}
+.scheduleDashboardSplit>.scheduleDashboardPanel{min-width:0;margin-bottom:0;padding:14px}
+.scheduleDashboardSplit .scheduleDashboardChart{max-height:390px;overflow:auto}
+.scheduleDashboardSplit .scheduleChartRow{margin:7px 0;grid-template-columns:minmax(65px,100px) 1fr 62px;font-size:13px;gap:8px}
+.scheduleDashboardSplit .scheduleChartTrack{height:18px}
+.scheduleDashboardSplit .scheduleDashboardTableWrap{max-height:390px;overflow:auto}
+.scheduleDashboardSplit .scheduleDashboardTable th,.scheduleDashboardSplit .scheduleDashboardTable td{padding:9px 7px;font-size:12px}
+.scheduleDashboardSplit .scheduleDashboardPanel h3{font-size:16px;margin-bottom:12px}
+.scheduleDashboardCards article{padding:12px 16px;margin-bottom:8px}
+.scheduleDashboardCards strong{font-size:24px}
+@media(max-width:800px){.scheduleDashboardSplit{grid-template-columns:1fr}.scheduleDashboardSplit>.scheduleDashboardPanel{margin-bottom:12px}}
