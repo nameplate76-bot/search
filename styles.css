@@ -1010,3 +1010,25 @@ body{width:100%;max-width:100%;overflow-x:hidden}
  .scheduleMobileEvent span,.scheduleMobileEvent small{font-size:12px;color:#526581}
  .scheduleMobileLeaveDetail{font-size:13px;font-weight:700}
 }
+
+/* V150 월별 카드 행 정렬과 점검/연차 이중 원 */
+#page-schedule .scheduleMonthCard{display:grid;grid-template-rows:30px 32px 180px 24px;align-content:start;gap:8px;text-align:left}
+#page-schedule .scheduleMonthCard .scheduleMonthHead{height:30px;margin:0;line-height:1.3;min-width:0}
+#page-schedule .scheduleMonthCard>.scheduleWeekdays{margin:0;height:32px;align-self:start}
+#page-schedule .scheduleMonthCard>.scheduleWeekdays>span{height:32px;min-height:0;padding:0}
+#page-schedule .scheduleMiniGrid{grid-template-rows:repeat(6,30px);grid-auto-rows:30px;align-self:start;height:180px}
+#page-schedule .scheduleMiniGrid>span{position:relative;display:flex;justify-content:center;align-items:center;height:30px;line-height:1;padding:0;box-sizing:border-box}
+#page-schedule .scheduleMiniGrid .planned{text-decoration:none;font-weight:800}
+#page-schedule .scheduleMiniGrid .planned::before{content:"";position:absolute;width:22px;height:22px;border:1.5px solid #387de3;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;box-sizing:border-box}
+#page-schedule .scheduleMiniGrid .scheduleLeaveDate::after{width:28px;height:28px;border:1.5px solid #d02c35;box-sizing:border-box}
+#page-schedule .scheduleMonthFooter{height:24px;margin:0;align-items:center;align-self:end}
+#page-schedule .scheduleMonthCard .scheduleMonthFooter>small{font-size:12px}
+.scheduleMonthEdgeNav{position:sticky;top:45vh;height:0;z-index:8;pointer-events:none}
+.scheduleMonthEdgeNav button{position:absolute;pointer-events:auto;top:0;width:36px;height:56px;padding:0;border:1px solid #9bb9df;border-radius:12px;background:#f4f8ffe6;color:#173f7a;font-size:32px;opacity:.55;box-shadow:0 2px 10px #173f7a22}
+.scheduleMonthEdgeNav button:hover,.scheduleMonthEdgeNav button:focus-visible{opacity:1;background:#dceaff}
+.scheduleMonthEdgeNav button:first-child{left:0}.scheduleMonthEdgeNav button:last-child{right:0}
+.scheduleMonthEdgeNav button:disabled{visibility:hidden}
+.scheduleMonthQuickNav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 12px;padding:8px;border:1px solid #c3d5ee;border-radius:10px;background:#f5f8ff;color:#173f7a}
+.scheduleMonthQuickNav button{font-size:13px;padding:8px 10px}.scheduleMonthQuickNav strong{font-size:14px;white-space:nowrap}
+@media(max-width:750px){.scheduleMonthEdgeNav{display:none}.scheduleMonthlyBoard{touch-action:pan-y pinch-zoom}.scheduleMonthQuickNav{position:sticky;top:4px;z-index:9}.scheduleMonthQuickNav button{padding:8px 6px;font-size:12px}}
+@media(max-width:480px){#page-schedule .scheduleAnnualGrid{grid-template-columns:1fr}}
