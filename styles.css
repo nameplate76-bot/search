@@ -975,3 +975,8 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleLeaveSummary{text-align:right;color:#d02c35;font-weight:700;font-size:12px;margin-top:8px}
 .scheduleLeaveListPanel{border-top:1px solid #d9e1ed;margin-top:16px;padding-top:10px}
 .scheduleLeaveListRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eee;color:#d02c35}
+
+/* V148: 월별 달력 하단의 두 요약을 같은 행에 정렬 */
+.scheduleMonthFooter{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:nowrap;gap:8px;margin-top:8px;overflow-x:auto}
+.scheduleMonthCard .scheduleMonthFooter>small{display:block;margin:0;font-size:13px;line-height:1.5;white-space:nowrap;flex:0 0 auto}
+.scheduleMonthFooter>.scheduleLeaveSummary{margin:0;line-height:1.5;white-space:nowrap;flex:0 0 auto;margin-left:auto}
