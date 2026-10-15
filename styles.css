@@ -860,3 +860,15 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #page-schedule .scheduleMonthTitle>span{font-size:14px!important}
 
 .scheduleScopeNote{padding:10px 14px;background:#edf5ff;color:#285e98;border:1px solid #d5e6ff;border-radius:8px;font-size:13px;line-height:1.6}
+
+/* V136 요일별 색상 칸 */
+#page-schedule .scheduleWeekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;padding:0;margin:0 0 5px;background:transparent;border:1px solid #c8daf1;border-radius:8px;overflow:hidden;box-sizing:border-box}
+#page-schedule .scheduleWeekdays>span{display:flex;align-items:center;justify-content:center;min-height:32px;padding:6px 1px;background:#e7f0ff;color:#24518a;font-size:13px;font-weight:800;line-height:1.3;border-right:1px solid #c8daf1;box-sizing:border-box;letter-spacing:0}
+#page-schedule .scheduleWeekdays>span:last-child{border-right:0}
+#page-schedule .scheduleWeekdays>span:first-child,#page-schedule .scheduleWeekdays>span:last-child{background:#ffecef;color:#c62c3b!important}
+#page-schedule .scheduleWeekdayLong{display:none}
+#page-schedule .scheduleMonthlyBoard>.scheduleWeekdays{border-radius:10px 10px 0 0;margin-bottom:0;border-color:#c3d5ee}
+#page-schedule .scheduleMonthlyBoard>.scheduleWeekdays>span{min-height:46px;font-size:15px}
+#page-schedule .scheduleMonthlyBoard .scheduleWeekdayShort{display:none}
+#page-schedule .scheduleMonthlyBoard .scheduleWeekdayLong{display:inline}
+@media(max-width:750px){#page-schedule .scheduleAnnualGrid .scheduleWeekdays>span{min-height:30px;font-size:12px;padding:6px 0}}
