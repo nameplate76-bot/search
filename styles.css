@@ -845,7 +845,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #userTable th.userSortableHeader{cursor:pointer;user-select:none;white-space:nowrap;padding-right:20px}#userTable th.userSortableHeader:hover{background:#eaf3ff}#userTable th.userSortActive{background:#e2eeff;color:#1e5ba8}#userTable .userSortIndicator{display:inline-block;margin-left:6px;font-size:10px;color:#8a9bb2;pointer-events:none}#userTable .userSortActive .userSortIndicator{color:#2563eb}#userTable th.userSortableHeader:focus-visible{outline:2px solid #3b82f6;outline-offset:-3px}
 
 /* V133 점검일정 통계 강조 */
-#page-schedule .scheduleStatistic,.scheduleDialog .scheduleStatistic,.holidayManagementDialog [data-holiday-count]{color:#d92d20!important;font-weight:800!important;font-variant-numeric:tabular-nums}.scheduleMonthCard small.scheduleStatistic{font-size:13px}.scheduleMonthHead b.scheduleStatistic{font-size:16px}.scheduleMonthTitle span.scheduleStatistic{font-size:14px}#scheduleMessage .scheduleStatistic{font-size:15px}
+#page-schedule .scheduleStatistic,.scheduleDialog .scheduleStatistic,.holidayManagementDialog [data-holiday-count]{color:#173f7a!important;font-weight:800!important;font-variant-numeric:tabular-nums}.scheduleMonthCard small.scheduleStatistic{font-size:13px}.scheduleMonthHead b.scheduleStatistic{font-size:16px}.scheduleMonthTitle span.scheduleStatistic{font-size:14px}#scheduleMessage .scheduleStatistic{font-size:15px}
 
 /* V134: 기존 화면 구조에도 적용하는 통계 강조 보완 */
 #page-schedule .scheduleMonthHead>b,
@@ -854,7 +854,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #page-schedule #scheduleMessage.meta,
 #page-schedule .scheduleStatistic,
 .scheduleDialog .scheduleStatistic,
-.holidayManagementDialog [data-holiday-count]{color:#d92d20!important;font-weight:800!important;font-variant-numeric:tabular-nums}
+.holidayManagementDialog [data-holiday-count]{color:#173f7a!important;font-weight:800!important;font-variant-numeric:tabular-nums}
 #page-schedule .scheduleMonthHead>b{font-size:16px!important}
 #page-schedule .scheduleMonthCard>small{font-size:13px!important}
 #page-schedule .scheduleMonthTitle>span{font-size:14px!important}
@@ -928,3 +928,13 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleDashboardCards article{padding:12px 16px;margin-bottom:8px}
 .scheduleDashboardCards strong{font-size:24px}
 @media(max-width:800px){.scheduleDashboardSplit{grid-template-columns:1fr}.scheduleDashboardSplit>.scheduleDashboardPanel{margin-bottom:12px}}
+
+/* V141: 집계표 제목 행 + 점검원 열 동시 고정 (PC/모바일 공통) */
+.scheduleDashboardTableWrap{position:relative;isolation:isolate;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scheduleDashboardTable{border-collapse:separate;border-spacing:0}
+.scheduleDashboardTable thead th{position:sticky;top:0;z-index:3;background:#eaf2ff;color:#173f7a}
+.scheduleDashboardTable tbody th:first-child,
+.scheduleDashboardTable tfoot th:first-child{position:sticky;left:0;z-index:2;background:#fff;box-shadow:2px 0 0 #cbd8eb;color:#173f7a}
+.scheduleDashboardTable tfoot th:first-child{background:#f4f8ff}
+.scheduleDashboardTable thead th:first-child{left:0;z-index:4;background:#eaf2ff;box-shadow:2px 0 0 #cbd8eb}
+.scheduleDashboardTable th:first-child{min-width:110px;max-width:180px;white-space:normal;overflow-wrap:anywhere}
