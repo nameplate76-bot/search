@@ -901,3 +901,17 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 @media (max-width: 650px) {
   #page-users .tableWrap { max-height: 60vh; max-height: 60dvh; }
 }
+
+/* V139 점검 대시보드 */
+.scheduleDashboardFilters{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px 0}
+.scheduleDashboardFilters select{padding:9px;border:1px solid #cbd5e1;border-radius:8px;background:white}
+.scheduleDashboardCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.scheduleDashboardCards article,.scheduleDashboardPanel{padding:18px;border:1px solid #dbe5f2;border-radius:12px;background:#fff;margin-bottom:16px}
+.scheduleDashboardCards article{display:flex;flex-direction:column;gap:10px;background:#f4f8ff}
+.scheduleDashboardCards strong{font-size:28px}.scheduleDashboardPanel h3{margin-top:0}
+.scheduleChartRow{display:grid;grid-template-columns:minmax(65px,120px) 1fr 72px;gap:12px;align-items:center;margin:12px 0}
+.scheduleChartTrack{height:22px;background:#edf2f8;border-radius:5px;overflow:hidden}.scheduleChartBar{height:100%;background:#377de0;border-radius:5px}
+.scheduleChartRow>strong{text-align:right}.scheduleDashboardTableWrap{overflow:auto;max-height:60vh}
+.scheduleDashboardTable{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}.scheduleDashboardTable th,.scheduleDashboardTable td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:center}
+.scheduleDashboardTable thead th{position:sticky;top:0;background:#eaf2ff;z-index:1}.scheduleDashboardTable tbody th{text-align:left}.scheduleDashboardTable tfoot{background:#f4f8ff;font-weight:800}
+@media(max-width:650px){.scheduleDashboardCards{grid-template-columns:1fr}.scheduleDashboardCards article{flex-direction:row;justify-content:space-between;align-items:center;margin-bottom:0}.scheduleDashboardCards strong{font-size:23px}.scheduleChartRow{grid-template-columns:80px 1fr 60px;gap:6px}.scheduleTabs{flex-wrap:wrap}}

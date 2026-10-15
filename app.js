@@ -2339,7 +2339,7 @@ async function refreshSearchScheduleDates(){
 }
 setInterval(refreshSearchScheduleDates,60000);
 window.addEventListener('focus',refreshSearchScheduleDates);
-function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEditSchedule()}}
+function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEditSchedule(),all:!!me&&canViewAllSchedule(),name:me?.name||''}}
 async function loadSchedule(){return window.STAFF_SCHEDULE_UI?.load()}
 function openSchedulePage(){window.STAFF_SCHEDULE_UI?.open()}
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
