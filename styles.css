@@ -872,7 +872,14 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #page-schedule .scheduleMonthlyBoard .scheduleWeekdayShort{display:none}
 #page-schedule .scheduleMonthlyBoard .scheduleWeekdayLong{display:inline}
 @media(max-width:750px){#page-schedule .scheduleAnnualGrid .scheduleWeekdays>span{min-height:30px;font-size:12px;padding:6px 0}}
-/* 사용자 관리: 표 내부 스크롤 및 제목 행 고정 */
+
+/* V138: 진행·담당·계약 금액 항목은 항상 새 행에서 시작 */
+.detailGrid > .financialDetailItem[data-detail-col="46"],
+.siteEditFields > .contractMoneyRowStart {
+  grid-column-start: 1;
+  margin-top: 8px;
+}
+/* 사용자 관리: 표 내부 스크롤 시 제목 행 고정 */
 #page-users .tableWrap {
   position: relative;
   max-height: 65vh;
@@ -881,12 +888,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   isolation: isolate;
   scrollbar-gutter: stable;
 }
-
-#userTable {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
+#userTable { border-collapse: separate; border-spacing: 0; }
 #userTable thead th {
   position: sticky;
   top: 0;
@@ -894,21 +896,8 @@ body{width:100%;max-width:100%;overflow-x:hidden}
   background: #eaf2ff;
   box-shadow: inset 0 -2px 0 #bfd2ed;
 }
-
-/* 정렬 중인 제목은 기존 강조색 유지 */
-#userTable thead th.userSortActive {
-  background: #dceaff;
-  color: #1e5ba8;
-}
-
-#userTable thead th.userSortableHeader:hover {
-  background: #e0ecff;
-}
-
-/* 작은 화면에서도 표 안에서 스크롤 */
+#userTable thead th.userSortActive { background: #dceaff; color: #1e5ba8; }
+#userTable thead th.userSortableHeader:hover { background: #e0ecff; }
 @media (max-width: 650px) {
-  #page-users .tableWrap {
-    max-height: 60vh;
-    max-height: 60dvh;
-  }
+  #page-users .tableWrap { max-height: 60vh; max-height: 60dvh; }
 }
