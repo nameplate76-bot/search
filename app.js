@@ -2258,6 +2258,13 @@ async function saveUserPassword(id){
  }finally{if(btn){btn.disabled=false;btn.textContent=old}}
 }
 
+let userTableSort={index:null,direction:'asc'};
+const userSortCollator=new Intl.Collator('ko-KR',{numeric:true,sensitivity:'base'});
+function userSortCellValue(row,index){const cell=row.cells[index];if(!cell)return '';const checkbox=cell.querySelector('input[type=checkbox]');if(checkbox)return checkbox.checked?'1':'0';const select=cell.querySelector('select');if(select)return select.selectedOptions[0]?.textContent||'';const text=cell.textContent.trim();return index===3?text.replace(/[^0-9]/g,''):text}
+function applyUserTableSort(){const table=$('userTable'),body=table.tBodies[0],index=userTableSort.index;if(index!==null){const rows=[...body.rows].map((row,position)=>({row,position,value:userSortCellValue(row,index)}));rows.sort((a,b)=>{if(!a.value&&!b.value)return a.position-b.position;if(!a.value)return 1;if(!b.value)return -1;const cmp=userSortCollator.compare(a.value,b.value);return (userTableSort.direction==='asc'?cmp:-cmp)||a.position-b.position});const fragment=document.createDocumentFragment();rows.forEach(x=>fragment.appendChild(x.row));body.appendChild(fragment)}
+ [...table.tHead.rows[0].cells].forEach((th,i)=>{const arrow=th.querySelector('.userSortIndicator');if(!arrow)return;const active=i===index;arrow.textContent=active?(userTableSort.direction==='asc'?'▲':'▼'):'↕';th.setAttribute('aria-sort',active?(userTableSort.direction==='asc'?'ascending':'descending'):'none');th.classList.toggle('userSortActive',active)})}
+function setupUserTableSorting(){const table=$('userTable'),headers=[...table.tHead.rows[0].cells];headers.forEach((th,index)=>{if(index===0||index===headers.length-1)return;if(th.dataset.userSortReady)return;th.dataset.userSortReady='1';th.classList.add('userSortableHeader');th.tabIndex=0;th.setAttribute('aria-sort','none');const label=th.textContent.trim();th.title=label+' · 클릭: 오름차순/내림차순 정렬';const arrow=document.createElement('span');arrow.className='userSortIndicator';arrow.setAttribute('aria-hidden','true');th.appendChild(arrow);const toggle=()=>{userTableSort={index,direction:userTableSort.index===index&&userTableSort.direction==='asc'?'desc':'asc'};applyUserTableSort()};th.addEventListener('click',e=>{if(e.target.closest('.columnResizer'))return;toggle()});th.addEventListener('keydown',e=>{if(e.target.closest('.columnResizer'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}})});applyUserTableSort()}
+
 function renderUsers(rows){
  const tb=$('userTable').querySelector('tbody');
  const perms=['approved','can_use_staff_portal','can_view_staff_sites','can_view_staff_unwritten','can_view_staff_schedule','can_edit_staff_schedule','can_create_staff_sites','can_edit_staff_sites','can_view_money','can_create_money','can_edit_money','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
@@ -2273,7 +2280,7 @@ function renderUsers(rows){
  tb.querySelectorAll('[data-reset]').forEach(b=>b.onclick=e=>{e.stopPropagation();resetPw(b.dataset.reset)});
  tb.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();deleteUser(b.dataset.del)});
  tb.querySelectorAll('[data-user-phone-call]').forEach(a=>a.onclick=e=>e.stopPropagation());
- updateUsersSelectedCount();scheduleTableColumnResize($('userTable'),'users');
+ updateUsersSelectedCount();setupUserTableSorting();scheduleTableColumnResize($('userTable'),'users');
 }
 async function loadUsers(force=false){
  if(!canManageUsers())return;
