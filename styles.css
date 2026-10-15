@@ -1031,4 +1031,27 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleMonthQuickNav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 12px;padding:8px;border:1px solid #c3d5ee;border-radius:10px;background:#f5f8ff;color:#173f7a}
 .scheduleMonthQuickNav button{font-size:13px;padding:8px 10px}.scheduleMonthQuickNav strong{font-size:14px;white-space:nowrap}
 @media(max-width:750px){.scheduleMonthEdgeNav{display:none}.scheduleMonthlyBoard{touch-action:pan-y pinch-zoom}.scheduleMonthQuickNav{position:sticky;top:4px;z-index:9}.scheduleMonthQuickNav button{padding:8px 6px;font-size:12px}}
-@media(max-width:480px){#page-schedule .scheduleAnnualGrid{grid-template-columns:1fr}}
+
+
+/* V151: 휴대폰 연간 달력 2열 x 6행 복원 */
+@media(max-width:750px){
+ #page-schedule .scheduleAnnualGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+ #page-schedule .scheduleMonthCard{padding:6px;gap:6px;grid-template-rows:26px 28px 156px 22px;min-width:0}
+ #page-schedule .scheduleMonthCard .scheduleMonthHead{height:26px;font-size:15px;gap:4px}
+ #page-schedule .scheduleMonthCard>.scheduleWeekdays{height:28px}
+ #page-schedule .scheduleMonthCard>.scheduleWeekdays>span{height:28px;min-height:0;font-size:11px}
+ #page-schedule .scheduleMiniGrid{height:156px;grid-template-rows:repeat(6,26px);grid-auto-rows:26px}
+ #page-schedule .scheduleMiniGrid>span{height:26px;font-size:11px}
+ #page-schedule .scheduleMiniGrid .planned::before{width:clamp(10px,calc((100vw - 100px)/14 - 4px),20px);height:clamp(10px,calc((100vw - 100px)/14 - 4px),20px)}
+ #page-schedule .scheduleMiniGrid .scheduleLeaveDate::after{width:clamp(14px,calc((100vw - 100px)/14),24px);height:clamp(14px,calc((100vw - 100px)/14),24px)}
+ #page-schedule .scheduleMonthFooter{height:22px;gap:2px}
+ #page-schedule .scheduleMonthCard .scheduleMonthFooter>small,#page-schedule .scheduleMonthFooter>.scheduleLeaveSummary{font-size:clamp(8px,2.1vw,11px);letter-spacing:-.2px}
+}
+
+/* V152: 월간 달력 연월 제목 약 1.5배 확대 */
+#page-schedule .scheduleMonthTitle h3{font-size:28px;line-height:1.35;font-weight:800;color:#173f7a;letter-spacing:-.3px}
+#page-schedule .scheduleMonthQuickNav{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:8px;padding-top:10px;padding-bottom:10px}
+#page-schedule .scheduleMonthQuickNav>strong{font-size:21px;line-height:1.35;font-weight:800;color:#173f7a;white-space:nowrap;text-align:center}
+#page-schedule .scheduleMonthQuickNav>button:first-child{justify-self:start}
+#page-schedule .scheduleMonthQuickNav>button:last-child{justify-self:end}
+@media(max-width:750px){#page-schedule .scheduleMonthQuickNav{column-gap:4px}#page-schedule .scheduleMonthQuickNav>button{padding-left:4px;padding-right:4px}}
