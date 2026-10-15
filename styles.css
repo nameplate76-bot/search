@@ -846,3 +846,15 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V133 점검일정 통계 강조 */
 #page-schedule .scheduleStatistic,.scheduleDialog .scheduleStatistic,.holidayManagementDialog [data-holiday-count]{color:#d92d20!important;font-weight:800!important;font-variant-numeric:tabular-nums}.scheduleMonthCard small.scheduleStatistic{font-size:13px}.scheduleMonthHead b.scheduleStatistic{font-size:16px}.scheduleMonthTitle span.scheduleStatistic{font-size:14px}#scheduleMessage .scheduleStatistic{font-size:15px}
+
+/* V134: 기존 화면 구조에도 적용하는 통계 강조 보완 */
+#page-schedule .scheduleMonthHead>b,
+#page-schedule .scheduleMonthCard>small,
+#page-schedule .scheduleMonthTitle>span,
+#page-schedule #scheduleMessage.meta,
+#page-schedule .scheduleStatistic,
+.scheduleDialog .scheduleStatistic,
+.holidayManagementDialog [data-holiday-count]{color:#d92d20!important;font-weight:800!important;font-variant-numeric:tabular-nums}
+#page-schedule .scheduleMonthHead>b{font-size:16px!important}
+#page-schedule .scheduleMonthCard>small{font-size:13px!important}
+#page-schedule .scheduleMonthTitle>span{font-size:14px!important}
