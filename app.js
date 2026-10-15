@@ -59,7 +59,8 @@ const can=k=>!!me?.[k],isAdmin=()=>me?.role==='admin'&&me?.approved;
 const canCreateSite=()=>isAdmin()||can('can_create_staff_sites');
 const canEditSite=()=>isAdmin()||can('can_edit_staff_sites');
 const canExportAllSites=()=>isAdmin()||can('can_export_staff_sites');
-const canViewSchedule=()=>isAdmin()||can('can_view_staff_schedule')||can('can_edit_staff_schedule');
+const canViewAllSchedule=()=>isAdmin()||can('can_view_staff_schedule')||can('can_edit_staff_schedule');
+const canViewSchedule=()=>!!me?.approved&&!!me?.can_use_staff_portal;
 const canEditSchedule=()=>isAdmin()||can('can_edit_staff_schedule');
 const canViewUnwritten=()=>isAdmin()||can('can_view_staff_unwritten');
 const canViewSales=()=>isAdmin()||can('can_view_staff_sales');
@@ -401,6 +402,7 @@ function showApp(){
  if(!canViewSchedule())window.STAFF_SCHEDULE_UI?.clear();
  $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');
  $('userBadge').textContent=`${me.name||me.user_id||''} · ${isAdmin()?'관리자':'일반 사용자'}`;
+ if($('scheduleScopeNote'))$('scheduleScopeNote').textContent=canViewAllSchedule()?'전체 일정 조회 · 관리자 또는 전체 일정 권한자':`${me.name||'이름 미등록'} · 점검원에 본인 이름이 포함된 현장만 표시됩니다. 통계도 해당 현장 기준입니다.`;
  $('scheduleNav')?.classList.toggle('hidden',!canViewSchedule());
  $('unwrittenNav')?.classList.toggle('hidden',!canViewUnwritten());
  $('salesNav').classList.toggle('hidden',!canViewSales());
@@ -2197,7 +2199,7 @@ function toggleUserSelection(id,checked){id=String(id);if(id===String(me?.id))re
 function syncUserSelectionUi(){const tb=$('userTable')?.querySelector('tbody');if(!tb)return;tb.querySelectorAll('[data-user-select]').forEach(ch=>{const on=selectedUserIds.has(String(ch.dataset.userSelect));ch.checked=on;ch.closest('tr')?.classList.toggle('userRowSelected',on)});updateUsersSelectedCount()}
 function selectAllUsers(){if(!isAdmin())return alert('직원 삭제는 관리자만 할 수 있습니다.');selectedUserIds=new Set((usersRows||[]).filter(p=>String(p.id)!==String(me?.id)).map(p=>String(p.id)));syncUserSelectionUi()}
 function clearUserSelection(){selectedUserIds.clear();syncUserSelectionUi()}
-function userPermissionLabel(k){return ({approved:'승인',can_use_staff_portal:'포털 사용',can_view_staff_sites:'현장 검색',can_view_staff_unwritten:'보고서 미작성 조회',can_view_staff_schedule:'점검일정 조회',can_edit_staff_schedule:'점검일정 수정',can_create_staff_sites:'현장 등록',can_edit_staff_sites:'현장 수정',can_view_money:'금액 조회',can_create_money:'금액 입력',can_edit_money:'금액 수정',can_export_staff_sites:'전체 엑셀',can_view_staff_sales:'매출 조회',can_export_staff_sales:'매출 내보내기',can_print_staff_sales:'매출 출력',can_import_staff_sites:'엑셀 DB 등록',can_manage_staff_users:'사용자 관리'})[k]||k}
+function userPermissionLabel(k){return ({approved:'승인',can_use_staff_portal:'포털 사용',can_view_staff_sites:'현장 검색',can_view_staff_unwritten:'보고서 미작성 조회',can_view_staff_schedule:'전체 점검일정 조회',can_edit_staff_schedule:'점검일정 수정',can_create_staff_sites:'현장 등록',can_edit_staff_sites:'현장 수정',can_view_money:'금액 조회',can_create_money:'금액 입력',can_edit_money:'금액 수정',can_export_staff_sites:'전체 엑셀',can_view_staff_sales:'매출 조회',can_export_staff_sales:'매출 내보내기',can_print_staff_sales:'매출 출력',can_import_staff_sites:'엑셀 DB 등록',can_manage_staff_users:'사용자 관리'})[k]||k}
 function userPhoneCanEdit(p){return !!p&&(isAdmin()||String(p.id)===String(me?.id))}
 function userPhoneHtml(p){
  const phone=formatPhone(p?.phone||'');
@@ -2343,7 +2345,7 @@ function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEdi
 async function loadSchedule(){return window.STAFF_SCHEDULE_UI?.load()}
 function openSchedulePage(){window.STAFF_SCHEDULE_UI?.open()}
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
- access:scheduleAccess,rpc:async(name,args)=>{const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
+ access:scheduleAccess,rpc:async(name,args)=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==135)throw new Error('직원별 일정 권한 SQL(V135)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
  changed:()=>{invalidateDataCaches('sites');searchSourceRows=[];lastSites=[]},
  pageActive:()=>activePageName()==='schedule'
 });
@@ -2351,7 +2353,7 @@ window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
 let ownPermissionRefreshAt=0,ownPermissionRefreshBusy=false;
 async function refreshOwnPermissions(){
  if(!me||ownPermissionRefreshBusy||Date.now()-ownPermissionRefreshAt<15000)return;ownPermissionRefreshBusy=true;ownPermissionRefreshAt=Date.now();
- try{const{data:{session}}=await sb.auth.getSession();if(!session)return;const p=await profileFor(session.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();return}const keys=['role','approved','can_use_staff_portal','can_view_staff_sites','can_view_staff_unwritten','can_view_staff_schedule','can_edit_staff_schedule','can_create_staff_sites','can_edit_staff_sites','can_view_money','can_create_money','can_edit_money','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];const changed=keys.some(k=>p?.[k]!==me?.[k]);if(changed){me=p;showApp()}}catch(e){console.warn('권한 새로고침 실패',e)}finally{ownPermissionRefreshBusy=false}
+ try{const{data:{session}}=await sb.auth.getSession();if(!session)return;const p=await profileFor(session.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();return}const keys=['name','role','approved','can_use_staff_portal','can_view_staff_sites','can_view_staff_unwritten','can_view_staff_schedule','can_edit_staff_schedule','can_create_staff_sites','can_edit_staff_sites','can_view_money','can_create_money','can_edit_money','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];const changed=keys.some(k=>p?.[k]!==me?.[k]);if(changed){me=p;invalidateDataCaches('sites');window.STAFF_SCHEDULE_UI?.clear();showApp()}}catch(e){console.warn('권한 새로고침 실패',e)}finally{ownPermissionRefreshBusy=false}
 }
 window.addEventListener('focus',refreshOwnPermissions);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshOwnPermissions()});setInterval(refreshOwnPermissions,60000);
 sb.auth.onAuthStateChange((event,session)=>{
