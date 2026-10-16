@@ -922,6 +922,19 @@ function syncElectronicReceiptFromYellowFile(value){
 }
 // 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
 const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31,32,33,40,50,51,52];
+function siteTemplateBaseName(value){let text=String(value||'');for(let before;before!==text;){before=text;text=text.replace(/\([^()]*\)|（[^（）]*）/g,'')}return text.replace(/\s+/g,'').trim()}
+function siteTemplateMoneyExcluded(targetName,sourceName,values){
+ const same=siteTemplateBaseName(targetName)===siteTemplateBaseName(sourceName)&&!!siteTemplateBaseName(sourceName);
+ const completed=(contract,progress)=>{const a=String(values[contract-1]??'').trim().replace(/,/g,''),b=String(values[progress-1]??'').trim().replace(/,/g,'');return a!==''&&b!==''&&Number.isFinite(Number(a))&&Number(a)>0&&Number(a)===Number(b)};
+ return same&&(completed(10,11)||completed(12,13));
+}
+function fillCreateInspectionDates(value){
+ if(siteEditMode!=='create'||!value)return;
+ siteScheduleDraft.end=value;siteEditValues[27]=value;siteEditValues[28]=value;
+ const end=$('siteScheduleEnd');if(end)end.value=value;
+ for(const col of [28,29]){const input=$('siteEditFields')?.querySelector(`[data-site-col="${col}"]`);if(input)input.value=value}
+ syncFieldEndFromPlan();
+}
 function clearSiteTemplateWorkValues(){
  SITE_TEMPLATE_CLEAR_COLS.forEach(col=>{siteEditValues[col-1]=''});
  if(/^x$/i.test(String(siteEditValues[13]??'').trim()))siteEditValues[13]='';
@@ -1096,12 +1109,12 @@ function renderSiteEditFields(){
   return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  if(g?.[0]==='진행·담당·계약'&&canViewSchedule()){
- const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`<label class="siteField"><span>점검시작 계획일자</span><input id="siteScheduleStart" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.start)}" ${canEditSchedule()?'':'disabled'}></label><label class="siteField"><span>점검종료 계획일자</span><input id="siteScheduleEnd" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.end)}" ${canEditSchedule()?'':'disabled'}></label><small class="fieldHelp">점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
+ const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`<label class="siteField"><span>점검시작 계획일자</span><input id="siteScheduleStart" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.start)}" ${canEditSchedule()?'':'disabled'}></label><label class="siteField"><span>점검종료 계획일자</span><input id="siteScheduleEnd" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.end)}" ${canEditSchedule()?'':'disabled'}></label><small class="fieldHelp">${siteEditMode==='create'?'계획 시작일을 입력하면 계획 종료일·점검 시작일·점검 종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 수정할 수 있습니다. ':''}점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
  const first=block.querySelector('#siteScheduleStart').closest('label'),last=block.querySelector('#siteScheduleEnd').closest('label');first.dataset.planOrder='138';last.dataset.planOrder='139';
  const help=block.querySelector('small');block.before(first,last);block.remove();help.classList.add('siteScheduleInlineHelp');fieldsRoot.append(help);
  fieldsRoot.querySelectorAll('[data-site-col]').forEach(input=>{const label=input.closest('label');if(label)label.dataset.planOrder=input.dataset.siteCol});
  arrangeInspectionDateFields(fieldsRoot,'[data-plan-order]','planOrder');
- $('siteScheduleStart').oninput=e=>{siteScheduleDraft.start=e.target.value;siteScheduleDraft.changed=true};$('siteScheduleEnd').oninput=e=>{siteScheduleDraft.end=e.target.value;siteScheduleDraft.changed=true};
+ $('siteScheduleStart').oninput=e=>{siteScheduleDraft.start=e.target.value;siteScheduleDraft.changed=true;fillCreateInspectionDates(e.target.value)};$('siteScheduleEnd').oninput=e=>{siteScheduleDraft.end=e.target.value;siteScheduleDraft.changed=true};
  }
  if((siteEditGroupIndex===2||siteEditGroupIndex===3)&&window.QuantityOCR){
   const bar=document.createElement('div');bar.className='quantityOcrBar';fieldsRoot.prepend(bar);
@@ -1166,24 +1179,34 @@ async function searchSiteNameSuggestions(term){
 async function applySiteTemplate(sourceId,options={}){
  if(siteEditMode!=='create'||!canCreateSite())return;
  try{
-  const keepSn=!!options.keepSn,currentSn=String(siteEditValues[0]||'').trim();
+  const keepSn=!!options.keepSn,currentSn=String(siteEditValues[0]||'').trim(),targetName=String(siteEditValues[3]||'').trim();
   notify($('siteEditMsg'),'선택한 현장정보를 불러오는 중...',true);
   const{data,error}=await sb.rpc('staff_site_template',{p_source_id:Number(sourceId)});if(error)throw error;
   let vals=Array.isArray(data?.values)?[...data.values]:Array(137).fill('');while(vals.length<137)vals.push('');
+  let original=null,moneyExcluded=false;
+  if(canCreateMoney()){
+   const response=await sb.rpc('staff_site_secure_detail',{p_source_id:Number(sourceId)});if(response.error)throw response.error;
+   if(!Array.isArray(response.data?.values))throw new Error('원본 현장의 계약·진행 및 금액정보를 확인할 수 없습니다.');
+   original=response.data.values;
+   const sourceName=String(response.data.site_name||original[3]||data.site_name||'');
+   moneyExcluded=siteTemplateMoneyExcluded(targetName||sourceName,sourceName,original);
+  }
   siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));
   clearSiteTemplateWorkValues();
+  if(canCreateMoney())for(const col of [46,47,48,49])siteEditValues[col-1]=moneyExcluded?'':normalizeCell(original[col-1]??'',col);
+  siteScheduleDraft={start:'',end:'',inspectors:'',changed:false};
   sitePerformanceManualCols.clear();seedPerformanceConfirmedBlanks();
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
   $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
   hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
-  const copiedName=String(data?.site_name||'');
+  const copiedName=String(data?.site_name||'');const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
    $('siteEditHint').textContent=`유사 현장 “${copiedName}” 정보를 불러왔습니다. 신규 S/N은 ${siteEditValues[0]||'-'}으로 유지됩니다. 필요한 내용을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'현장정보를 불러왔습니다. 접수·점검·작성·제본 이력과 문서작성 매출은 초기화했습니다. 새 내용을 입력한 뒤 신규등록하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 불러왔습니다. 접수·점검·작성·제본 이력과 문서작성 매출은 초기화했습니다.'+moneyNote+' 새 내용을 입력한 뒤 신규등록하세요.',true);
   }else{
    $('siteEditHint').textContent=`기존 현장 “${copiedName}” 정보를 복사했습니다. S/N을 포함해 필요한 항목을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'현장정보를 복사하고 접수·점검·작성·제본 이력과 문서작성 매출을 초기화했습니다. 새 내용을 입력한 뒤 저장하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 복사하고 접수·점검·작성·제본 이력과 문서작성 매출을 초기화했습니다.'+moneyNote+' 새 내용을 입력한 뒤 저장하세요.',true);
   }
  }catch(e){notify($('siteEditMsg'),'기존 현장정보 불러오기 실패: '+e.message)}
 }
