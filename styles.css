@@ -1066,3 +1066,5 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleContactAddress{padding:5px 0;border:0;border-radius:0;background:transparent;color:#1756a9;text-decoration:underline;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.6;font-size:14px}
 .scheduleContactAddress span{font-weight:700;white-space:nowrap}.scheduleContactError{color:#b42318}
 @media(max-width:480px){.scheduleContactPanel dl{grid-template-columns:1fr}}
+
+.scheduleDialogBuild{display:block;font-size:11px;color:#526581;margin-top:5px}.scheduleContactFailure{font-size:12px;line-height:1.6;overflow-wrap:anywhere;margin:10px 0 0}
