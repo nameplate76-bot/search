@@ -1055,3 +1055,14 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 #page-schedule .scheduleMonthQuickNav>button:first-child{justify-self:start}
 #page-schedule .scheduleMonthQuickNav>button:last-child{justify-self:end}
 @media(max-width:750px){#page-schedule .scheduleMonthQuickNav{column-gap:4px}#page-schedule .scheduleMonthQuickNav>button{padding-left:4px;padding-right:4px}}
+
+/* V155: 일정 상세의 연락처 조회 전용 영역 */
+.scheduleContactPanel{background:#f7faff;border:1px solid #d5e2f4;border-radius:10px;padding:12px;min-width:0}
+.scheduleContactPanel h4{margin:0 0 10px;color:#173f7a;font-size:15px}.scheduleContactPanel h4 small{font-size:11px;font-weight:400;color:#64748b;margin-left:6px}
+.scheduleContactPanel dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0}
+.scheduleContactPanel dl>div{min-width:0}.scheduleContactPanel dl>div:last-child{grid-column:1/-1}
+.scheduleContactPanel dt{font-size:12px;font-weight:700;color:#526581;margin-bottom:4px}.scheduleContactPanel dd{margin:0;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.scheduleContactPhones{display:flex;flex-wrap:wrap;gap:5px 12px}.scheduleContactPhone{color:#1756a9;text-decoration:underline;text-underline-offset:3px;padding:4px 0}
+.scheduleContactAddress{padding:5px 0;border:0;border-radius:0;background:transparent;color:#1756a9;text-decoration:underline;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.6;font-size:14px}
+.scheduleContactAddress span{font-weight:700;white-space:nowrap}.scheduleContactError{color:#b42318}
+@media(max-width:480px){.scheduleContactPanel dl{grid-template-columns:1fr}}

@@ -2365,6 +2365,7 @@ function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEdi
 async function loadSchedule(){return window.STAFF_SCHEDULE_UI?.load()}
 function openSchedulePage(){window.STAFF_SCHEDULE_UI?.open()}
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
+ phoneNumbers:splitPhoneNumbers,cleanPhone,route:openRouteChooser,
  access:scheduleAccess,rpc:async(name,args)=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==137)throw new Error('일정 권한 분리 SQL(V137)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
  changed:()=>{invalidateDataCaches('sites');searchSourceRows=[];lastSites=[]},
  pageActive:()=>activePageName()==='schedule'
