@@ -1082,3 +1082,13 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .scheduleContactPanel .scheduleContactPhone:hover,.scheduleContactPanel .scheduleContactAddress:hover{background:#e3edff;border-color:#3975e4}
 .scheduleContactPanel .scheduleContactPhone:focus-visible,.scheduleContactPanel .scheduleContactAddress:focus-visible{outline:3px solid #9dbfff;outline-offset:2px}
 @media(max-width:480px){.scheduleContactPanel .scheduleContactAddress{grid-template-columns:22px minmax(0,1fr)}.scheduleContactAddress>.scheduleContactActionLabel{grid-column:2;justify-self:start}}
+
+/* V159: 직접등록 전용 페이지 */
+.siteCreateEditorHost{background:#fff;border:1px solid #dce3ee;border-radius:16px;padding:24px;min-width:0}
+.siteCreateEditorHost .dlgHead{position:static;align-items:flex-start;gap:16px}
+.siteCreateEditorHost h3{font-size:28px;margin:0 0 8px}
+.siteCreateEditorHost .siteEditFields{max-height:none;overflow:visible}
+.siteCreateEditorHost .siteEditForm{max-height:none;overflow:visible;padding:0}
+.siteCreateEditorHost .siteEditFoot{position:sticky;bottom:0;background:#fff;padding:16px 0;z-index:5;border-top:1px solid #e3e8ef}
+.siteCreateEditorHost .siteCreateBack{width:auto;height:auto;white-space:nowrap;font-size:14px;padding:10px 14px}
+@media(max-width:750px){.siteCreateEditorHost{padding:14px;border-radius:12px}.siteCreateEditorHost h3{font-size:24px}.siteCreateEditorHost .dlgHead{flex-wrap:wrap}.siteCreateEditorHost .siteEditFoot button{flex:1;min-height:44px}.siteCreateEditorHost .siteEditFields{min-width:0}}
