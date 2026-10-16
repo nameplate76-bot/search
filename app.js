@@ -923,11 +923,11 @@ function syncElectronicReceiptFromYellowFile(value){
 // 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
 const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31,32,33,40,50,51,52];
 function siteTemplateBaseName(value){let text=String(value||'');for(let before;before!==text;){before=text;text=text.replace(/\([^()]*\)|（[^（）]*）/g,'')}return text.replace(/\s+/g,'').trim()}
-function siteTemplateMoneyExcluded(targetName,sourceName,values){
- const same=siteTemplateBaseName(targetName)===siteTemplateBaseName(sourceName)&&!!siteTemplateBaseName(sourceName);
+function siteTemplateContractCompleted(values){
  const completed=(contract,progress)=>{const a=String(values[contract-1]??'').trim().replace(/,/g,''),b=String(values[progress-1]??'').trim().replace(/,/g,'');return a!==''&&b!==''&&Number.isFinite(Number(a))&&Number(a)>0&&Number(a)===Number(b)};
- return same&&(completed(10,11)||completed(12,13));
+ return completed(10,11)||completed(12,13);
 }
+function siteTemplateMoneyExcluded(targetName,sourceName,values){return !!siteTemplateBaseName(sourceName)&&siteTemplateBaseName(targetName)===siteTemplateBaseName(sourceName)&&siteTemplateContractCompleted(values)}
 function fillCreateInspectionDates(value){
  if(siteEditMode!=='create'||!value)return;
  siteScheduleDraft.end=value;siteEditValues[27]=value;siteEditValues[28]=value;
@@ -1183,30 +1183,28 @@ async function applySiteTemplate(sourceId,options={}){
   notify($('siteEditMsg'),'선택한 현장정보를 불러오는 중...',true);
   const{data,error}=await sb.rpc('staff_site_template',{p_source_id:Number(sourceId)});if(error)throw error;
   let vals=Array.isArray(data?.values)?[...data.values]:Array(137).fill('');while(vals.length<137)vals.push('');
-  let original=null,moneyExcluded=false;
-  if(canCreateMoney()){
-   const response=await sb.rpc('staff_site_secure_detail',{p_source_id:Number(sourceId)});if(response.error)throw response.error;
-   if(!Array.isArray(response.data?.values))throw new Error('원본 현장의 계약·진행 및 금액정보를 확인할 수 없습니다.');
-   original=response.data.values;
-   const sourceName=String(response.data.site_name||original[3]||data.site_name||'');
-   moneyExcluded=siteTemplateMoneyExcluded(targetName||sourceName,sourceName,original);
-  }
+  const response=await sb.rpc('staff_site_secure_detail',{p_source_id:Number(sourceId)});if(response.error)throw response.error;
+  if(!Array.isArray(response.data?.values))throw new Error('원본 현장의 계약·진행 정보를 확인할 수 없습니다.');
+  const original=response.data.values,sourceName=String(response.data.site_name||original[3]||data.site_name||'');
+  const contractExcluded=siteTemplateContractCompleted(original);
+  const moneyExcluded=canCreateMoney()&&siteTemplateMoneyExcluded(targetName||sourceName,sourceName,original);
   siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));
   clearSiteTemplateWorkValues();
+  for(const col of [10,11,12,13,14,15])siteEditValues[col-1]=contractExcluded?'':normalizeCell(original[col-1]??'',col);
   if(canCreateMoney())for(const col of [46,47,48,49])siteEditValues[col-1]=moneyExcluded?'':normalizeCell(original[col-1]??'',col);
   siteScheduleDraft={start:'',end:'',inspectors:'',changed:false};
   sitePerformanceManualCols.clear();seedPerformanceConfirmedBlanks();
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
   $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
   hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
-  const copiedName=String(data?.site_name||'');const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
+  const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 계약·진행 완료 조건에 해당하여 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
    $('siteEditHint').textContent=`유사 현장 “${copiedName}” 정보를 불러왔습니다. 신규 S/N은 ${siteEditValues[0]||'-'}으로 유지됩니다. 필요한 내용을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'현장정보를 불러왔습니다. 접수·점검·작성·제본 이력과 문서작성 매출은 초기화했습니다.'+moneyNote+' 새 내용을 입력한 뒤 신규등록하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 불러왔습니다. 접수·점검·작성·제본 이력과 문서작성 매출은 초기화했습니다.'+contractNote+moneyNote+' 새 내용을 입력한 뒤 신규등록하세요.',true);
   }else{
    $('siteEditHint').textContent=`기존 현장 “${copiedName}” 정보를 복사했습니다. S/N을 포함해 필요한 항목을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
-   notify($('siteEditMsg'),'현장정보를 복사하고 접수·점검·작성·제본 이력과 문서작성 매출을 초기화했습니다.'+moneyNote+' 새 내용을 입력한 뒤 저장하세요.',true);
+   notify($('siteEditMsg'),'현장정보를 복사하고 접수·점검·작성·제본 이력과 문서작성 매출을 초기화했습니다.'+contractNote+moneyNote+' 새 내용을 입력한 뒤 저장하세요.',true);
   }
  }catch(e){notify($('siteEditMsg'),'기존 현장정보 불러오기 실패: '+e.message)}
 }
