@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v159">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v160">
 <script>
 (function(){
-  const BUILD='20261019-v159';
+  const BUILD='20261019-v160';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -43,7 +43,7 @@
 
 .scheduleDialogBuild{display:block;font-size:11px;color:#526581;margin-top:5px}.scheduleContactFailure{font-size:12px;line-height:1.6;overflow-wrap:anywhere;margin:10px 0 0}
 
-/* V159: 전화/길찾기 실행을 명확하게 표시 */
+/* V160: 전화/길찾기 실행을 명확하게 표시 */
 .scheduleContactPanel dl>div{padding:10px;border:1px solid #d9e4f4;border-radius:10px;background:#fff;box-sizing:border-box}
 .scheduleContactPanel dt{margin-bottom:7px}
 .scheduleContactPanel .scheduleContactPhone{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;max-width:100%;min-height:46px;box-sizing:border-box;padding:8px 10px;border:1px solid #a8c4ff;border-radius:10px;background:#f1f6ff;color:#174ac7;text-decoration:none;line-height:1.5;flex-wrap:wrap}
@@ -58,7 +58,7 @@
 @media(max-width:480px){.scheduleContactPanel .scheduleContactAddress{grid-template-columns:22px minmax(0,1fr)}.scheduleContactAddress>.scheduleContactActionLabel{grid-column:2;justify-self:start}}
 
 </style><style id="site-create-page-style">
-/* V159: 직접등록 전용 페이지 */
+/* V160: 직접등록 전용 페이지 */
 .siteCreateEditorHost{background:#fff;border:1px solid #dce3ee;border-radius:16px;padding:24px;min-width:0}
 .siteCreateEditorHost .dlgHead{position:static;align-items:flex-start;gap:16px}
 .siteCreateEditorHost h3{font-size:28px;margin:0 0 8px}
@@ -68,7 +68,10 @@
 .siteCreateEditorHost .siteCreateBack{width:auto;height:auto;white-space:nowrap;font-size:14px;padding:10px 14px}
 @media(max-width:750px){.siteCreateEditorHost{padding:14px;border-radius:12px}.siteCreateEditorHost h3{font-size:24px}.siteCreateEditorHost .dlgHead{flex-wrap:wrap}.siteCreateEditorHost .siteEditFoot button{flex:1;min-height:44px}.siteCreateEditorHost .siteEditFields{min-width:0}}
 </style>
-</head>
+<style>
+/* V160 mobile registration steps */
+.siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
+</style></head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
 <div id="loginView" class="loginShell">
@@ -89,7 +92,7 @@
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V159</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V160</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -258,7 +261,7 @@
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v159"></script><script src="fields.js?v=20261019-v159"></script><script src="quantity-ocr.js?v=20261019-v159"></script><script id="bundled-report-files-js" data-build="V159">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v160"></script><script src="fields.js?v=20261019-v160"></script><script src="quantity-ocr.js?v=20261019-v160"></script><script id="bundled-report-files-js" data-build="V160">
 (function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
@@ -376,7 +379,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261019-v159"></script><script id="bundled-inspection-schedule-js" data-build="V159">
+</script><script src="schedule-holidays.js?v=20261019-v160"></script><script id="bundled-inspection-schedule-js" data-build="V160">
 (function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
@@ -405,7 +408,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V159';
+root.STAFF_SCHEDULE_VERSION='V160';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -499,7 +502,7 @@ root.createStaffSchedule=function(deps){
  }
  function makeDialog(title,body){const d=document.createElement('dialog');d.className='scheduleDialog';d.innerHTML=`<div class="dlgHead"><h3>${title}</h3><button type="button" class="iconBtn" data-close aria-label="닫기">×</button></div><div class="scheduleDialogBody">${body}</div>`;document.body.appendChild(d);d.querySelector('[data-close]').onclick=()=>d.close();d.addEventListener('close',()=>{dialogSeq++;d.remove()});d.showModal();return d}
  function edit(row,date=key(year,month,1)){const access=deps.access();if(!access.view)return;const editable=access.edit;
- const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">V159 · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
+ const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">V160 · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
  const form=d.querySelector('form'),msg=d.querySelector('[data-msg]');
  let contactRequest=0;
  async function loadContact(sourceId){const request=++contactRequest,panel=d.querySelector('.scheduleContactPanel');if(!sourceId){panel.innerHTML='<p>현장을 선택하면 연락처를 조회합니다.</p>';return}panel.innerHTML='<h4>관리주체 연락처 <small>조회 전용</small></h4><dl><div><dt>관리주체 담당자</dt><dd>조회 중…</dd></div><div><dt>관리주체 전화번호</dt><dd>조회 중…</dd></div><div><dt>관리주체 이메일</dt><dd>조회 중…</dd></div><div><dt>주소</dt><dd>조회 중…</dd></div></dl>';try{
@@ -552,7 +555,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V159">
+</script><script id="bundled-app-js" data-build="V160">
 (()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
@@ -1591,7 +1594,10 @@ function quantityPrintSheetHtml(row){
 }
 function quantityPrintCss(){return `*{box-sizing:border-box}body{margin:0;background:#fff;color:#111;font-family:Arial,'Noto Sans KR','Malgun Gothic',sans-serif}.qtySheet{width:190mm;margin:0 auto;background:#fff}.qtyInfoTable,.qtyPrintTable{width:100%;min-width:0!important;border-collapse:collapse;table-layout:fixed}.qtyInfoTable th,.qtyInfoTable td,.qtyPrintTable th,.qtyPrintTable td{border:1px solid #222;text-align:center;vertical-align:middle}.qtyInfoTable th{width:17%;font-size:11pt;padding:4px;font-weight:700}.qtyInfoTable td{font-size:10.5pt;padding:4px;min-height:7mm}.qtyFormTitle{border:1px solid #222;border-top:0;padding:8px 4px;text-align:center;font-size:13pt;font-weight:700}.qtyPrintTable th{background:#d9d9d9;font-size:9.5pt;padding:4px 2px;font-weight:700}.qtyPrintTable td{font-size:8.5pt;padding:3px 2px;line-height:1.18;white-space:normal}.qtyGroup{font-weight:700}.qtyDetail{font-size:8.2pt!important}.qtyMark,.qtyNum{font-weight:700}.qtyCriteria{font-size:8.2pt!important}.qtySet{font-size:11pt!important}.qtyFootnote{border:1px solid #222;border-top:0;padding:5px 6px;font-size:6.8pt;line-height:1.25}.qtyPrintTable tr{break-inside:avoid}.qtyPrintTable tbody tr{height:8mm}@page{size:A4 portrait;margin:8mm}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.qtySheet{width:100%;margin:0}.qtyPrintTable tbody tr{height:auto}}`;}
 function openQuantityPrint(row){quantityPrintRow=row;$('quantityPrintTitle').textContent=`확정수량 출력 - ${row?.site_name||''}`;$('quantityPrintPreview').innerHTML=quantityPrintSheetHtml(row);$('quantityPrintDlg').showModal()}
-function runQuantityPrint(){if(!quantityPrintRow)return;const w=window.open('','_blank','width=1000,height=900');if(!w)return alert('출력 창을 열 수 없습니다. 팝업 차단을 해제해 주세요.');const title=`확정수량_${String(quantityPrintRow?.site_name||'현장').replace(/[\\/:*?"<>|]/g,'_')}`;w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${quantityPrintCss()}</style></head><body>${quantityPrintSheetHtml(quantityPrintRow)}<script>window.addEventListener('load',()=>setTimeout(()=>{window.focus();window.print()},250));<\/script></body></html>`);w.document.close()}
+function runQuantityPrint(){if(!quantityPrintRow)return;const w=window.open('','_blank','width=1000,height=900');if(!w)return alert('출력 창을 열 수 없습니다. 팝업 차단을 해제해 주세요.');const title=`확정수량_${String(quantityPrintRow?.site_name||'현장').replace(/[\\/:*?"<>|]/g,'_')}`;w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>${quantityPrintCss()}</style><style>
+/* V160 mobile registration steps */
+.siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
+</style></head><body>${quantityPrintSheetHtml(quantityPrintRow)}<script>window.addEventListener('load',()=>setTimeout(()=>{window.focus();window.print()},250));<\/script></body></html>`);w.document.close()}
 
 async function getSharedReportApi(){
  const {data,error}=await sb.from('staff_report_settings').select('api_url').eq('id','shared').maybeSingle();
@@ -1642,8 +1648,49 @@ function applySiteInputLanguageHints(root){
  });
 }
 function siteInputType(col){return dateCols.has(col)?'date':'text'}
-function renderSiteEditTabs(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
+const mobileCreateMedia=window.matchMedia('(max-width:750px)');
+function mobileCreatePages(){return siteEditMode==='create'&&mobileCreateMedia.matches}
+const mobileCreateTitles=['유사 현장 불러오기','기본정보','진행 담당·계약','유지관리 전체수량','성능점검 전체수량','성능점검수량'];
+function selectMobileCreatePage(index){
+ siteEditGroupIndex=Math.max(-1,Math.min(4,index));renderSiteEditTabs();renderSiteEditFields();
+ $('siteEditTabs').querySelector('.active')?.scrollIntoView?.({block:'nearest',inline:'nearest'});
+ window.scrollTo(0,0);
+}
+function syncMobileCreatePanels(){
+ const mobile=mobileCreatePages(),template=mobile&&siteEditGroupIndex===-1;
+ $('siteCreateEditorHost')?.classList.toggle('mobileCreatePages',mobile);
+ $('siteTemplateSearchPanel').classList.toggle('hidden',siteEditMode!=='create'||(mobile&&!template));
+ $('siteEditFields').classList.toggle('hidden',template);
+ $('siteEditForm').querySelector('.siteContactSection').classList.toggle('hidden',mobile&&siteEditGroupIndex!==0);
+ $('siteCreatePager')?.remove();
+ if(mobile){
+  const pager=document.createElement('div');pager.id='siteCreatePager';pager.className='siteCreatePager';
+  const step=siteEditGroupIndex+1;
+  pager.innerHTML=`<button type="button" data-prev ${step===0?'disabled':''}>이전</button><span aria-live="polite">${step+1} / 6 · ${mobileCreateTitles[step]}</span><button type="button" data-next ${step===5?'disabled':''}>${step===0?'불러오기 없이 입력':'다음'}</button>`;
+  $('siteEditForm').querySelector('.siteEditFoot').before(pager);
+  pager.querySelector('[data-prev]').onclick=()=>selectMobileCreatePage(siteEditGroupIndex-1);
+  pager.querySelector('[data-next]').onclick=()=>selectMobileCreatePage(siteEditGroupIndex+1);
+ }
+}
+function renderSiteEditTabs(){
+ if(!mobileCreatePages()){if(siteEditGroupIndex<0)siteEditGroupIndex=0;renderSiteEditTabsDesktop();return}
+ const root=$('siteEditTabs');root.innerHTML=mobileCreateTitles.map((title,i)=>`<button type="button" class="chip ${siteEditGroupIndex===i-1?'active':''}" data-site-group="${i-1}" aria-current="${siteEditGroupIndex===i-1?'step':'false'}">${title}</button>`).join('');
+ root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>selectMobileCreatePage(Number(b.dataset.siteGroup)));
+}
+let createTouchStart=null;
+$('siteCreateEditorHost').addEventListener('touchstart',e=>{
+ createTouchStart=null;if(!mobileCreatePages()||e.touches.length!==1||e.target.closest('input,textarea,select,button,a,.siteEditTabs,.siteTemplateResults,.quantityOcrBar'))return;
+ const t=e.touches[0];createTouchStart={x:t.clientX,y:t.clientY};
+},{passive:true});
+$('siteCreateEditorHost').addEventListener('touchend',e=>{
+ if(!createTouchStart||!mobileCreatePages())return;const t=e.changedTouches[0],dx=t.clientX-createTouchStart.x,dy=t.clientY-createTouchStart.y;createTouchStart=null;
+ if(Math.abs(dx)>=65&&Math.abs(dx)>Math.abs(dy)*1.5)selectMobileCreatePage(siteEditGroupIndex+(dx<0?1:-1));
+},{passive:true});
+$('siteCreateEditorHost').addEventListener('touchcancel',()=>{createTouchStart=null},{passive:true});
+mobileCreateMedia.addEventListener('change',()=>{if($('page-site-create').classList.contains('active')){if(siteEditGroupIndex<0&&!mobileCreatePages())siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields()}});
+function renderSiteEditTabsDesktop(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
 function renderSiteEditFields(){
+ syncMobileCreatePanels();if(mobileCreatePages()&&siteEditGroupIndex===-1){$('siteEditFields').innerHTML='';return}
  syncInspectionType(false);syncContractAmount(false);
  const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];
  const fields=siteFieldsForGroup(g).filter(siteFieldAllowed);
@@ -1753,7 +1800,7 @@ async function applySiteTemplate(sourceId,options={}){
   sitePerformanceManualCols.clear();seedPerformanceConfirmedBlanks();
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
   $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
-  hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
+  if(mobileCreatePages()&&options.fromSearch)siteEditGroupIndex=0;hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
   const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 계약·진행 완료 조건에 해당하여 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
@@ -1813,7 +1860,7 @@ function closeSiteEditor(){
   window.scrollTo(0,0);
  }else $('siteEditDlg').close();
 }
-async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';mountSiteEditor(true);resetSiteEditor();$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);setTimeout(()=>{$('siteTemplateQuery')?.focus()},60)}
+async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';mountSiteEditor(true);resetSiteEditor();if(mobileCreatePages())siteEditGroupIndex=-1;$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);setTimeout(()=>{if(!mobileCreatePages())$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';mountSiteEditor(false);resetSiteEditor();siteEditRow=r;siteScheduleDraft={start:r.schedule_plan_start||'',end:r.schedule_plan_end||'',inspectors:r.schedule_inspectors||'',changed:false};$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
@@ -2596,7 +2643,10 @@ function printSalesReport(){
   td.classList.add('printTotalNumber');
   td.style.fontSize=len>=14?'5.2pt':len>=12?'5.7pt':len>=10?'6.3pt':'7pt';
  });
- w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4 portrait;margin:10mm 8mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,'Malgun Gothic',sans-serif;color:#111}h1{text-align:center;font-size:15pt;margin:0 0 6mm}.salesReportTable{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.5pt}.salesReportTable thead{display:table-header-group}.salesReportTable tr{break-inside:avoid;page-break-inside:avoid}.salesReportTable th{background:#0877bd!important;color:#fff!important;font-weight:900;text-align:center;border:1px solid #fff;padding:5px 3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable td{border:1px solid #aeb7c2;padding:5px 3px;vertical-align:middle;word-break:break-word}.salesReportTable td.num{text-align:right}.salesReportTable td.center{text-align:center}.salesReportTable .totalrow td{font-weight:900;background:#0877bd!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable .totalrow td.num,.salesReportTable .totalrow td:last-child{background:#fff!important;color:#111!important}.salesReportTable .totalrow td.printTotalNumber{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;letter-spacing:-.15px;padding-left:1px!important;padding-right:2px!important;font-variant-numeric:tabular-nums;line-height:1.05}.salesReportTable .salesDone{color:#a7adb5}.salesReportTable .emptyrow{text-align:center;color:#68768a;padding:20px}</style></head><body><h1>${esc(title)}</h1>${printTable.outerHTML}</body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300);
+ w.document.open();w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4 portrait;margin:10mm 8mm}*{box-sizing:border-box}body{margin:0;font-family:Arial,'Malgun Gothic',sans-serif;color:#111}h1{text-align:center;font-size:15pt;margin:0 0 6mm}.salesReportTable{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.5pt}.salesReportTable thead{display:table-header-group}.salesReportTable tr{break-inside:avoid;page-break-inside:avoid}.salesReportTable th{background:#0877bd!important;color:#fff!important;font-weight:900;text-align:center;border:1px solid #fff;padding:5px 3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable td{border:1px solid #aeb7c2;padding:5px 3px;vertical-align:middle;word-break:break-word}.salesReportTable td.num{text-align:right}.salesReportTable td.center{text-align:center}.salesReportTable .totalrow td{font-weight:900;background:#0877bd!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.salesReportTable .totalrow td.num,.salesReportTable .totalrow td:last-child{background:#fff!important;color:#111!important}.salesReportTable .totalrow td.printTotalNumber{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;letter-spacing:-.15px;padding-left:1px!important;padding-right:2px!important;font-variant-numeric:tabular-nums;line-height:1.05}.salesReportTable .salesDone{color:#a7adb5}.salesReportTable .emptyrow{text-align:center;color:#68768a;padding:20px}</style><style>
+/* V160 mobile registration steps */
+.siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
+</style></head><body><h1>${esc(title)}</h1>${printTable.outerHTML}</body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300);
 }
 function workbookImportNumber(value,label){
  if(value===null||value===undefined||String(value).trim()==='')return null;

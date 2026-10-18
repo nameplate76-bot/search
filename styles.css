@@ -1092,3 +1092,6 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 .siteCreateEditorHost .siteEditFoot{position:sticky;bottom:0;background:#fff;padding:16px 0;z-index:5;border-top:1px solid #e3e8ef}
 .siteCreateEditorHost .siteCreateBack{width:auto;height:auto;white-space:nowrap;font-size:14px;padding:10px 14px}
 @media(max-width:750px){.siteCreateEditorHost{padding:14px;border-radius:12px}.siteCreateEditorHost h3{font-size:24px}.siteCreateEditorHost .dlgHead{flex-wrap:wrap}.siteCreateEditorHost .siteEditFoot button{flex:1;min-height:44px}.siteCreateEditorHost .siteEditFields{min-width:0}}
+
+/* V160 mobile registration steps */
+.siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
