@@ -1215,3 +1215,27 @@ body{background:#102957;color:var(--text)}
 #page-schedule .scheduleDashboardFilters>[role="group"]{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 #page-schedule .scheduleDashboardFilters [data-dash-period]{min-height:42px;padding:10px 16px;border-radius:9px}
 #page-schedule .scheduleDashboard>.hint{color:#c8d8f0;line-height:1.7;margin:12px 0 18px}
+
+/* V167: sales readability on light surfaces */
+#page-sales{--navy:#172b45}
+#page-sales :is(.salesDashboard,.salesMonthlyOverview,.salesPanel){color:#172b45;background:#fff}
+#page-sales :is(.salesDashboardHead h3,.salesMonthlyHead h3,.salesMonthlySectionTitle strong,.salesDashSectionTitle strong,.salesDashBarLabel,.salesMonthlyKpis b,.salesMonthlySummaryMobileGrid b){color:#172b45}
+#page-sales :is(.salesDashboardHead p,.salesMonthlyHead p,.salesPanelHint,.salesNotice,.salesDashTableHelp,.salesDashEmpty,.salesMonthlyEmpty,.salesListHint,.salesListConditionHelp){color:#475569;line-height:1.65}
+#page-sales :is(.salesDashSectionTitle small,.salesMonthlySectionTitle small,.salesDashKpis span,.salesMonthlyKpis span,.salesDashCompareGroupTitle,.salesDashMetricRow>span,.salesMonthlySummaryMobileGrid span,.salesFreezeStatus){color:#475569;font-size:12px;line-height:1.5}
+#page-sales :is(.salesDashKpis b,.salesDashBarValue,.salesDashMetricRow>b,.salesMonthlyKpis b){color:#172b45;font-weight:800;font-variant-numeric:tabular-nums}
+#page-sales .salesMonthlyOverview{border-color:#d6e1f0;box-shadow:0 4px 14px rgba(0,12,40,.12)}
+#page-sales :is(.salesMonthlyChartCard,.salesMonthlyTableCard,.salesMonthlySummaryMobileCard){background:#fff;color:#172b45;border-color:#d6e1f0}
+#page-sales .salesMonthlyKpis>div{background:#f2f6fc;color:#172b45;border-color:#d6e1f0}
+#page-sales .salesDashOwnerList label{background:#fff;color:#172b45}
+#page-sales .salesDashOwnerList label:has(input:checked){background:#e8f1ff;color:#173e80;border-color:#9ebbea}
+#page-sales .salesDashOwnerActions .salesDashOwnerClose{background:#2563eb;color:#fff;border-color:#1d4ed8;opacity:1}
+#page-sales input::placeholder{color:#52647d;opacity:1}
+#page-sales select:disabled{opacity:1;background:#e9eef6;color:#52647d}
+#page-sales .salesMonthlyChart svg text{fill:#475569;font-size:12px}
+#page-sales .salesMonthlyTooltip{background:#172b45;color:#fff;border-color:#3b557b}
+#page-sales .salesMonthlyTooltip :is(strong,span,b){color:#fff}
+#page-sales .salesReportTable .salesDone{color:#52647d}
+#page-sales .salesReportTable :is(th,td){line-height:1.5}
+#page-sales :is(.salesMonthlyRate,.salesMonthlyTable .rate){color:#1d4ed8;font-weight:800}
+@media(max-width:800px){#page-sales .salesMonthlySummaryMobileGrid span{font-size:12px}#page-sales .salesMonthlySummaryMobileGrid b{font-size:13px}#page-sales :is(.salesMonthlySectionTitle small,.salesDashSectionTitle small){font-size:12px}}
+@media print{#page-sales .salesReportTable .salesDone{color:#334155!important}}
