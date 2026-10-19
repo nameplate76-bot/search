@@ -141,6 +141,14 @@ function editableSiteFieldsInOrder(){
  }
  return out;
 }
+function moveCreateProgressInputNext(current){
+ const root=$('siteEditFields');if(!root?.contains(current))return false;
+ // Use the rendered order: it includes shared plan dates and the reordered date fields.
+ const controls=[...root.querySelectorAll('input,select,textarea')].filter(enterNavVisible);
+ const index=controls.indexOf(current),next=index>=0?controls[index+1]:null;
+ // Last field stays focused; saving remains an explicit action.
+ return next?focusEnterNavControl(next):false;
+}
 function moveSiteEditDataFieldNext(current){
  const col=Number(current?.dataset?.siteCol||0);if(!col)return false;
  const fields=editableSiteFieldsInOrder(),idx=fields.findIndex(f=>Number(f.col)===col),next=idx>=0?fields[idx+1]:null;
@@ -167,6 +175,7 @@ function enableEnterToNext(form,{siteEditor=false}={}){
   // 전화번호 등 여러 줄 입력이 필요한 경우 Shift+Enter는 줄바꿈으로 남겨둡니다.
   if(el.tagName==='TEXTAREA'&&e.shiftKey)return;
   e.preventDefault();e.stopPropagation();
+  if(siteEditor&&siteEditMode==='create'&&siteEditGroups[siteEditGroupIndex]?.[0]==='진행·담당·계약'&&$('siteEditFields')?.contains(el)){moveCreateProgressInputNext(el);return}
   if(siteEditor&&el.matches('[data-site-col]')){moveSiteEditDataFieldNext(el);return}
   moveEnterNavNext(form,el);
  });
