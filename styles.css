@@ -1294,3 +1294,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
  #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDetails{display:block;margin:12px 0;padding:12px;border:1px solid #c3d5ee;border-radius:10px;background:#fff;min-width:0}
  #page-schedule[data-calendar-mode="monthly"] .scheduleMobileEvent{font-size:13px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
 }
+
+/* V171: search list alignment only; exception fields retain their existing body alignment. */
+#page-search .desktopSiteTable thead th{text-align:center!important}
+#page-search .desktopSiteTable tbody td.siteBodyCentered{text-align:center!important}

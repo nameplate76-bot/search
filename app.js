@@ -714,6 +714,8 @@ function siteListHeaderHtml(key){
  const c=siteListColumn(key),active=siteListSort.key===key,arrow=active?(siteListSort.dir==='asc'?' ▲':' ▼'):'';
  return `<th class="col-dynamic ${c.sortable?'sortableHeader':''} ${active?'sortActive':''}" data-col-key="${key}" data-sortable="${c.sortable?'1':'0'}" draggable="true" title="${c.sortable?'클릭: 정렬 · ':''}드래그: 열 이동"><span>${esc(c.label)}${arrow}</span>${c.field&&siteColumnFiltersEnabled?`<button type="button" class="siteColumnFilterBtn ${siteColumnFilters.has(key)?'filterActive':''}" data-site-filter="${key}" aria-label="${esc(c.label)} 필터" title="${siteColumnFilters.has(key)?'필터 적용중 · 클릭하여 변경':'열 필터'}">${siteColumnFilters.has(key)?'▼●':'▽'}</button>`:''}</th>`;
 }
+// Stable field identifiers keep alignment correct after column reorder/filter changes.
+const SITE_LIST_ALIGNMENT_EXCEPTIONS=new Set([4,5,16,46,47,48,49,50,51,52]);
 function siteListCellHtml(r,key,index){
  if(key==='no')return `<td class="center col-no">${index+1}</td>`;
  if(key==='actions'){
@@ -721,8 +723,8 @@ function siteListCellHtml(r,key,index){
   return `<td class="center rowActions col-actions">${edit}<button class="smallBtn" data-report-files="${r.source_id}">보고서</button><button class="smallBtn" data-detail-btn="${r.source_id}">상세</button></td>`;
  }
  const c=siteListColumn(key),v=c.prop?(canViewSchedule()?r[c.prop]||'':''):c.field?siteFieldDisplayValue(r,c.field):'';
- const isSite=c.field?.label==='현장명';
- return `<td class="col-dynamic ${isSite?'siteNameCell':''}">${isSite?`<strong>${esc(v||'-')}</strong>`:esc(v||'-')}</td>`;
+ const isSite=c.field?.label==='현장명',centered=!SITE_LIST_ALIGNMENT_EXCEPTIONS.has(Number(c.field?.col));
+ return `<td class="col-dynamic ${centered?'siteBodyCentered':''} ${isSite?'siteNameCell':''}">${isSite?`<strong>${esc(v||'-')}</strong>`:esc(v||'-')}</td>`;
 }
 function bindSiteListHeaderInteractions(root){
  let dragKey=null;
