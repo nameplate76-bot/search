@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v174">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v175">
 <script>
 (function(){
-  const BUILD='20261019-v174';
+  const BUILD='20261019-v175';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -305,7 +305,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V174</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V175</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -474,7 +474,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v174"></script><script src="fields.js?v=20261019-v174"></script><script src="quantity-ocr.js?v=20261019-v174"></script><script id="bundled-report-files-js" data-build="V174">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v175"></script><script src="fields.js?v=20261019-v175"></script><script src="quantity-ocr.js?v=20261019-v175"></script><script id="bundled-report-files-js" data-build="V175">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -592,7 +592,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261019-v174"></script><script id="bundled-inspection-schedule-js" data-build="V174">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261019-v175"></script><script id="bundled-inspection-schedule-js" data-build="V175">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -620,7 +620,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V174';
+root.STAFF_SCHEDULE_VERSION='V175';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -714,7 +714,7 @@ root.createStaffSchedule=function(deps){
  }
  function makeDialog(title,body){const d=document.createElement('dialog');d.className='scheduleDialog';d.innerHTML=`<div class="dlgHead"><h3>${title}</h3><button type="button" class="iconBtn" data-close aria-label="닫기">×</button></div><div class="scheduleDialogBody">${body}</div>`;document.body.appendChild(d);d.querySelector('[data-close]').onclick=()=>d.close();d.addEventListener('close',()=>{dialogSeq++;d.remove()});d.showModal();return d}
  function edit(row,date=key(year,month,1)){const access=deps.access();if(!access.view)return;const editable=access.edit;
- const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">V169 · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
+ const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">${root.STAFF_SCHEDULE_VERSION} · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
  const form=d.querySelector('form'),msg=d.querySelector('[data-msg]');
  let contactRequest=0;
  async function loadContact(sourceId){const request=++contactRequest,panel=d.querySelector('.scheduleContactPanel');if(!sourceId){panel.innerHTML='<p>현장을 선택하면 연락처를 조회합니다.</p>';return}panel.innerHTML='<h4>관리주체 연락처 <small>조회 전용</small></h4><dl><div><dt>관리주체 담당자</dt><dd>조회 중…</dd></div><div><dt>관리주체 전화번호</dt><dd>조회 중…</dd></div><div><dt>관리주체 이메일</dt><dd>조회 중…</dd></div><div><dt>주소</dt><dd>조회 중…</dd></div></dl>';try{
@@ -767,7 +767,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V174">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V175">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -815,9 +815,13 @@ async function refreshAfterSiteSave(id){
  const results=await Promise.allSettled(jobs);
  if(results.some(r=>r.status==='rejected'||r.value===false))alert('현장 정보는 저장되었습니다. 일부 화면을 갱신하지 못했습니다. 새로고침으로 최신 내용을 확인해 주세요.');
 }
-const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료'];
+const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료','점검시작 계획일자','점검종료 계획일자'];
 let displayFields=[...DEFAULT_DISPLAY_FIELDS];
-function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim())}
+const DISPLAY_DATE_ORDER=[44,45,138,139,28,29,26,27,32,40,22,23];
+const PLAN_DISPLAY_FIELDS=[{col:138,label:'점검시작 계획일자',prop:'schedule_plan_start',listKey:'schedule_start',financial:false},{col:139,label:'점검종료 계획일자',prop:'schedule_plan_end',listKey:'schedule_end',financial:false}];
+function displayFieldByLabel(label){return schema.fields.find(f=>f.label===label)||PLAN_DISPLAY_FIELDS.find(f=>f.label===label)}
+function orderDisplayDateFields(fields){const dates=DISPLAY_DATE_ORDER.map(col=>fields.find(f=>Number(f.col)===col)).filter(Boolean),first=fields.findIndex(f=>DISPLAY_DATE_ORDER.includes(Number(f.col)));if(first<0)return fields;return [...fields.slice(0,first),...dates,...fields.slice(first).filter(f=>!DISPLAY_DATE_ORDER.includes(Number(f.col)))]}
+function selectableDisplayFields(){return orderDisplayDateFields([...schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim()),...(canViewSchedule()?PLAN_DISPLAY_FIELDS:[])])}
 function sanitizeDisplayFields(list){const allowed=new Set(selectableDisplayFields().map(f=>f.label));return [...new Set((Array.isArray(list)?list:[]).map(String).filter(x=>allowed.has(x)))]}
 function displayFieldStorageKey(){return `staff_display_fields:${me?.id||'guest'}`}
 function applyDisplayFieldPreference(profile){
@@ -1362,8 +1366,8 @@ const SITE_LIST_SPECIAL_COLUMNS={
 };
 function displayFieldKey(field){return `field_${field.col}`}
 function activeSiteListColumns(){
- const dynamic=displayFields.map(label=>schema.fields.find(f=>f.label===label)).filter(Boolean).map(f=>({key:displayFieldKey(f),label:f.label,sortable:true,field:f}));
- return [SITE_LIST_SPECIAL_COLUMNS.no,...dynamic,...(canViewSchedule()?[SITE_LIST_SPECIAL_COLUMNS.schedule_start,SITE_LIST_SPECIAL_COLUMNS.schedule_end]:[]),SITE_LIST_SPECIAL_COLUMNS.actions];
+ const dynamic=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule()))).map(f=>f.listKey?SITE_LIST_SPECIAL_COLUMNS[f.listKey]:({key:displayFieldKey(f),label:f.label,sortable:true,field:f}));
+ return [SITE_LIST_SPECIAL_COLUMNS.no,...dynamic,SITE_LIST_SPECIAL_COLUMNS.actions];
 }
 function activeSiteListKeys(){return activeSiteListColumns().map(c=>c.key)}
 function siteListOrderStorageKey(){return `staff_site_list_column_order:${me?.id||'guest'}`}
@@ -1585,12 +1589,12 @@ function renderSites(){
  }
  const sortedMobile=sortedSiteRows(filtered),visible=siteColumnFiltersEnabled?sortedMobile:sortedMobile.slice(0,600);
  root.innerHTML=filterToolbar+siteSelectionBarHtml(visible)+(filtered.length?'':'<div class="siteCard">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</div>')+visible.map(r=>{
-  const fieldsHtml=displayFields.map(f=>{const meta=schema.fields.find(x=>x.label===f),v=meta?formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col):val(r,f);return `<div><span>${esc(f)}</span><b>${esc(v||'-')}</b></div>`}).join('');
+  const fieldsHtml=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule()))).map(meta=>{const v=meta.prop?r[meta.prop]||'':formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col);return `<div><span>${esc(siteCompactFieldLabel(meta,'search'))}</span><b>${esc(v||'-')}</b></div>`}).join('');
   const p1=r.field_plan_start?'done':'',p2=r.field_end?'done':(r.field_plan_start?'working':''),p3=r.report_complete_date?'done':(r.field_end?'working':'');
   const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';
   const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';
   const select=isAdmin()?`<label class="mobileSiteSelect"><input type="checkbox" class="siteCardCheck" data-site-select="${r.source_id}"> 선택</label>`:'';
-  return `<article class="siteCard"><div class="siteSelectionMeta">${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}${canViewSchedule()?`<div><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:''}</div><div class="stepRow"><div class="step ${p1}">점검계획</div><div class="step ${p2}">현장점검</div><div class="step ${p3}">보고서</div></div><div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
+  return `<article class="siteCard"><div class="siteSelectionMeta">${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}</div><div class="stepRow"><div class="step ${p1}">점검계획</div><div class="step ${p2}">현장점검</div><div class="step ${p3}">보고서</div></div><div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
  }).join('')+(!siteColumnFiltersEnabled&&filtered.length>600?`<div class="siteCard">화면 성능을 위해 처음 600건만 표시합니다. 전체선택은 현재 표시된 카드만 대상으로 합니다.</div>`:'');
  root.querySelectorAll('[data-report-files]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteReports(Number(b.dataset.reportFiles))});
  root.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDetail(Number(b.dataset.detail)));

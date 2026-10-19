@@ -46,9 +46,13 @@ async function refreshAfterSiteSave(id){
  const results=await Promise.allSettled(jobs);
  if(results.some(r=>r.status==='rejected'||r.value===false))alert('현장 정보는 저장되었습니다. 일부 화면을 갱신하지 못했습니다. 새로고침으로 최신 내용을 확인해 주세요.');
 }
-const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료'];
+const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료','점검시작 계획일자','점검종료 계획일자'];
 let displayFields=[...DEFAULT_DISPLAY_FIELDS];
-function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim())}
+const DISPLAY_DATE_ORDER=[44,45,138,139,28,29,26,27,32,40,22,23];
+const PLAN_DISPLAY_FIELDS=[{col:138,label:'점검시작 계획일자',prop:'schedule_plan_start',listKey:'schedule_start',financial:false},{col:139,label:'점검종료 계획일자',prop:'schedule_plan_end',listKey:'schedule_end',financial:false}];
+function displayFieldByLabel(label){return schema.fields.find(f=>f.label===label)||PLAN_DISPLAY_FIELDS.find(f=>f.label===label)}
+function orderDisplayDateFields(fields){const dates=DISPLAY_DATE_ORDER.map(col=>fields.find(f=>Number(f.col)===col)).filter(Boolean),first=fields.findIndex(f=>DISPLAY_DATE_ORDER.includes(Number(f.col)));if(first<0)return fields;return [...fields.slice(0,first),...dates,...fields.slice(first).filter(f=>!DISPLAY_DATE_ORDER.includes(Number(f.col)))]}
+function selectableDisplayFields(){return orderDisplayDateFields([...schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim()),...(canViewSchedule()?PLAN_DISPLAY_FIELDS:[])])}
 function sanitizeDisplayFields(list){const allowed=new Set(selectableDisplayFields().map(f=>f.label));return [...new Set((Array.isArray(list)?list:[]).map(String).filter(x=>allowed.has(x)))]}
 function displayFieldStorageKey(){return `staff_display_fields:${me?.id||'guest'}`}
 function applyDisplayFieldPreference(profile){
@@ -593,8 +597,8 @@ const SITE_LIST_SPECIAL_COLUMNS={
 };
 function displayFieldKey(field){return `field_${field.col}`}
 function activeSiteListColumns(){
- const dynamic=displayFields.map(label=>schema.fields.find(f=>f.label===label)).filter(Boolean).map(f=>({key:displayFieldKey(f),label:f.label,sortable:true,field:f}));
- return [SITE_LIST_SPECIAL_COLUMNS.no,...dynamic,...(canViewSchedule()?[SITE_LIST_SPECIAL_COLUMNS.schedule_start,SITE_LIST_SPECIAL_COLUMNS.schedule_end]:[]),SITE_LIST_SPECIAL_COLUMNS.actions];
+ const dynamic=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule()))).map(f=>f.listKey?SITE_LIST_SPECIAL_COLUMNS[f.listKey]:({key:displayFieldKey(f),label:f.label,sortable:true,field:f}));
+ return [SITE_LIST_SPECIAL_COLUMNS.no,...dynamic,SITE_LIST_SPECIAL_COLUMNS.actions];
 }
 function activeSiteListKeys(){return activeSiteListColumns().map(c=>c.key)}
 function siteListOrderStorageKey(){return `staff_site_list_column_order:${me?.id||'guest'}`}
@@ -816,12 +820,12 @@ function renderSites(){
  }
  const sortedMobile=sortedSiteRows(filtered),visible=siteColumnFiltersEnabled?sortedMobile:sortedMobile.slice(0,600);
  root.innerHTML=filterToolbar+siteSelectionBarHtml(visible)+(filtered.length?'':'<div class="siteCard">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</div>')+visible.map(r=>{
-  const fieldsHtml=displayFields.map(f=>{const meta=schema.fields.find(x=>x.label===f),v=meta?formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col):val(r,f);return `<div><span>${esc(f)}</span><b>${esc(v||'-')}</b></div>`}).join('');
+  const fieldsHtml=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule()))).map(meta=>{const v=meta.prop?r[meta.prop]||'':formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col);return `<div><span>${esc(siteCompactFieldLabel(meta,'search'))}</span><b>${esc(v||'-')}</b></div>`}).join('');
   const p1=r.field_plan_start?'done':'',p2=r.field_end?'done':(r.field_plan_start?'working':''),p3=r.report_complete_date?'done':(r.field_end?'working':'');
   const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';
   const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';
   const select=isAdmin()?`<label class="mobileSiteSelect"><input type="checkbox" class="siteCardCheck" data-site-select="${r.source_id}"> 선택</label>`:'';
-  return `<article class="siteCard"><div class="siteSelectionMeta">${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}${canViewSchedule()?`<div><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:''}</div><div class="stepRow"><div class="step ${p1}">점검계획</div><div class="step ${p2}">현장점검</div><div class="step ${p3}">보고서</div></div><div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
+  return `<article class="siteCard"><div class="siteSelectionMeta">${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}</div><div class="stepRow"><div class="step ${p1}">점검계획</div><div class="step ${p2}">현장점검</div><div class="step ${p3}">보고서</div></div><div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
  }).join('')+(!siteColumnFiltersEnabled&&filtered.length>600?`<div class="siteCard">화면 성능을 위해 처음 600건만 표시합니다. 전체선택은 현재 표시된 카드만 대상으로 합니다.</div>`:'');
  root.querySelectorAll('[data-report-files]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteReports(Number(b.dataset.reportFiles))});
  root.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDetail(Number(b.dataset.detail)));
