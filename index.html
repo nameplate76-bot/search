@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v169">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v170">
 <script>
 (function(){
-  const BUILD='20261019-v169';
+  const BUILD='20261019-v170';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -43,7 +43,7 @@
 
 .scheduleDialogBuild{display:block;font-size:11px;color:#526581;margin-top:5px}.scheduleContactFailure{font-size:12px;line-height:1.6;overflow-wrap:anywhere;margin:10px 0 0}
 
-/* V169: 전화/길찾기 실행을 명확하게 표시 */
+/* V170: 전화/길찾기 실행을 명확하게 표시 */
 .scheduleContactPanel dl>div{padding:10px;border:1px solid #d9e4f4;border-radius:10px;background:#fff;box-sizing:border-box}
 .scheduleContactPanel dt{margin-bottom:7px}
 .scheduleContactPanel .scheduleContactPhone{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;max-width:100%;min-height:46px;box-sizing:border-box;padding:8px 10px;border:1px solid #a8c4ff;border-radius:10px;background:#f1f6ff;color:#174ac7;text-decoration:none;line-height:1.5;flex-wrap:wrap}
@@ -58,7 +58,7 @@
 @media(max-width:480px){.scheduleContactPanel .scheduleContactAddress{grid-template-columns:22px minmax(0,1fr)}.scheduleContactAddress>.scheduleContactActionLabel{grid-column:2;justify-self:start}}
 
 </style><style id="site-create-page-style">
-/* V169: 직접등록 전용 페이지 */
+/* V170: 직접등록 전용 페이지 */
 .siteCreateEditorHost{background:#fff;border:1px solid #dce3ee;border-radius:16px;padding:24px;min-width:0}
 .siteCreateEditorHost .dlgHead{position:static;align-items:flex-start;gap:16px}
 .siteCreateEditorHost h3{font-size:28px;margin:0 0 8px}
@@ -69,10 +69,10 @@
 @media(max-width:750px){.siteCreateEditorHost{padding:14px;border-radius:12px}.siteCreateEditorHost h3{font-size:24px}.siteCreateEditorHost .dlgHead{flex-wrap:wrap}.siteCreateEditorHost .siteEditFoot button{flex:1;min-height:44px}.siteCreateEditorHost .siteEditFields{min-width:0}}
 </style>
 <style>
-/* V169 mobile registration steps */
+/* V170 mobile registration steps */
 .siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
 </style><style id="quantity-desktop-six-columns">
-/* V169: PC 설비별 수량 6열 */
+/* V170: PC 설비별 수량 6열 */
 @media (min-width:801px) and (hover:hover) and (pointer:fine){
  .siteEditFields.quantityGrid,.detailGrid.quantityGrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important;align-items:start}
  .siteEditFields.quantityGrid .siteField,.detailGrid.quantityGrid .detailItem{min-width:0}
@@ -81,11 +81,11 @@
  .siteEditFields.quantityGrid .performanceAutoBtn{width:100%;padding:6px 4px;font-size:12px}
 }
 </style><style>
-/* V169: 현장 상세/보고서 전용 페이지 */
+/* V170: 현장 상세/보고서 전용 페이지 */
 .siteDetailPageHost{background:white;border:1px solid #dce3ee;border-radius:14px;padding:20px;min-width:0}.siteDetailPageHost .dlgHead{position:static;gap:16px}.siteDetailPageHost .dlgHead h3{font-size:25px}.siteDetailPageHost #detailClose{width:auto;padding:10px 18px;font-size:14px;white-space:nowrap}.siteDetailPageHost #detailTabs{flex-wrap:wrap;padding:12px 0}.siteDetailPageHost #detailBody{max-height:none;overflow:visible}.reportFilesPage{display:block;width:100%;max-width:none;max-height:none;margin:16px 0;padding:20px;border:1px solid #dce3ee;border-radius:14px;background:white;box-sizing:border-box}
 @media(max-width:750px){.siteDetailPageHost,.reportFilesPage{padding:12px}.siteDetailPageHost #detailTabs{flex-wrap:nowrap;overflow-x:auto}.siteDetailPageHost #detailTabs button{flex-shrink:0}.siteDetailPageHost .dlgHead h3{font-size:21px}}
-</style><style id="navy-light-theme-v169">
-/* V169 selected navy canvas / light working surfaces */
+</style><style id="navy-light-theme-v170">
+/* V170 selected navy canvas / light working surfaces */
 :root{--bg:#102957;--card:#fff;--text:#172b45;--muted:#60718b;--line:#d6e1f0;--blue:#2563eb;--blue2:#1d4ed8;--shadow:0 6px 22px rgba(0,12,40,.16)}
 body{background:#102957;color:var(--text)}
 .loginShell{background:#102957}
@@ -126,8 +126,8 @@ body{background:#102957;color:var(--text)}
 .reportFilesPage [data-close]{background:#c2410c;color:#fff;border:2px solid #9a3412;font-weight:800;min-height:44px;padding:10px 20px}
 @media(max-width:750px){.siteDetailPageHost #detailClose{min-width:100px;min-height:46px;padding:10px 16px;font-size:16px}#page-schedule{margin-top:12px}}
 @media print{body,.page{background:#fff!important;color:#172b45!important}.pageTitle h2,.pageTitle p{color:#172b45!important}}
-</style><style id="blue-close-filter-v169">
-/* V169: blue close and unified filter controls */
+</style><style id="blue-close-filter-v170">
+/* V170: blue close and unified filter controls */
 .siteDetailPageHost #detailClose,.reportFilesPage [data-close]{background:#2563eb;color:#fff;border-color:#1d4ed8;box-shadow:0 3px 10px rgba(37,99,235,.22)}
 .siteDetailPageHost #detailClose:hover,.reportFilesPage [data-close]:hover{background:#1d4ed8;color:#fff;border-color:#1e40af}
 .siteDetailPageHost #detailClose:focus-visible,.reportFilesPage [data-close]:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
@@ -139,8 +139,8 @@ body{background:#102957;color:var(--text)}
 #page-search .siteColumnFilterToolbar>button:disabled{opacity:1;background:#e9eef6;border-color:#d6dfeb;color:#6b7d95;cursor:not-allowed}
 #page-search .desktopListHint{color:#c8d8f0}#page-search .desktopListHint strong{color:#eef5ff}
 @media(max-width:800px){#page-search .siteListActionRow .siteColumnFilterToolbar{max-width:100%;margin-left:0;padding:8px;gap:8px}#page-search .siteColumnFilterToolbar>button{min-height:42px}}
-</style><style id="section-theme-v169">
-/* V169: unified schedule, unwritten and sales working surfaces */
+</style><style id="section-theme-v170">
+/* V170: unified schedule, unwritten and sales working surfaces */
 #page-schedule{background:transparent;color:#eef5ff;border:0;border-radius:0;margin:0 auto}
 #page-schedule .pageTitle h2{color:#fff}#page-schedule .pageTitle p{color:#c8d8f0}
 #page-schedule .scheduleToolbar{background:#f0f5fd;color:#172b45;border:1px solid #d6e1f0;border-radius:14px;padding:14px;gap:14px}
@@ -184,15 +184,15 @@ body{background:#102957;color:var(--text)}
 #page-sales table tfoot td,#page-sales table .totalrow td{background:#e7effc;color:#153664;font-weight:800}
 @media(max-width:750px){#page-schedule .scheduleToolbar{padding:10px}#page-schedule .scheduleMonthTitle{padding:10px}#page-unwritten :is(.unwrittenOwnerSection,.unwrittenListSection),#page-sales :is(.salesDashboard,.salesPanel){border-radius:12px}}
 @media print{#page-schedule{background:#fff!important;color:#172b45!important}#page-schedule .pageTitle h2{color:#172b45!important}}
-</style><style id="schedule-cleanup-v169">
-/* V169 schedule information cleanup */
+</style><style id="schedule-cleanup-v170">
+/* V170 schedule information cleanup */
 #page-schedule #scheduleScopeNote{display:none}
 #page-schedule #scheduleMessage:empty{display:none}
 #page-schedule .scheduleDashboardFilters>[role="group"]{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 #page-schedule .scheduleDashboardFilters [data-dash-period]{min-height:42px;padding:10px 16px;border-radius:9px}
 #page-schedule .scheduleDashboard>.hint{color:#c8d8f0;line-height:1.7;margin:12px 0 18px}
-</style><style id="sales-readability-v169">
-/* V169: sales readability on light surfaces */
+</style><style id="sales-readability-v170">
+/* V170: sales readability on light surfaces */
 #page-sales{--navy:#172b45}
 #page-sales :is(.salesDashboard,.salesMonthlyOverview,.salesPanel){color:#172b45;background:#fff}
 #page-sales :is(.salesDashboardHead h3,.salesMonthlyHead h3,.salesMonthlySectionTitle strong,.salesDashSectionTitle strong,.salesDashBarLabel,.salesMonthlyKpis b,.salesMonthlySummaryMobileGrid b){color:#172b45}
@@ -218,7 +218,7 @@ body{background:#102957;color:var(--text)}
 </style>
 
 
-<style id="portal-design-v169">/* V169 approved navy/light design. Data & permission behavior stays in existing modules. */
+<style id="portal-design-v170">/* V170 approved navy/light design. Data & permission behavior stays in existing modules. */
 :root{--navy:#172b45;--muted:#475569;--blue:#2563eb;--line:#d6e1f0}
 body{background:#102957;color:#172b45}button,input,select,textarea{font-family:inherit}button{border-radius:8px;min-height:38px}button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
 .topbar{background:#091b40}.topbar .bar{gap:16px}.topbar nav button{border-radius:9px;font-size:15px}.topbar nav button.active{background:#edf4ff;color:#1d4ed8}
@@ -259,6 +259,22 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-users.hasUserPanel .userInfoSummary{grid-template-columns:1fr 1fr}
 @media(max-width:750px){#page-schedule .scheduleDayGrid{grid-auto-rows:minmax(80px,auto)}#page-schedule .scheduleDay{overflow:visible;height:auto;min-height:80px}.scheduleMobileHelp{color:#c8d8f0}}
 </style>
+<style id="mobile-monthly-v170">
+/* V170: restore the pre-redesign compact monthly calendar on mobile only. */
+@media(max-width:750px){
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMonthlyScroll{overflow:visible;width:100%;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMonthlyBoard{min-width:0;width:100%;max-width:100%}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDayGrid{grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:66px;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay{min-height:0;height:66px;padding:0;box-sizing:border-box;overflow:hidden}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>.scheduleDayHead,
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>small,
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>.scheduleEvents{display:none!important}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDate{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:100%;height:100%;min-height:0;padding:5px 0;margin:0;border:0;border-radius:0;background:transparent;color:#172b4d;min-width:0;box-sizing:border-box;box-shadow:none}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDate[aria-pressed="true"]{background:#e6f0ff;box-shadow:inset 0 0 0 2px #173f7a}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDetails{display:block;margin:12px 0;padding:12px;border:1px solid #c3d5ee;border-radius:10px;background:#fff;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileEvent{font-size:13px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+}
+</style>
 </head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
@@ -280,7 +296,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V169</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V170</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -449,7 +465,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v169"></script><script src="fields.js?v=20261019-v169"></script><script src="quantity-ocr.js?v=20261019-v169"></script><script id="bundled-report-files-js" data-build="V169">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v170"></script><script src="fields.js?v=20261019-v170"></script><script src="quantity-ocr.js?v=20261019-v170"></script><script id="bundled-report-files-js" data-build="V170">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -567,7 +583,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261019-v169"></script><script id="bundled-inspection-schedule-js" data-build="V169">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261019-v170"></script><script id="bundled-inspection-schedule-js" data-build="V170">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -595,7 +611,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V169';
+root.STAFF_SCHEDULE_VERSION='V170';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -742,7 +758,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V169">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V170">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';

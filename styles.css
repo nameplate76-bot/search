@@ -1279,3 +1279,18 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-users.userCompactTable #userTable .columnResizer{display:none}
 #page-users.hasUserPanel .userInfoSummary{grid-template-columns:1fr 1fr}
 @media(max-width:750px){#page-schedule .scheduleDayGrid{grid-auto-rows:minmax(80px,auto)}#page-schedule .scheduleDay{overflow:visible;height:auto;min-height:80px}.scheduleMobileHelp{color:#c8d8f0}}
+
+/* V170: restore the pre-redesign compact monthly calendar on mobile only. */
+@media(max-width:750px){
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMonthlyScroll{overflow:visible;width:100%;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMonthlyBoard{min-width:0;width:100%;max-width:100%}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDayGrid{grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:66px;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay{min-height:0;height:66px;padding:0;box-sizing:border-box;overflow:hidden}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>.scheduleDayHead,
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>small,
+ #page-schedule[data-calendar-mode="monthly"] .scheduleDay>.scheduleEvents{display:none!important}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDate{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:100%;height:100%;min-height:0;padding:5px 0;margin:0;border:0;border-radius:0;background:transparent;color:#172b4d;min-width:0;box-sizing:border-box;box-shadow:none}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDate[aria-pressed="true"]{background:#e6f0ff;box-shadow:inset 0 0 0 2px #173f7a}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileDetails{display:block;margin:12px 0;padding:12px;border:1px solid #c3d5ee;border-radius:10px;background:#fff;min-width:0}
+ #page-schedule[data-calendar-mode="monthly"] .scheduleMobileEvent{font-size:13px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+}
