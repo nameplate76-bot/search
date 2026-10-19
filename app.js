@@ -31,7 +31,7 @@ let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null;
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
@@ -503,13 +503,13 @@ async function searchSites(force=false){
  if(!can('can_view_staff_sites'))return;
  const q=siteColumnFiltersEnabled?'':$('siteQuery').value.trim(),sameQuery=searchCacheReady&&searchCacheQuery===q;
  if(!force&&sameQuery&&cacheFresh(searchLoadedAt)){applySearchCache();return}
- const requestId=++searchRequestSeq;$('searchMeta').textContent='검색 중...';
+ const requestId=++searchRequestSeq,requestAccount=me?.id;$('searchMeta').textContent='검색 중...';
  try{
   const rows=await fetchPaged('staff_site_search_list','*',query=>{query=query.order('excel_row',{ascending:true}).order('source_id',{ascending:true});if(q){const term=q.replace(/[%_,()]/g,' ').trim();query=query.or(`site_name.ilike.%${term}%,previous_name.ilike.%${term}%,region.ilike.%${term}%,sn.ilike.%${term}%,document_owner.ilike.%${term}%,field_inspector.ilike.%${term}%,sales_manager.ilike.%${term}%`)}return query});
   if(canViewSchedule()){const plans=await fetchSitePlanDates();const map=new Map(plans.map(p=>[Number(p.source_id),p]));rows.forEach(r=>{const plan=map.get(Number(r.source_id));r.schedule_plan_start=plan?.plan_start||'';r.schedule_plan_end=plan?.plan_end||''})}
-  if(requestId!==searchRequestSeq)return;
-  searchSourceRows=rows;searchCacheQuery=q;searchCacheReady=true;searchLoadedAt=Date.now();applySearchCache();
- }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML=''}
+  if(requestId!==searchRequestSeq||requestAccount!==me?.id||!can('can_view_staff_sites'))return;
+  searchSourceRows=rows;searchCacheQuery=q;searchCacheReady=true;searchLoadedAt=Date.now();applySearchCache();return true;
+ }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML='';return false}
 }
 function refilterSearchSites(){const q=siteColumnFiltersEnabled?'':$('siteQuery').value.trim();if(searchCacheReady&&searchCacheQuery===q){applySearchCache();return}searchSites(false)}
 function siteStatusLabel(r){const s=statusOf(r);return s==='complete'?'보고서 완료':s==='unwritten'?'보고서 미작성':s==='checking'?'점검 진행 중':s==='target'?'점검대상':'전체 진행 중'}
@@ -2547,13 +2547,32 @@ async function refreshSearchScheduleDates(){
 }
 setInterval(refreshSearchScheduleDates,60000);
 window.addEventListener('focus',refreshSearchScheduleDates);
+let scheduleRelatedSeq=0;
+async function refreshScheduleRelated(change={}){
+ const revision=++scheduleRelatedSeq,account=me?.id;
+ if(!account)return false;
+ const salesWereLoaded=salesCacheReady||activePageName()==='sales';
+ invalidateDataCaches('sites');
+ const jobs=[];
+ if(can('can_view_staff_sites'))jobs.push(searchSites(true));
+ if(canViewUnwritten())jobs.push(loadUnwrittenDashboard(true));
+ if(canViewSales()&&salesWereLoaded)jobs.push(loadSales(true));
+ const results=await Promise.allSettled(jobs);
+ if(account!==me?.id||revision!==scheduleRelatedSeq)return true;
+ const detailId=Number($('detailTabs').querySelector('[data-quantity-print]')?.dataset.quantityPrint||0);
+ if(activePageName()==='site-detail'&&detailId&&detailId===Number(change.source_id)){
+  const group=Number($('detailTabs').querySelector('[data-g].active')?.dataset.g||0);
+  await openDetail(detailId,{preserveReturn:true,group});
+ }
+ return !results.some(r=>r.status==='rejected'||r.value===false);
+}
 function scheduleAccess(){return {view:!!me&&canViewSchedule(),edit:!!me&&canEditSchedule(),all:!!me&&canViewAllSchedule(),name:me?.name||''}}
 async function loadSchedule(){return window.STAFF_SCHEDULE_UI?.load()}
 function openSchedulePage(){window.STAFF_SCHEDULE_UI?.open()}
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
  phoneNumbers:splitPhoneNumbers,cleanPhone,route:openRouteChooser,
  access:scheduleAccess,rpc:async(name,args)=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==137)throw new Error('일정 권한 분리 SQL(V137)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},
- changed:()=>{invalidateDataCaches('sites');searchSourceRows=[];lastSites=[]},
+ changed:refreshScheduleRelated,
  pageActive:()=>activePageName()==='schedule'
 });
 
