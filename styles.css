@@ -1104,3 +1104,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
  .siteEditFields.quantityGrid .siteField input{width:100%;min-width:0;text-align:center;padding:8px 6px}
  .siteEditFields.quantityGrid .performanceAutoBtn{width:100%;padding:6px 4px;font-size:12px}
 }
+
+/* V162: 현장 상세/보고서 전용 페이지 */
+.siteDetailPageHost{background:white;border:1px solid #dce3ee;border-radius:14px;padding:20px;min-width:0}.siteDetailPageHost .dlgHead{position:static;gap:16px}.siteDetailPageHost .dlgHead h3{font-size:25px}.siteDetailPageHost #detailClose{width:auto;padding:10px 18px;font-size:14px;white-space:nowrap}.siteDetailPageHost #detailTabs{flex-wrap:wrap;padding:12px 0}.siteDetailPageHost #detailBody{max-height:none;overflow:visible}.reportFilesPage{display:block;width:100%;max-width:none;max-height:none;margin:16px 0;padding:20px;border:1px solid #dce3ee;border-radius:14px;background:white;box-sizing:border-box}
+@media(max-width:750px){.siteDetailPageHost,.reportFilesPage{padding:12px}.siteDetailPageHost #detailTabs{flex-wrap:nowrap;overflow-x:auto}.siteDetailPageHost #detailTabs button{flex-shrink:0}.siteDetailPageHost .dlgHead h3{font-size:21px}}

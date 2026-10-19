@@ -19,14 +19,14 @@ function sameMapping(a,b){return !!a&&!!b&&['folder','reference_date','preferred
 root.ReportFiles={open,endpoint,nasWebUrl,mappingValue,mappingKey,saveLocal,sameMapping};
 function open(ctx){
  const apiKey='staff-report-api-v1:'+String(ctx.config.supabaseUrl||'');let override='';if(!ctx.getApi){try{override=localStorage.getItem(apiKey)||''}catch(e){}}
- const dlg=document.createElement('dialog');dlg.className='reportFilesDialog';
+ const dlg=document.createElement(ctx.container?'section':'dialog');dlg.className='reportFilesDialog'+(ctx.container?' reportFilesPage':'');
  const example=String(ctx.row.site_name||'').includes('상록중학교');
  const dateMatch=String(ctx.row.site_name||'').match(/(?:기준일)\s*(\d{2,4})[.\/-](\d{1,2})[.\/-](\d{1,2})/);
  const referenceLabel=dateMatch?`${dateMatch[1]}.${dateMatch[2]}.${dateMatch[3]}`:'';
  dlg.innerHTML=`<div class="dlgHead"><div><h3>현장 보고서</h3><small>${escape(ctx.row.site_name)} · 현장 ID ${Number(ctx.row.source_id)}</small></div><button type="button" data-close>닫기</button></div><p>NAS 원본 파일을 조회합니다. 보고서를 확인하고 PDF 열람 또는 다운로드를 선택하세요.</p><div class="filterRow"><a data-nas hidden target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">ipDISK에서 보고서 찾기</a><button type="button" data-refresh class="primary">보고서 다시 조회</button>${ctx.admin?'<button type="button" data-diagnose>연결 상태 확인</button>':''}</div><div data-nas-guide hidden></div><p data-status role="status" aria-live="polite"></p><div data-list class="reportFilesList"></div>${ctx.admin?'<div data-diagnostics role="status" aria-live="polite"></div>':''}${ctx.admin?`<details class="reportMapping" open><summary>관리자: 임시 HTTPS 연결 주소 설정</summary><p>PC 임시연결 창에 표시된 주소를 붙여넣으세요. 관리자가 저장하면 모든 직원의 PC와 휴대폰에 공통으로 적용됩니다. 공통 주소를 처음 저장하기 전에는 이 브라우저의 기존 주소 또는 포털 기본 주소를 사용합니다. 현재 실행 중인 주소인지 확인한 뒤 공통 저장하세요. 이미 열린 보고서 화면에서는 보고서 다시 조회를 누르세요.</p><label>발급된 임시 HTTPS 주소<input data-api placeholder="PC에서 발급된 https://…trycloudflare.com 주소"></label><button type="button" data-api-save>공통 연결 주소 저장</button></details><details class="reportMapping" open><summary>관리자: 현장 보고서 폴더 연결</summary><p>직원 PC의 드라이브 문자는 달라도 됩니다. 모든 보고서는 연결 프로그램 PC에서 읽습니다. NAS 기준 폴더가 VOL1인 경우 Z 또는 F 드라이브의 전체 경로를 붙여넣으면 VOL1 아래 상대 경로로 변환해 저장합니다. 연결 PC의 기준 폴더는 실제 접근 가능한 위치여야 합니다. 보고서가 있는 폴더까지 지정하고 폴더명이 바뀌면 수정하세요.</p><label>현장 폴더 경로 (상대 경로 또는 드라이브의 VOL1 전체 경로)<input data-folder lang="ko" placeholder="예: 유지관리 및 성능점검/② 학교/상록중학교"></label><label>성능 실시기준일 (다른 보고서도 함께 보려면 공란)<input data-date type="date"></label><label>우선 표시할 파일명 (선택)<input data-preferred lang="ko" placeholder="예: 제5권 기계설비 성능점검 보고서-상록중학교(기준일 25.04.18).pdf"></label><button type="button" data-save>이 현장에 폴더 연결 저장</button><p data-save-status role="status" aria-live="polite">입력 후 저장 버튼을 누르세요.</p><small>연결 프로그램이 있으면 해당 프로그램에 저장합니다. 연결 전에는 이 PC·브라우저에만 저장되며 다른 기기와 공유되지 않습니다. NAS 원본은 변경하지 않습니다.</small></details>`:''}`;
- document.body.append(dlg);dlg.showModal();const q=s=>dlg.querySelector(s);let base='',closed=false,busy=false,saving=false,mappingDirty=false,initialMapping=Promise.resolve(),activeRefresh=Promise.resolve(),requests=new Set();
+ (ctx.container||document.body).append(dlg);if(!ctx.container)dlg.showModal();const q=s=>dlg.querySelector(s);let base='',closed=false,busy=false,saving=false,mappingDirty=false,initialMapping=Promise.resolve(),activeRefresh=Promise.resolve(),requests=new Set();
  const status=s=>{q('[data-status]').textContent=s};
- const close=()=>{closed=true;requests.forEach(c=>c.abort());dlg.close();dlg.remove()};q('[data-close]').onclick=close;dlg.oncancel=e=>{e.preventDefault();close()};
+ const close=(notify=true)=>{closed=true;requests.forEach(c=>c.abort());if(!ctx.container)dlg.close();dlg.remove();if(notify&&ctx.onClose)ctx.onClose()};if(ctx.onReady)ctx.onReady(close);q('[data-close]').onclick=close;dlg.oncancel=e=>{e.preventDefault();close()};
  let nas='';try{nas=nasWebUrl(ctx.config.reportNasWebUrl);if(nas){q('[data-nas]').href=nas;q('[data-nas]').hidden=false;q('[data-nas-guide]').hidden=false;q('[data-nas-guide]').innerHTML=`<p>ipDISK 창에서 로그인한 후 현장명 <b>${escape(ctx.row.site_name)}</b>으로 해당 폴더를 찾아 파일을 열람하거나 다운로드하세요. 포털 로그인과 NAS 로그인은 별개입니다.</p>${example?`<p>상록중학교 위치 확인: VOL1 → 유지관리 및 성능점검 → ② 학교 → 상록중학교 → 해당 계약 폴더 → 제본 PDF 저장 폴더 → 제출용. ${referenceLabel?'조회 중인 현장의 기준일 '+escape(referenceLabel)+'에 해당하는 보고서를 확인하세요.':'조회 중인 계약에 해당하는 보고서를 확인하세요.'} 폴더명이 바뀌면 연결 경로도 수정하세요.</p>`:''}<small>서버 화면의 파일 조회·다운로드 지원 여부는 실제 접속 확인이 필요합니다. 자동 현장 폴더 이동은 아직 연결되지 않았습니다.</small>`}}catch(e){status(e.message)}
  try{base=endpoint(override||ctx.config.reportApiUrl)}catch(e){status(e.message)}
  async function request(route,options={}){
@@ -45,23 +45,35 @@ function open(ctx){
   const url=URL.createObjectURL(blob);if(view){popup.location.replace(url)}else{const a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove()}setTimeout(()=>URL.revokeObjectURL(url),300000);status(view?'PDF 열람 창을 열었습니다.':'다운로드를 시작했습니다.');
  }catch(e){if(popup)popup.close();if(!closed)status(e.message)}finally{if(!closed)lock(false)}}
  async function refresh(){if(busy||saving)return;lock(true);status('이 현장의 보고서 폴더를 확인하고 있습니다.');q('[data-list]').innerHTML='';try{
-  const data=await request('reports');if(closed)return;
+  let data;
+  for(let attempt=0;attempt<3;attempt++){
+   try{data=await request('reports');break}catch(error){
+    if(closed)return;
+    if(error.httpStatus!==503||attempt===2)throw error;
+    status(`NAS 연결 준비를 기다린 후 다시 조회합니다 (${attempt+1}/2). 기존 폴더 연결정보는 유지됩니다.`);
+    await new Promise(resolve=>setTimeout(resolve,(attempt+1)*1500));if(closed)return;
+   }
+  }
+  if(closed)return;
+  if(data.recovery_message&&ctx.admin&&!mappingDirty){
+   try{const restored=await request('mapping');if(!closed&&!mappingDirty&&restored.mapping){const m=restored.mapping;q('[data-folder]').value=m.folder||'';q('[data-date]').value=m.reference_date||'';q('[data-preferred]').value=m.preferred_file||'';q('[data-save-status]').textContent='기존 보고서 경로를 확인하여 복구했습니다. 현재 표시된 값은 서버에 저장된 연결정보입니다.'}}catch(e){}
+  }
   if(!data.connected){status('이 현장에 보고서 폴더가 연결되지 않았습니다. 관리자에게 연결 설정을 요청하세요.');return}
   const files=data.files||[];if(!files.length){status('연결된 폴더에서 조건에 맞는 보고서를 찾지 못했습니다. 폴더 위치와 실시기준일을 확인하세요.');return}
   q('[data-list]').innerHTML=`<table><thead><tr><th>파일명</th><th>현장 폴더 안의 위치</th><th>수정일</th><th>크기</th><th>열람·다운로드</th></tr></thead><tbody>${files.map((f,i)=>`<tr><td>${f.preferred?'<b>우선 표시</b> ':''}${escape(f.name)}</td><td>${escape(f.folder==='.'?'현장 폴더':f.folder)}</td><td>${escape(new Date(f.modified*1000).toLocaleString('ko-KR'))}</td><td>${(Number(f.size)/1024/1024).toFixed(2)} MB</td><td>${f.pdf?`<button type="button" data-file-id="${i}" data-view="1">PDF 열람</button>`:''}<button type="button" data-file-id="${i}">다운로드</button></td></tr>`).join('')}</tbody></table>`;
-  q('[data-list]').querySelectorAll('[data-file-id]').forEach(b=>b.onclick=()=>fileAction(files[Number(b.dataset.fileId)],b.dataset.view==='1'));status(`${files.length}개 파일을 찾았습니다. 같은 종류의 파일이 여러 개면 파일명과 위치를 확인해 선택하세요.`);
- }catch(e){if(!closed){if(e.httpStatus===404&&e.serverMessage.includes('연결한 현장 폴더가 없습니다')){await initialMapping.catch(()=>{});if(!closed){const folder=ctx.admin?q('[data-folder]').value:'';status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · '+(folder?'관리자 화면의 폴더 경로: '+folder+' · ':'')+'연결 프로그램 PC에서 NAS 기준 폴더와 실제 폴더명을 확인하세요. NAS 재연결 중인지도 확인한 후 다시 조회하세요. 실제 폴더명이 다른 경우에만 해당 현장의 경로를 수정하세요.')}}else if(e.httpStatus===404){status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · 이 응답만으로 NAS 폴더 문제라고 판단할 수 없습니다. 현장 조회 권한과 현재 HTTPS 연결 주소를 확인하세요.')}else status(e.message)}}finally{if(!closed)lock(false)}}
+  q('[data-list]').querySelectorAll('[data-file-id]').forEach(b=>b.onclick=()=>fileAction(files[Number(b.dataset.fileId)],b.dataset.view==='1'));status(`${data.recovery_message?data.recovery_message+' ':''}${files.length}개 파일을 찾았습니다. 같은 종류의 파일이 여러 개면 파일명과 위치를 확인해 선택하세요.`);
+ }catch(e){if(!closed){if(e.httpStatus===404&&e.serverMessage.includes('연결한 현장 폴더가 없습니다')){await initialMapping.catch(()=>{});if(!closed){const folder=ctx.admin?q('[data-folder]').value:'';status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · '+(folder?'관리자 화면의 폴더 경로: '+folder+' · ':'')+'연결 프로그램 PC에서 NAS 기준 폴더와 실제 폴더명을 확인하세요. NAS 재연결 중인지도 확인한 후 다시 조회하세요. 기존 등록정보를 삭제하거나 전체 재등록하지 마세요. 연결 상태 확인에서 실제 NAS 기준 폴더·연결 DB·실행 버전을 먼저 확인하세요. R5는 확인 가능한 동일 현장 경로만 자동 복구합니다.')}}else if(e.httpStatus===404){status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · 이 응답만으로 NAS 폴더 문제라고 판단할 수 없습니다. 현장 조회 권한과 현재 HTTPS 연결 주소를 확인하세요.')}else status(e.message)}}finally{if(!closed)lock(false)}}
  function startRefresh(){activeRefresh=refresh();return activeRefresh}
  q('[data-refresh]').onclick=startRefresh;
  if(ctx.admin)q('[data-diagnose]').onclick=async()=>{
   if(busy||saving)return;lock(true);status('실행 중인 연결 프로그램의 상태를 확인하고 있습니다.');
   try{
    const data=await request('diagnostics');if(closed)return;
-   if(!data.bridge_version||Number(data.site_id)!==Number(ctx.row.source_id))throw Error('연결 상태 응답을 확인할 수 없습니다. 이 HTTPS 주소에 보고서 연결 프로그램 R4가 실행 중인지 확인하세요.');
+   if(!data.bridge_version||Number(data.site_id)!==Number(ctx.row.source_id))throw Error('연결 상태 응답을 확인할 수 없습니다. 이 HTTPS 주소에 보고서 연결 프로그램 R5가 실행 중인지 확인하세요.');
    const mapping=data.mapping||{};
-   q('[data-diagnostics]').innerHTML=`<div class="reportMapping"><strong>실행 중인 연결 프로그램 확인</strong><p>버전: ${escape(data.bridge_version)} · 프로세스 ID: ${Number(data.process_id)} · 현장 ID: ${Number(data.site_id)}</p><p>실행 중인 NAS 기준 폴더: ${escape(data.nas_root)}</p><p>실제로 읽은 현장 연결 경로: ${escape(mapping.folder||'미등록')}</p><p>실시기준일: ${escape(mapping.reference_date||'필터 없음')}</p><p>검색 결과: HTTP ${Number(data.http_status)} · ${Number(data.file_count||0)}개 파일</p><p>${escape(data.message)}</p></div>`;
+   q('[data-diagnostics]').innerHTML=`<div class="reportMapping"><strong>실행 중인 연결 프로그램 확인</strong><p>버전: ${escape(data.bridge_version)} · 프로세스 ID: ${Number(data.process_id)} · 현장 ID: ${Number(data.site_id)}</p><p>실행 중인 NAS 기준 폴더: ${escape(data.nas_root)}</p><p>설정 파일: ${escape(data.config_file||'구버전은 표시하지 않습니다')}</p><p>실제 연결 DB: ${escape(data.mapping_database||'구버전은 표시하지 않습니다')} · 등록 ${data.mapping_count===undefined?'구버전 미지원':Number(data.mapping_count)+'건'}</p><p>설정된 NAS 기준 폴더: ${escape(data.configured_nas_root||data.nas_root)}</p><p>실제로 읽은 현장 연결 경로: ${escape(mapping.folder||'미등록')}</p><p>실시기준일: ${escape(mapping.reference_date||'필터 없음')}</p><p>검색 결과: HTTP ${Number(data.http_status)} · ${Number(data.file_count||0)}개 파일</p><p>${escape(data.message)}</p>${data.bridge_version==='R4'?'<p><b>현재 PC는 이전 R4 연결 프로그램입니다. 이번 R5 server.py를 실제 실행 폴더에 적용하고 재시작하세요.</b></p>':''}${data.recovery?`<p>자동 복구: ${escape(data.recovery.previous_folder)} → ${escape(data.recovery.folder)}</p>`:''}</div>`;
    status(data.http_status===200?data.message+' · '+Number(data.file_count||0)+'개 파일. 보고서 다시 조회를 눌러 목록을 확인하세요.':data.message+' (HTTP '+Number(data.http_status)+')');
-  }catch(e){if(!closed)status(e.message+(e.httpStatus===404?' · 현재 HTTPS 주소에 연결 프로그램 R4가 실행 중인지 확인하세요. 연결 상태 확인 요청의 404이며, 현장 폴더가 없다는 뜻으로 단정할 수 없습니다.':''))}
+  }catch(e){if(!closed)status(e.message+(e.httpStatus===404?' · 현재 HTTPS 주소에 연결 프로그램 R5가 실행 중인지 확인하세요. 연결 상태 확인 요청의 404이며, 현장 폴더가 없다는 뜻으로 단정할 수 없습니다.':''))}
   finally{if(!closed)lock(false)}
  };
 
@@ -69,7 +81,7 @@ function open(ctx){
   const saveStatus=(message,error=false)=>{if(closed)return;const node=q('[data-save-status]');node.textContent=message;node.dataset.error=String(error)};
   ['[data-folder]','[data-date]','[data-preferred]'].forEach(sel=>q(sel).addEventListener('input',()=>{mappingDirty=true;saveStatus('변경한 입력 내용은 아직 저장되지 않았습니다.')}));
   q('[data-api]').value=override||ctx.config.reportApiUrl||'';
-  q('[data-api-save]').onclick=async()=>{if(saving){saveStatus('폴더 저장이 끝난 뒤 연결 주소를 변경하세요.',true);return}try{const value=endpoint(q('[data-api]').value);if(!value||!new URL(value).hostname.endsWith('.trycloudflare.com'))throw Error('PC에서 발급된 trycloudflare.com HTTPS 주소를 입력하세요.');if(ctx.saveApi){const btn=q('[data-api-save]');btn.disabled=true;status('공통 접속주소 저장 중…');try{await ctx.saveApi(value);try{localStorage.removeItem(apiKey)}catch(e){}}finally{btn.disabled=false}}else{localStorage.setItem(apiKey,value);if(localStorage.getItem(apiKey)!==value)throw Error('주소 저장에 실패했습니다.');}close();open({...ctx,config:{...ctx.config,reportApiUrl:value}})}catch(e){status(e.message)}};
+  q('[data-api-save]').onclick=async()=>{if(saving){saveStatus('폴더 저장이 끝난 뒤 연결 주소를 변경하세요.',true);return}try{const value=endpoint(q('[data-api]').value);if(!value||!new URL(value).hostname.endsWith('.trycloudflare.com'))throw Error('PC에서 발급된 trycloudflare.com HTTPS 주소를 입력하세요.');if(ctx.saveApi){const btn=q('[data-api-save]');btn.disabled=true;status('공통 접속주소 저장 중…');try{await ctx.saveApi(value);try{localStorage.removeItem(apiKey)}catch(e){}}finally{btn.disabled=false}}else{localStorage.setItem(apiKey,value);if(localStorage.getItem(apiKey)!==value)throw Error('주소 저장에 실패했습니다.');}close(false);open({...ctx,config:{...ctx.config,reportApiUrl:value}})}catch(e){status(e.message)}};
   q('[data-save]').onclick=async()=>{
    if(saving)return;
    let value;try{value=mappingValue({folder:q('[data-folder]').value,reference_date:q('[data-date]').value,preferred_file:q('[data-preferred]').value})}catch(e){saveStatus('저장하지 못했습니다: '+e.message,true);return}
@@ -99,6 +111,7 @@ function open(ctx){
  }
  if(!base){q('[data-refresh]').disabled=true;status('보고서 연결 준비 상태입니다. NAS에 접근 가능한 PC·서버에서 연결 프로그램을 실행하고 HTTPS 주소를 설정해야 실제 파일 조회가 가능합니다.');if(nas)status('ipDISK 연결 주소를 설정했습니다. 위 버튼으로 서버 창을 열어 로그인 후 보고서를 찾으세요. 포털 내부 자동 목록 조회는 연결 프로그램 설정 후 사용할 수 있습니다.');}else startRefresh();
  if(!base&&ctx.admin){try{const raw=localStorage.getItem(mappingKey(ctx.config,ctx.row.source_id));if(raw){const m=mappingValue(JSON.parse(raw));q('[data-folder]').value=m.folder;q('[data-date]').value=m.reference_date;q('[data-preferred]').value=m.preferred_file;status('이 PC·브라우저에 저장된 폴더 정보를 불러왔습니다. 다른 기기와 공유되지 않습니다. ipDISK 버튼으로 서버를 열 수 있으며 자동 목록 조회는 별도 연결이 필요합니다.')}}catch(e){status('저장된 연결 정보를 불러오지 못했습니다. 경로를 다시 입력해 저장하세요. '+e.message)}}
+ return close;
 }
 
 })(window);
