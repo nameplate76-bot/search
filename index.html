@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v177">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v178">
 <script>
 (function(){
-  const BUILD='20261019-v177';
+  const BUILD='20261019-v178';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,6 +34,20 @@
 #page-schedule .scheduleInspectorFieldset legend{background:#fff;color:#173f7a!important;font-size:16px;font-weight:800;line-height:1.5;padding:3px 10px;border-radius:6px}
 #page-unwritten .unwrittenTable td:is(.uw-col-receipt,.uw-col-field_end,.uw-col-field_inspector,.uw-col-elapsed,.uw-col-corporation,.uw-col-inspection_type){text-align:center!important}
 #unwrittenPrint{white-space:nowrap;flex-shrink:0;min-height:40px}
+
+/* V178: user header alignment, frozen employee names and compact resizing */
+#page-users #userTable thead th{text-align:center!important}
+#page-users #userTable th.userSortableHeader{padding-left:10px!important;padding-right:10px!important}
+#page-users #userTable :is(th,td):nth-child(2){position:sticky;left:0;background:#fff;z-index:4;box-shadow:2px 0 0 #c7d7ee;overflow-wrap:anywhere}
+#page-users #userTable tbody tr:nth-child(even)>td:nth-child(2){background:#f2f6ff}
+#page-users #userTable tbody tr:hover>td:nth-child(2){background:#eaf2ff}
+#page-users #userTable tbody tr.userRowSelected>td:nth-child(2){background:#eef4ff}
+#page-users #userTable thead th:nth-child(2){top:0;z-index:12;background:#e8f0fd}
+#page-users #userTable thead th:nth-child(2).userSortActive{background:#dceaff}
+#page-users.userCompactTable #userTable{min-width:800px}
+#page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:none}
+#page-users.userCompactTable #userTable td{white-space:normal;overflow-wrap:anywhere}
+@media print{#page-users #userTable :is(th,td):nth-child(2){position:static;box-shadow:none}#page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:table-column!important}}
 </style><style id="bundled-schedule-contact-style">
 /* V155: 일정 상세의 연락처 조회 전용 영역 */
 .scheduleContactPanel{background:#f7faff;border:1px solid #d5e2f4;border-radius:10px;padding:12px;min-width:0}
@@ -257,10 +271,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-schedule .scheduleMonthlyScroll{overflow-x:auto}#page-schedule .scheduleMonthlyBoard{min-width:0;width:100%}#page-schedule .scheduleDay{min-height:68px;padding:3px;height:auto}#page-schedule .scheduleMobileDate{height:auto;min-height:32px}#page-schedule .scheduleDay>.scheduleEvents{display:block;margin-top:2px}#page-schedule .scheduleDay>small{display:block;font-size:10px}#page-schedule .scheduleEvent{font-size:10px;line-height:1.45;padding:4px 2px;word-break:break-all;border-radius:4px}#page-schedule .scheduleLeaveEvent{font-size:10px;padding:3px 2px;overflow-wrap:anywhere;white-space:normal}#page-schedule .scheduleMonthTitle h3{font-size:24px}#page-schedule .scheduleMonthlyFooter small,#page-schedule .scheduleMonthlyFooter .scheduleLeaveSummary{font-size:12px}.userPanelPermissions{grid-template-columns:1fr 1fr}.userPanelPermissions label{font-size:13px}
 }
 @media print{.salesViewTabs,.salesSharedControls,.salesDesignTitle,.userPanelFoot{display:none!important}.designViewHidden{display:block!important}.userCompactTable #userTable th,.userCompactTable #userTable td{display:table-cell!important}}
-#page-users.userCompactTable #userTable{table-layout:auto!important;width:100%!important;min-width:800px}
-#page-users.userCompactTable #userTable colgroup{display:none}
-#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{width:auto!important;min-width:0!important;max-width:none!important;white-space:normal}
-#page-users.userCompactTable #userTable .columnResizer{display:none}
+
 #page-users.hasUserPanel .userInfoSummary{grid-template-columns:1fr 1fr}
 @media(max-width:750px){#page-schedule .scheduleDayGrid{grid-auto-rows:minmax(80px,auto)}#page-schedule .scheduleDay{overflow:visible;height:auto;min-height:80px}.scheduleMobileHelp{color:#c8d8f0}}
 </style>
@@ -310,7 +321,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V177</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V178</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -479,7 +490,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v177"></script><script src="fields.js?v=20261019-v177"></script><script src="quantity-ocr.js?v=20261019-v177"></script><script id="bundled-report-files-js" data-build="V177">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v178"></script><script src="fields.js?v=20261019-v178"></script><script src="quantity-ocr.js?v=20261019-v178"></script><script id="bundled-report-files-js" data-build="V178">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -597,7 +608,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261019-v177"></script><script id="bundled-inspection-schedule-js" data-build="V177">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261019-v178"></script><script id="bundled-inspection-schedule-js" data-build="V178">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -625,7 +636,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V177';
+root.STAFF_SCHEDULE_VERSION='V178';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -772,7 +783,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V177">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V178">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -972,10 +983,12 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
  tableResizeTimers.set(table,id);
 }
 function installTableColumnResize(table,tableName){
- if(table?.id==='userTable'&&$('page-users').classList.contains('userCompactTable')){table.querySelector(':scope > colgroup')?.remove();table.querySelectorAll('.columnResizer').forEach(el=>el.remove());table.classList.remove('columnResizeEnabled');['width','min-width','table-layout'].forEach(k=>table.style.removeProperty(k));return}
+ const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
+ if(userTable)tableName=compact?'users-compact':'users';
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length)return;
- if(table.classList.contains('columnResizeEnabled')&&table.querySelectorAll('.columnResizer').length===headers.length)return;
+ const visibleHeaders=headers.filter(th=>getComputedStyle(th).display!=='none'),resizeMode=compact?'compact':'full';
+ if(table.classList.contains('columnResizeEnabled')&&table.dataset.resizeMode===resizeMode&&table.querySelectorAll('.columnResizer').length===visibleHeaders.length)return;
  const measuredWidths=headers.map(th=>Math.round(th.getBoundingClientRect().width));if(!measuredWidths[0])return;
  table.querySelectorAll('.columnResizer').forEach(x=>x.remove());
  let colgroup=table.querySelector(':scope > colgroup');
@@ -985,7 +998,11 @@ function installTableColumnResize(table,tableName){
  const cols=[...colgroup.children],stored=readTableColumnWidths(tableName),resolved={...stored};
  const applyTableWidth=()=>{const total=cols.reduce((sum,c)=>sum+(parseFloat(c.style.width)||0),0);table.style.setProperty('width',`${Math.ceil(total)}px`,'important');table.style.setProperty('min-width','0','important');table.style.setProperty('table-layout','fixed','important')};
  headers.forEach((th,i)=>{
-  const col=cols[i],key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
+  const col=cols[i],hidden=getComputedStyle(th).display==='none';
+  if(userTable)th.dataset.resizeKey=`user-col-${i}`;
+  if(hidden){col.style.setProperty('display','none');col.style.setProperty('width','0px','important');return}
+  col.style.removeProperty('display');
+  const key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
   const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
@@ -1005,7 +1022,7 @@ function installTableColumnResize(table,tableName){
   });
   th.appendChild(handle);
  });
- table.classList.add('columnResizeEnabled');applyTableWidth();
+ table.dataset.resizeMode=resizeMode;table.classList.add('columnResizeEnabled');applyTableWidth();
 }
 function ownerParts(raw){raw=String(raw||'').trim();const m=raw.match(/^(20\d{2}|\d{2})(.*)$/);if(!m)return{year:null,owner:raw};let y=Number(m[1]);if(y<100)y+=2000;return{year:y,owner:m[2].trim()||raw}}
 function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}

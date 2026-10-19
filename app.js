@@ -198,10 +198,12 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
  tableResizeTimers.set(table,id);
 }
 function installTableColumnResize(table,tableName){
- if(table?.id==='userTable'&&$('page-users').classList.contains('userCompactTable')){table.querySelector(':scope > colgroup')?.remove();table.querySelectorAll('.columnResizer').forEach(el=>el.remove());table.classList.remove('columnResizeEnabled');['width','min-width','table-layout'].forEach(k=>table.style.removeProperty(k));return}
+ const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
+ if(userTable)tableName=compact?'users-compact':'users';
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length)return;
- if(table.classList.contains('columnResizeEnabled')&&table.querySelectorAll('.columnResizer').length===headers.length)return;
+ const visibleHeaders=headers.filter(th=>getComputedStyle(th).display!=='none'),resizeMode=compact?'compact':'full';
+ if(table.classList.contains('columnResizeEnabled')&&table.dataset.resizeMode===resizeMode&&table.querySelectorAll('.columnResizer').length===visibleHeaders.length)return;
  const measuredWidths=headers.map(th=>Math.round(th.getBoundingClientRect().width));if(!measuredWidths[0])return;
  table.querySelectorAll('.columnResizer').forEach(x=>x.remove());
  let colgroup=table.querySelector(':scope > colgroup');
@@ -211,7 +213,11 @@ function installTableColumnResize(table,tableName){
  const cols=[...colgroup.children],stored=readTableColumnWidths(tableName),resolved={...stored};
  const applyTableWidth=()=>{const total=cols.reduce((sum,c)=>sum+(parseFloat(c.style.width)||0),0);table.style.setProperty('width',`${Math.ceil(total)}px`,'important');table.style.setProperty('min-width','0','important');table.style.setProperty('table-layout','fixed','important')};
  headers.forEach((th,i)=>{
-  const col=cols[i],key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
+  const col=cols[i],hidden=getComputedStyle(th).display==='none';
+  if(userTable)th.dataset.resizeKey=`user-col-${i}`;
+  if(hidden){col.style.setProperty('display','none');col.style.setProperty('width','0px','important');return}
+  col.style.removeProperty('display');
+  const key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
   const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
@@ -231,7 +237,7 @@ function installTableColumnResize(table,tableName){
   });
   th.appendChild(handle);
  });
- table.classList.add('columnResizeEnabled');applyTableWidth();
+ table.dataset.resizeMode=resizeMode;table.classList.add('columnResizeEnabled');applyTableWidth();
 }
 function ownerParts(raw){raw=String(raw||'').trim();const m=raw.match(/^(20\d{2}|\d{2})(.*)$/);if(!m)return{year:null,owner:raw};let y=Number(m[1]);if(y<100)y+=2000;return{year:y,owner:m[2].trim()||raw}}
 function inferYearMonth(vals,owner){let year=owner.year,month=Number(vals[20])||null;if(month<1||month>12)month=null;for(const ix of [31,43,44]){const m=String(vals[ix]||'').match(/^(\d{4})-(\d{2})/);if(m){year=year||Number(m[1]);month=month||Number(m[2])}}return{year,month}}

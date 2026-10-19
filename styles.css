@@ -1273,10 +1273,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-schedule .scheduleMonthlyScroll{overflow-x:auto}#page-schedule .scheduleMonthlyBoard{min-width:0;width:100%}#page-schedule .scheduleDay{min-height:68px;padding:3px;height:auto}#page-schedule .scheduleMobileDate{height:auto;min-height:32px}#page-schedule .scheduleDay>.scheduleEvents{display:block;margin-top:2px}#page-schedule .scheduleDay>small{display:block;font-size:10px}#page-schedule .scheduleEvent{font-size:10px;line-height:1.45;padding:4px 2px;word-break:break-all;border-radius:4px}#page-schedule .scheduleLeaveEvent{font-size:10px;padding:3px 2px;overflow-wrap:anywhere;white-space:normal}#page-schedule .scheduleMonthTitle h3{font-size:24px}#page-schedule .scheduleMonthlyFooter small,#page-schedule .scheduleMonthlyFooter .scheduleLeaveSummary{font-size:12px}.userPanelPermissions{grid-template-columns:1fr 1fr}.userPanelPermissions label{font-size:13px}
 }
 @media print{.salesViewTabs,.salesSharedControls,.salesDesignTitle,.userPanelFoot{display:none!important}.designViewHidden{display:block!important}.userCompactTable #userTable th,.userCompactTable #userTable td{display:table-cell!important}}
-#page-users.userCompactTable #userTable{table-layout:auto!important;width:100%!important;min-width:800px}
-#page-users.userCompactTable #userTable colgroup{display:none}
-#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{width:auto!important;min-width:0!important;max-width:none!important;white-space:normal}
-#page-users.userCompactTable #userTable .columnResizer{display:none}
+
 #page-users.hasUserPanel .userInfoSummary{grid-template-columns:1fr 1fr}
 @media(max-width:750px){#page-schedule .scheduleDayGrid{grid-auto-rows:minmax(80px,auto)}#page-schedule .scheduleDay{overflow:visible;height:auto;min-height:80px}.scheduleMobileHelp{color:#c8d8f0}}
 
@@ -1306,3 +1303,17 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-schedule .scheduleInspectorFieldset legend{background:#fff;color:#173f7a!important;font-size:16px;font-weight:800;line-height:1.5;padding:3px 10px;border-radius:6px}
 #page-unwritten .unwrittenTable td:is(.uw-col-receipt,.uw-col-field_end,.uw-col-field_inspector,.uw-col-elapsed,.uw-col-corporation,.uw-col-inspection_type){text-align:center!important}
 #unwrittenPrint{white-space:nowrap;flex-shrink:0;min-height:40px}
+
+/* V178: user header alignment, frozen employee names and compact resizing */
+#page-users #userTable thead th{text-align:center!important}
+#page-users #userTable th.userSortableHeader{padding-left:10px!important;padding-right:10px!important}
+#page-users #userTable :is(th,td):nth-child(2){position:sticky;left:0;background:#fff;z-index:4;box-shadow:2px 0 0 #c7d7ee;overflow-wrap:anywhere}
+#page-users #userTable tbody tr:nth-child(even)>td:nth-child(2){background:#f2f6ff}
+#page-users #userTable tbody tr:hover>td:nth-child(2){background:#eaf2ff}
+#page-users #userTable tbody tr.userRowSelected>td:nth-child(2){background:#eef4ff}
+#page-users #userTable thead th:nth-child(2){top:0;z-index:12;background:#e8f0fd}
+#page-users #userTable thead th:nth-child(2).userSortActive{background:#dceaff}
+#page-users.userCompactTable #userTable{min-width:800px}
+#page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:none}
+#page-users.userCompactTable #userTable td{white-space:normal;overflow-wrap:anywhere}
+@media print{#page-users #userTable :is(th,td):nth-child(2){position:static;box-shadow:none}#page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:table-column!important}}
