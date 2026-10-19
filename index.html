@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v168">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261019-v169">
 <script>
 (function(){
-  const BUILD='20261019-v168';
+  const BUILD='20261019-v169';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -43,7 +43,7 @@
 
 .scheduleDialogBuild{display:block;font-size:11px;color:#526581;margin-top:5px}.scheduleContactFailure{font-size:12px;line-height:1.6;overflow-wrap:anywhere;margin:10px 0 0}
 
-/* V168: 전화/길찾기 실행을 명확하게 표시 */
+/* V169: 전화/길찾기 실행을 명확하게 표시 */
 .scheduleContactPanel dl>div{padding:10px;border:1px solid #d9e4f4;border-radius:10px;background:#fff;box-sizing:border-box}
 .scheduleContactPanel dt{margin-bottom:7px}
 .scheduleContactPanel .scheduleContactPhone{display:inline-flex;align-items:center;justify-content:flex-start;gap:8px;max-width:100%;min-height:46px;box-sizing:border-box;padding:8px 10px;border:1px solid #a8c4ff;border-radius:10px;background:#f1f6ff;color:#174ac7;text-decoration:none;line-height:1.5;flex-wrap:wrap}
@@ -58,7 +58,7 @@
 @media(max-width:480px){.scheduleContactPanel .scheduleContactAddress{grid-template-columns:22px minmax(0,1fr)}.scheduleContactAddress>.scheduleContactActionLabel{grid-column:2;justify-self:start}}
 
 </style><style id="site-create-page-style">
-/* V168: 직접등록 전용 페이지 */
+/* V169: 직접등록 전용 페이지 */
 .siteCreateEditorHost{background:#fff;border:1px solid #dce3ee;border-radius:16px;padding:24px;min-width:0}
 .siteCreateEditorHost .dlgHead{position:static;align-items:flex-start;gap:16px}
 .siteCreateEditorHost h3{font-size:28px;margin:0 0 8px}
@@ -69,10 +69,10 @@
 @media(max-width:750px){.siteCreateEditorHost{padding:14px;border-radius:12px}.siteCreateEditorHost h3{font-size:24px}.siteCreateEditorHost .dlgHead{flex-wrap:wrap}.siteCreateEditorHost .siteEditFoot button{flex:1;min-height:44px}.siteCreateEditorHost .siteEditFields{min-width:0}}
 </style>
 <style>
-/* V168 mobile registration steps */
+/* V169 mobile registration steps */
 .siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
 </style><style id="quantity-desktop-six-columns">
-/* V168: PC 설비별 수량 6열 */
+/* V169: PC 설비별 수량 6열 */
 @media (min-width:801px) and (hover:hover) and (pointer:fine){
  .siteEditFields.quantityGrid,.detailGrid.quantityGrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important;align-items:start}
  .siteEditFields.quantityGrid .siteField,.detailGrid.quantityGrid .detailItem{min-width:0}
@@ -81,11 +81,11 @@
  .siteEditFields.quantityGrid .performanceAutoBtn{width:100%;padding:6px 4px;font-size:12px}
 }
 </style><style>
-/* V168: 현장 상세/보고서 전용 페이지 */
+/* V169: 현장 상세/보고서 전용 페이지 */
 .siteDetailPageHost{background:white;border:1px solid #dce3ee;border-radius:14px;padding:20px;min-width:0}.siteDetailPageHost .dlgHead{position:static;gap:16px}.siteDetailPageHost .dlgHead h3{font-size:25px}.siteDetailPageHost #detailClose{width:auto;padding:10px 18px;font-size:14px;white-space:nowrap}.siteDetailPageHost #detailTabs{flex-wrap:wrap;padding:12px 0}.siteDetailPageHost #detailBody{max-height:none;overflow:visible}.reportFilesPage{display:block;width:100%;max-width:none;max-height:none;margin:16px 0;padding:20px;border:1px solid #dce3ee;border-radius:14px;background:white;box-sizing:border-box}
 @media(max-width:750px){.siteDetailPageHost,.reportFilesPage{padding:12px}.siteDetailPageHost #detailTabs{flex-wrap:nowrap;overflow-x:auto}.siteDetailPageHost #detailTabs button{flex-shrink:0}.siteDetailPageHost .dlgHead h3{font-size:21px}}
-</style><style id="navy-light-theme-v168">
-/* V168 selected navy canvas / light working surfaces */
+</style><style id="navy-light-theme-v169">
+/* V169 selected navy canvas / light working surfaces */
 :root{--bg:#102957;--card:#fff;--text:#172b45;--muted:#60718b;--line:#d6e1f0;--blue:#2563eb;--blue2:#1d4ed8;--shadow:0 6px 22px rgba(0,12,40,.16)}
 body{background:#102957;color:var(--text)}
 .loginShell{background:#102957}
@@ -126,8 +126,8 @@ body{background:#102957;color:var(--text)}
 .reportFilesPage [data-close]{background:#c2410c;color:#fff;border:2px solid #9a3412;font-weight:800;min-height:44px;padding:10px 20px}
 @media(max-width:750px){.siteDetailPageHost #detailClose{min-width:100px;min-height:46px;padding:10px 16px;font-size:16px}#page-schedule{margin-top:12px}}
 @media print{body,.page{background:#fff!important;color:#172b45!important}.pageTitle h2,.pageTitle p{color:#172b45!important}}
-</style><style id="blue-close-filter-v168">
-/* V168: blue close and unified filter controls */
+</style><style id="blue-close-filter-v169">
+/* V169: blue close and unified filter controls */
 .siteDetailPageHost #detailClose,.reportFilesPage [data-close]{background:#2563eb;color:#fff;border-color:#1d4ed8;box-shadow:0 3px 10px rgba(37,99,235,.22)}
 .siteDetailPageHost #detailClose:hover,.reportFilesPage [data-close]:hover{background:#1d4ed8;color:#fff;border-color:#1e40af}
 .siteDetailPageHost #detailClose:focus-visible,.reportFilesPage [data-close]:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
@@ -139,8 +139,8 @@ body{background:#102957;color:var(--text)}
 #page-search .siteColumnFilterToolbar>button:disabled{opacity:1;background:#e9eef6;border-color:#d6dfeb;color:#6b7d95;cursor:not-allowed}
 #page-search .desktopListHint{color:#c8d8f0}#page-search .desktopListHint strong{color:#eef5ff}
 @media(max-width:800px){#page-search .siteListActionRow .siteColumnFilterToolbar{max-width:100%;margin-left:0;padding:8px;gap:8px}#page-search .siteColumnFilterToolbar>button{min-height:42px}}
-</style><style id="section-theme-v168">
-/* V168: unified schedule, unwritten and sales working surfaces */
+</style><style id="section-theme-v169">
+/* V169: unified schedule, unwritten and sales working surfaces */
 #page-schedule{background:transparent;color:#eef5ff;border:0;border-radius:0;margin:0 auto}
 #page-schedule .pageTitle h2{color:#fff}#page-schedule .pageTitle p{color:#c8d8f0}
 #page-schedule .scheduleToolbar{background:#f0f5fd;color:#172b45;border:1px solid #d6e1f0;border-radius:14px;padding:14px;gap:14px}
@@ -184,15 +184,15 @@ body{background:#102957;color:var(--text)}
 #page-sales table tfoot td,#page-sales table .totalrow td{background:#e7effc;color:#153664;font-weight:800}
 @media(max-width:750px){#page-schedule .scheduleToolbar{padding:10px}#page-schedule .scheduleMonthTitle{padding:10px}#page-unwritten :is(.unwrittenOwnerSection,.unwrittenListSection),#page-sales :is(.salesDashboard,.salesPanel){border-radius:12px}}
 @media print{#page-schedule{background:#fff!important;color:#172b45!important}#page-schedule .pageTitle h2{color:#172b45!important}}
-</style><style id="schedule-cleanup-v168">
-/* V168 schedule information cleanup */
+</style><style id="schedule-cleanup-v169">
+/* V169 schedule information cleanup */
 #page-schedule #scheduleScopeNote{display:none}
 #page-schedule #scheduleMessage:empty{display:none}
 #page-schedule .scheduleDashboardFilters>[role="group"]{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 #page-schedule .scheduleDashboardFilters [data-dash-period]{min-height:42px;padding:10px 16px;border-radius:9px}
 #page-schedule .scheduleDashboard>.hint{color:#c8d8f0;line-height:1.7;margin:12px 0 18px}
-</style><style id="sales-readability-v168">
-/* V168: sales readability on light surfaces */
+</style><style id="sales-readability-v169">
+/* V169: sales readability on light surfaces */
 #page-sales{--navy:#172b45}
 #page-sales :is(.salesDashboard,.salesMonthlyOverview,.salesPanel){color:#172b45;background:#fff}
 #page-sales :is(.salesDashboardHead h3,.salesMonthlyHead h3,.salesMonthlySectionTitle strong,.salesDashSectionTitle strong,.salesDashBarLabel,.salesMonthlyKpis b,.salesMonthlySummaryMobileGrid b){color:#172b45}
@@ -218,7 +218,7 @@ body{background:#102957;color:var(--text)}
 </style>
 
 
-<style id="portal-design-v168">/* V168 approved navy/light design. Data & permission behavior stays in existing modules. */
+<style id="portal-design-v169">/* V169 approved navy/light design. Data & permission behavior stays in existing modules. */
 :root{--navy:#172b45;--muted:#475569;--blue:#2563eb;--line:#d6e1f0}
 body{background:#102957;color:#172b45}button,input,select,textarea{font-family:inherit}button{border-radius:8px;min-height:38px}button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
 .topbar{background:#091b40}.topbar .bar{gap:16px}.topbar nav button{border-radius:9px;font-size:15px}.topbar nav button.active{background:#edf4ff;color:#1d4ed8}
@@ -280,7 +280,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V168</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V169</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -449,7 +449,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v168"></script><script src="fields.js?v=20261019-v168"></script><script src="quantity-ocr.js?v=20261019-v168"></script><script id="bundled-report-files-js" data-build="V168">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261019-v169"></script><script src="fields.js?v=20261019-v169"></script><script src="quantity-ocr.js?v=20261019-v169"></script><script id="bundled-report-files-js" data-build="V169">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -567,7 +567,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261019-v168"></script><script id="bundled-inspection-schedule-js" data-build="V168">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261019-v169"></script><script id="bundled-inspection-schedule-js" data-build="V169">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -595,7 +595,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V168';
+root.STAFF_SCHEDULE_VERSION='V169';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -689,7 +689,7 @@ root.createStaffSchedule=function(deps){
  }
  function makeDialog(title,body){const d=document.createElement('dialog');d.className='scheduleDialog';d.innerHTML=`<div class="dlgHead"><h3>${title}</h3><button type="button" class="iconBtn" data-close aria-label="닫기">×</button></div><div class="scheduleDialogBody">${body}</div>`;document.body.appendChild(d);d.querySelector('[data-close]').onclick=()=>d.close();d.addEventListener('close',()=>{dialogSeq++;d.remove()});d.showModal();return d}
  function edit(row,date=key(year,month,1)){const access=deps.access();if(!access.view)return;const editable=access.edit;
- const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">V168 · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
+ const d=makeDialog(row?'점검일정 상세·수정':'점검일정 등록',`<p class="scheduleDialogIntro">현장을 선택하고 점검 기간과 점검원을 입력해 주세요.<small class="scheduleDialogBuild">V169 · 연락처 조회 지원</small></p><form class="schedulePlanForm"><div class="scheduleSearchPanel"><label>현장 검색<input id="scheduleSiteQuery" placeholder="현장명 또는 S/N" ${row?'disabled':''} value="${esc(row?.site_name||'')}" autocomplete="off"></label>${!row?'<button class="scheduleSearchButton" type="button" data-search>현장 검색</button><div class="scheduleChoiceHeading"><span>검색된 현장 선택</span><button type="button" data-sort-sites>내림차순 ↓</button></div><select id="scheduleSiteSelect" required aria-label="등록할 현장 선택"><option value="">현장을 검색하고 선택하세요</option></select>':''}</div><section class="scheduleContactPanel" aria-label="현장 연락처 조회" aria-live="polite"><p>현장을 선택하면 연락처를 조회합니다.</p></section><div class="schedulePeriodFields"><label>점검시작 계획일자<input name="start" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_start||date}" required ${!editable?'disabled':''}></label><label>점검종료 계획일자<input name="end" type="date" min="2000-01-01" max="2050-12-31" value="${row?.plan_end||date}" required ${!editable?'disabled':''}></label></div><label>현장점검원<input name="inspectors" maxlength="500" placeholder="황선구, 이승건" value="${esc(row?.inspectors||'')}" ${!editable?'disabled':''}></label><div class="schedulePeriodSummary" data-period-summary></div><p class="hint">시작일부터 종료일까지 모든 날짜에 표시됩니다. 월별 등록률은 주말·공휴일을 제외합니다.</p><p data-msg role="status"></p>${editable?'<div class="actions scheduleFormActions"><button type="button" data-cancel>취소</button><button type="submit" class="primary">저장</button>'+ (row?'<button type="button" data-delete class="danger">일정 삭제</button>':'')+'</div>':''}</form>`);
  const form=d.querySelector('form'),msg=d.querySelector('[data-msg]');
  let contactRequest=0;
  async function loadContact(sourceId){const request=++contactRequest,panel=d.querySelector('.scheduleContactPanel');if(!sourceId){panel.innerHTML='<p>현장을 선택하면 연락처를 조회합니다.</p>';return}panel.innerHTML='<h4>관리주체 연락처 <small>조회 전용</small></h4><dl><div><dt>관리주체 담당자</dt><dd>조회 중…</dd></div><div><dt>관리주체 전화번호</dt><dd>조회 중…</dd></div><div><dt>관리주체 이메일</dt><dd>조회 중…</dd></div><div><dt>주소</dt><dd>조회 중…</dd></div></dl>';try{
@@ -742,7 +742,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V168">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V169">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -770,17 +770,26 @@ let unwrittenDisplayFields=[];
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
 let searchSourceRows=[],searchCacheQuery='',searchCacheReady=false,searchLoadedAt=0,searchRequestSeq=0;
-let unwrittenCacheReady=false,unwrittenLoadedAt=0,unwrittenLoadPromise=null;
+let unwrittenCacheReady=false,unwrittenLoadedAt=0,unwrittenLoadPromise=null,unwrittenRequestSeq=0;
 let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null;
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function activePageName(){return document.querySelector('.page.active')?.id?.replace(/^page-/,'')||savedPage()}
 async function refreshActiveData(force=false){const name=activePageName();if(name==='schedule')return loadSchedule();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force)}
+// Re-read committed rows, even when their list is behind a detail page.
+async function refreshAfterSiteSave(id){
+ const page=activePageName(),group=$('detailTabs').querySelector('[data-g].active')?.dataset.g||'0';
+ const jobs=[];if(canViewUnwritten())jobs.push(loadUnwrittenDashboard(true));
+ if(page==='site-detail'){if(detailReturnState?.page==='search')jobs.push(searchSites(true));jobs.push(openDetail(id,{preserveReturn:true,group:Number(group)}));}
+ else if(page!=='unwritten')jobs.push(refreshActiveData(true));
+ const results=await Promise.allSettled(jobs);
+ if(results.some(r=>r.status==='rejected'||r.value===false))alert('현장 정보는 저장되었습니다. 일부 화면을 갱신하지 못했습니다. 새로고침으로 최신 내용을 확인해 주세요.');
+}
 const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료'];
 let displayFields=[...DEFAULT_DISPLAY_FIELDS];
 function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim())}
@@ -1094,8 +1103,8 @@ async function saveContact(e){
  const emailNote=emailSync?.synced&&Number(emailSync.matched)>0?` 같은 학교 ${Number(emailSync.matched).toLocaleString()}건에 관리주체 이메일을 반영했습니다.`:'';
  notify($('contactEditMsg'),(syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.')+phoneNote+emailNote,true);
  invalidateDataCaches('sites');
- await refreshActiveData(true).catch(()=>{});
- setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
+ await refreshAfterSiteSave(id);
+ setTimeout(()=>{$('contactEditDlg').close()},350);
 }
 let currentRouteAddress='',currentRouteName='현장';
 function openRouteChooser(address,name){address=String(address||'').trim();if(!address)return alert('등록된 주소가 없습니다. 관리자에게 주소 입력을 요청하세요.');currentRouteAddress=address;currentRouteName=String(name||'현장').trim()||'현장';$('routeAddress').textContent=address;$('routeDlg').showModal()}
@@ -1819,7 +1828,7 @@ function arrangeInspectionDateFields(root,selector,key){
  const marker=document.createComment('inspection-date-order');anchor.before(marker);
  for(const col of order){const node=nodes.find(n=>n.dataset[key]===col);if(node)marker.before(node)}marker.remove();
 }
-async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;detailReturnState=captureSiteReturn();clearPageReport();const host=$('detailPageHost');while($('detailDlg').firstChild)host.appendChild($('detailDlg').firstChild);$('detailClose').textContent='× 닫기';$('detailClose').title='현장 검색 목록의 이전 위치로 돌아가기';$('detailClose').setAttribute('aria-label','이전 화면으로 돌아가기');$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('')+`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button><button class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>${canEditSite()?`<button class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;const render=i=>{showDetailInformation();const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');$('detailBody').innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?`<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:'')+fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');if(i===1)arrangeInspectionDateFields($('detailBody'),'[data-detail-col]','detailCol');bindContactActions(r);const rb=tabs.querySelector('[data-report-files]');if(rb)rb.onclick=()=>openSiteReports(Number(rb.dataset.reportFiles));const qb=tabs.querySelector('[data-quantity-print]');if(qb)qb.onclick=()=>openQuantityPrint(r);const eb=tabs.querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);activateSitePage('site-detail');window.scrollTo(0,0)}
+async function openDetail(id,{preserveReturn=false,group=0}={}){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;if(!preserveReturn)detailReturnState=captureSiteReturn();clearPageReport();const host=$('detailPageHost');while($('detailDlg').firstChild)host.appendChild($('detailDlg').firstChild);$('detailClose').textContent='× 닫기';$('detailClose').title='현장 검색 목록의 이전 위치로 돌아가기';$('detailClose').setAttribute('aria-label','이전 화면으로 돌아가기');$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('')+`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button><button class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>${canEditSite()?`<button class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;const render=i=>{showDetailInformation();const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');$('detailBody').innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?`<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:'')+fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');if(i===1)arrangeInspectionDateFields($('detailBody'),'[data-detail-col]','detailCol');bindContactActions(r);const rb=tabs.querySelector('[data-report-files]');if(rb)rb.onclick=()=>openSiteReports(Number(rb.dataset.reportFiles));const qb=tabs.querySelector('[data-quantity-print]');if(qb)qb.onclick=()=>openQuantityPrint(r);const eb=tabs.querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(Math.max(0,Math.min(groups.length-1,group)));activateSitePage('site-detail');if(!preserveReturn)window.scrollTo(0,0)}
 
 const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
@@ -2060,7 +2069,7 @@ async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteE
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
  const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);
- invalidateDataCaches('sites');if(siteEditMode==='create')closeSiteEditor();else setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
+ invalidateDataCaches('sites');if(siteEditMode==='create')closeSiteEditor();else setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),refreshAfterSiteSave(savedId)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
 function reportValue(r,col){
@@ -2090,22 +2099,26 @@ function renderUnwrittenDashboardSummary(){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners');
  const ownerMap=new Map();for(const r of unwrittenRows){const n=reportOwnerName(r);ownerMap.set(n,(ownerMap.get(n)||0)+1)}
  const ownerEntries=[...ownerMap.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'));
+ if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
  summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi"><span>담당자</span><b>${ownerEntries.filter(([n])=>n!=='미배정').length.toLocaleString()}명</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
  owners.innerHTML=`<button class="ownerCard ${unwrittenOwnerFilter==='all'?'active':''}" data-owner="all"><span>전체</span><b>${unwrittenRows.length.toLocaleString()}건</b></button>`+ownerEntries.map(([name,count])=>`<button class="ownerCard ${unwrittenOwnerFilter===name?'active':''}" data-owner="${esc(name)}"><span>${esc(name)}</span><b>${count.toLocaleString()}건</b></button>`).join('');
  owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{unwrittenOwnerFilter=b.dataset.owner;renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
- if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';renderUnwrittenList();
+ renderUnwrittenList();
 }
 async function loadUnwrittenDashboard(force=false){
- if(!canViewUnwritten())return;
- if(!force&&unwrittenCacheReady&&cacheFresh(unwrittenLoadedAt)){renderUnwrittenDashboardSummary();return}
+ if(!canViewUnwritten())return false;
+ if(!force&&unwrittenCacheReady&&cacheFresh(unwrittenLoadedAt)){renderUnwrittenDashboardSummary();return true}
  if(unwrittenLoadPromise&&!force)return unwrittenLoadPromise;
+ const request=++unwrittenRequestSeq,account=me?.id;
+ const current=()=>request===unwrittenRequestSeq&&account===me?.id&&canViewUnwritten();
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
  unwrittenLoadPromise=(async()=>{try{
   const rows=await fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}));
-  unwrittenRows=rows.filter(isUnwrittenReport);unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();
- }catch(e){summary.innerHTML=`<div class="statusBanner warn">미작성 대시보드 조회 오류: ${esc(e.message)}</div>`}finally{unwrittenLoadPromise=null}})();
+  if(!current())return;
+  unwrittenRows=rows.filter(isUnwrittenReport);unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
+ }catch(e){if(!current())return;summary.innerHTML=`<div class="statusBanner warn">미작성 현황 갱신 실패: ${esc(e.message)} · 새로고침으로 다시 조회해 주세요.</div>`;return false}finally{if(request===unwrittenRequestSeq)unwrittenLoadPromise=null}})();
  return unwrittenLoadPromise;
 }
 

@@ -26,17 +26,26 @@ let unwrittenDisplayFields=[];
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
 let searchSourceRows=[],searchCacheQuery='',searchCacheReady=false,searchLoadedAt=0,searchRequestSeq=0;
-let unwrittenCacheReady=false,unwrittenLoadedAt=0,unwrittenLoadPromise=null;
+let unwrittenCacheReady=false,unwrittenLoadedAt=0,unwrittenLoadPromise=null,unwrittenRequestSeq=0;
 let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null;
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function activePageName(){return document.querySelector('.page.active')?.id?.replace(/^page-/,'')||savedPage()}
 async function refreshActiveData(force=false){const name=activePageName();if(name==='schedule')return loadSchedule();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force)}
+// Re-read committed rows, even when their list is behind a detail page.
+async function refreshAfterSiteSave(id){
+ const page=activePageName(),group=$('detailTabs').querySelector('[data-g].active')?.dataset.g||'0';
+ const jobs=[];if(canViewUnwritten())jobs.push(loadUnwrittenDashboard(true));
+ if(page==='site-detail'){if(detailReturnState?.page==='search')jobs.push(searchSites(true));jobs.push(openDetail(id,{preserveReturn:true,group:Number(group)}));}
+ else if(page!=='unwritten')jobs.push(refreshActiveData(true));
+ const results=await Promise.allSettled(jobs);
+ if(results.some(r=>r.status==='rejected'||r.value===false))alert('현장 정보는 저장되었습니다. 일부 화면을 갱신하지 못했습니다. 새로고침으로 최신 내용을 확인해 주세요.');
+}
 const DEFAULT_DISPLAY_FIELDS=['S/N','보고서  등급','현장명','지역','문서작성 > 담당','현장점검원','문서작성 진행 현황 > 현황 > 보고서 작성 완료'];
 let displayFields=[...DEFAULT_DISPLAY_FIELDS];
 function selectableDisplayFields(){return schema.fields.filter(f=>!f.financial&&f.col<=45&&!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&String(f.label||'').trim())}
@@ -350,8 +359,8 @@ async function saveContact(e){
  const emailNote=emailSync?.synced&&Number(emailSync.matched)>0?` 같은 학교 ${Number(emailSync.matched).toLocaleString()}건에 관리주체 이메일을 반영했습니다.`:'';
  notify($('contactEditMsg'),(syncResult.synced?`저장했습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`:'저장했습니다.')+phoneNote+emailNote,true);
  invalidateDataCaches('sites');
- await refreshActiveData(true).catch(()=>{});
- setTimeout(()=>{$('contactEditDlg').close();if(row)openDetail(id)},350);
+ await refreshAfterSiteSave(id);
+ setTimeout(()=>{$('contactEditDlg').close()},350);
 }
 let currentRouteAddress='',currentRouteName='현장';
 function openRouteChooser(address,name){address=String(address||'').trim();if(!address)return alert('등록된 주소가 없습니다. 관리자에게 주소 입력을 요청하세요.');currentRouteAddress=address;currentRouteName=String(name||'현장').trim()||'현장';$('routeAddress').textContent=address;$('routeDlg').showModal()}
@@ -1075,7 +1084,7 @@ function arrangeInspectionDateFields(root,selector,key){
  const marker=document.createComment('inspection-date-order');anchor.before(marker);
  for(const col of order){const node=nodes.find(n=>n.dataset[key]===col);if(node)marker.before(node)}marker.remove();
 }
-async function openDetail(id){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;detailReturnState=captureSiteReturn();clearPageReport();const host=$('detailPageHost');while($('detailDlg').firstChild)host.appendChild($('detailDlg').firstChild);$('detailClose').textContent='× 닫기';$('detailClose').title='현장 검색 목록의 이전 위치로 돌아가기';$('detailClose').setAttribute('aria-label','이전 화면으로 돌아가기');$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('')+`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button><button class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>${canEditSite()?`<button class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;const render=i=>{showDetailInformation();const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');$('detailBody').innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?`<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:'')+fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');if(i===1)arrangeInspectionDateFields($('detailBody'),'[data-detail-col]','detailCol');bindContactActions(r);const rb=tabs.querySelector('[data-report-files]');if(rb)rb.onclick=()=>openSiteReports(Number(rb.dataset.reportFiles));const qb=tabs.querySelector('[data-quantity-print]');if(qb)qb.onclick=()=>openQuantityPrint(r);const eb=tabs.querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(0);activateSitePage('site-detail');window.scrollTo(0,0)}
+async function openDetail(id,{preserveReturn=false,group=0}={}){let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('현장 정보를 불러오지 못했습니다: '+e.message)}if(!r)return;if(!preserveReturn)detailReturnState=captureSiteReturn();clearPageReport();const host=$('detailPageHost');while($('detailDlg').firstChild)host.appendChild($('detailDlg').firstChild);$('detailClose').textContent='× 닫기';$('detailClose').title='현장 검색 목록의 이전 위치로 돌아가기';$('detailClose').setAttribute('aria-label','이전 화면으로 돌아가기');$('detailTitle').textContent=r.site_name;const tabs=$('detailTabs');tabs.innerHTML=groups.map((g,i)=>`<button class="chip ${i===0?'active':''}" data-g="${i}">${g[0]}</button>`).join('')+`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button><button class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>${canEditSite()?`<button class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;const render=i=>{showDetailInformation();const g=groups[i];const quantityGroup=['유지관리 전체수량','성능점검 대상 전체수량','성능점검수량'].includes(g?.[0]);$('detailBody').classList.toggle('quantityGrid',quantityGroup);const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');$('detailBody').innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?`<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div><div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:'')+fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');if(i===1)arrangeInspectionDateFields($('detailBody'),'[data-detail-col]','detailCol');bindContactActions(r);const rb=tabs.querySelector('[data-report-files]');if(rb)rb.onclick=()=>openSiteReports(Number(rb.dataset.reportFiles));const qb=tabs.querySelector('[data-quantity-print]');if(qb)qb.onclick=()=>openQuantityPrint(r);const eb=tabs.querySelector('[data-detail-site-edit]');if(eb)eb.onclick=()=>{openSiteEditor(Number(eb.dataset.detailSiteEdit))};tabs.querySelectorAll('[data-g]').forEach(x=>x.classList.toggle('active',Number(x.dataset.g)===i))};tabs.querySelectorAll('[data-g]').forEach(x=>x.onclick=()=>render(Number(x.dataset.g)));render(Math.max(0,Math.min(groups.length-1,group)));activateSitePage('site-detail');if(!preserveReturn)window.scrollTo(0,0)}
 
 const siteEditGroups=[['기본정보',1,18,[54,53]],['진행·담당·계약',19,52],['유지관리 전체수량',55,81],['성능점검 대상 전체수량',83,109],['성능점검수량',111,137]];
 let siteEditMode='create',siteEditValues=Array(137).fill(''),siteEditRow=null,siteEditGroupIndex=0,siteAddressMode='search';
@@ -1316,7 +1325,7 @@ async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteE
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
  const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);
- invalidateDataCaches('sites');if(siteEditMode==='create')closeSiteEditor();else setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),refreshActiveData(true)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
+ invalidateDataCaches('sites');if(siteEditMode==='create')closeSiteEditor();else setTimeout(()=>{$('siteEditDlg').close()},350);await Promise.all([refreshDbStatus(),refreshAfterSiteSave(savedId)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
 function reportValue(r,col){
@@ -1346,22 +1355,26 @@ function renderUnwrittenDashboardSummary(){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners');
  const ownerMap=new Map();for(const r of unwrittenRows){const n=reportOwnerName(r);ownerMap.set(n,(ownerMap.get(n)||0)+1)}
  const ownerEntries=[...ownerMap.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'));
+ if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
  summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi"><span>담당자</span><b>${ownerEntries.filter(([n])=>n!=='미배정').length.toLocaleString()}명</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
  owners.innerHTML=`<button class="ownerCard ${unwrittenOwnerFilter==='all'?'active':''}" data-owner="all"><span>전체</span><b>${unwrittenRows.length.toLocaleString()}건</b></button>`+ownerEntries.map(([name,count])=>`<button class="ownerCard ${unwrittenOwnerFilter===name?'active':''}" data-owner="${esc(name)}"><span>${esc(name)}</span><b>${count.toLocaleString()}건</b></button>`).join('');
  owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{unwrittenOwnerFilter=b.dataset.owner;renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
- if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';renderUnwrittenList();
+ renderUnwrittenList();
 }
 async function loadUnwrittenDashboard(force=false){
- if(!canViewUnwritten())return;
- if(!force&&unwrittenCacheReady&&cacheFresh(unwrittenLoadedAt)){renderUnwrittenDashboardSummary();return}
+ if(!canViewUnwritten())return false;
+ if(!force&&unwrittenCacheReady&&cacheFresh(unwrittenLoadedAt)){renderUnwrittenDashboardSummary();return true}
  if(unwrittenLoadPromise&&!force)return unwrittenLoadPromise;
+ const request=++unwrittenRequestSeq,account=me?.id;
+ const current=()=>request===unwrittenRequestSeq&&account===me?.id&&canViewUnwritten();
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
  unwrittenLoadPromise=(async()=>{try{
   const rows=await fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}));
-  unwrittenRows=rows.filter(isUnwrittenReport);unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();
- }catch(e){summary.innerHTML=`<div class="statusBanner warn">미작성 대시보드 조회 오류: ${esc(e.message)}</div>`}finally{unwrittenLoadPromise=null}})();
+  if(!current())return;
+  unwrittenRows=rows.filter(isUnwrittenReport);unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
+ }catch(e){if(!current())return;summary.innerHTML=`<div class="statusBanner warn">미작성 현황 갱신 실패: ${esc(e.message)} · 새로고침으로 다시 조회해 주세요.</div>`;return false}finally{if(request===unwrittenRequestSeq)unwrittenLoadPromise=null}})();
  return unwrittenLoadPromise;
 }
 
