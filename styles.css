@@ -1298,3 +1298,6 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 /* V171: search list alignment only; exception fields retain their existing body alignment. */
 #page-search .desktopSiteTable thead th{text-align:center!important}
 #page-search .desktopSiteTable tbody td.siteBodyCentered{text-align:center!important}
+
+/* V172: center unwritten list headings except site name and important notes. */
+#page-unwritten .unwrittenTable thead th:not(.uw-col-site_name):not(.uw-col-important){text-align:center!important}
