@@ -1163,3 +1163,48 @@ body{background:#102957;color:var(--text)}
 #page-search .siteColumnFilterToolbar>button:disabled{opacity:1;background:#e9eef6;border-color:#d6dfeb;color:#6b7d95;cursor:not-allowed}
 #page-search .desktopListHint{color:#c8d8f0}#page-search .desktopListHint strong{color:#eef5ff}
 @media(max-width:800px){#page-search .siteListActionRow .siteColumnFilterToolbar{max-width:100%;margin-left:0;padding:8px;gap:8px}#page-search .siteColumnFilterToolbar>button{min-height:42px}}
+
+/* V165: unified schedule, unwritten and sales working surfaces */
+#page-schedule{background:transparent;color:#eef5ff;border:0;border-radius:0;margin:0 auto}
+#page-schedule .pageTitle h2{color:#fff}#page-schedule .pageTitle p{color:#c8d8f0}
+#page-schedule .scheduleToolbar{background:#f0f5fd;color:#172b45;border:1px solid #d6e1f0;border-radius:14px;padding:14px;gap:14px}
+#page-schedule .scheduleLegend{background:#f0f5fd;color:#425b7a;border:1px solid #d6e1f0;border-radius:12px}
+#page-schedule .schedulePeriodPicker{background:#fff;color:#172b45;box-shadow:none}
+#page-schedule .scheduleScopeNote{background:#eff6ff;color:#285e98;border-color:#c7dcf8}
+#page-schedule .scheduleMonthTitle{background:#fff;color:#172b45;border:1px solid #d6e1f0;border-radius:12px;padding:12px 14px}
+#page-schedule .scheduleMonthTitle h3{color:#172b45}
+#page-schedule .scheduleMonthCard{background:#fff;color:#172b45;border-color:#d6e1f0}
+#page-schedule .scheduleMonthCard.full{background:#fff0f0;border-top-color:#e85353}
+#page-schedule .scheduleMonthCard.high{background:#e7f0ff;border-top-color:#387de3}
+#page-schedule .scheduleMonthCard.low{background:#f1f8ff;border-top-color:#b6d7ff}
+#page-schedule .scheduleMonthlyBoard{background:#fff;color:#172b45;border-radius:12px;overflow:hidden}
+#page-schedule .scheduleWeekdays{background:#e7effc;color:#153664}
+#page-schedule .scheduleDay{color:#172b45}
+#page-schedule .scheduleEvent{background:#ecf4ff;color:#17385d;border-color:#b9d3f5}
+#page-schedule :is(.scheduleDashboardCards article,.scheduleDashboardPanel,.scheduleInspectorFieldset){color:#172b45;background:#fff;border-color:#d6e1f0;box-shadow:0 4px 14px rgba(0,12,40,.12)}
+#page-schedule .scheduleDashboardCards article{background:#f0f5fd}
+#page-schedule .scheduleDashboardFilters{background:#f0f5fd;color:#172b45;padding:12px;border:1px solid #d6e1f0;border-radius:12px}
+#page-schedule #scheduleMessage.meta{background:#eff6ff;color:#173f7a;padding:10px 14px;border-radius:10px}
+#page-schedule #scheduleMessage:empty{display:none}
+#page-unwritten :is(.unwrittenKpi,.unwrittenOwnerSection,.unwrittenListSection,.unwrittenCard){color:#172b45;background:#fff;border-color:#d6e1f0;box-shadow:0 4px 14px rgba(0,12,40,.12)}
+#page-unwritten .unwrittenKpi.warn{background:#fff8e9;color:#92400e;border-color:#f4d49a}
+#page-unwritten .unwrittenKpi.danger{background:#fff1f0;color:#9b1c13;border-color:#f3bbb7}
+#page-unwritten .sectionHead{color:#172b45;border-bottom:1px solid #e0e8f3;padding-bottom:12px}
+#page-unwritten .sectionHead small{color:#60718b}
+#page-unwritten .ownerCard{background:#f2f6fc;color:#172b45;border-color:#d6e1f0}
+#page-unwritten .ownerCard:hover{background:#e9f1ff}
+#page-unwritten .ownerCard.active{background:#dfeaff;color:#153e8b;border-color:#82a9f2;box-shadow:inset 0 0 0 1px #82a9f2}
+#page-unwritten .unwrittenListHint{color:#60718b}
+#page-sales :is(.salesDashboard,.salesPanel,.salesDashChartCard,.salesDashRatioCard,.salesDashSummaryCard,.salesMonthlyChart){background:#fff;color:#172b45;border-color:#d6e1f0}
+#page-sales .salesDashboard{box-shadow:0 4px 14px rgba(0,12,40,.12)}
+#page-sales :is(.salesDashboardHead,.salesPanelHead,.salesDashSectionTitle){color:#172b45}
+#page-sales :is(.salesDashboardControls,.salesFreezeToolbar){background:#f0f5fd;color:#172b45;border:1px solid #d6e1f0;border-radius:12px}
+#page-sales .salesFilters{background:#f0f5fd;color:#172b45}
+#page-sales .salesDashKpis>div{color:#172b45;background:#f2f6fc;border-color:#d6e1f0}
+#page-sales .salesDashOwnerPicker>summary{background:#fff;color:#24436c;border:1px solid #cbd8ea;border-radius:9px}
+#page-sales :is(.salesListHint,.salesListConditionHelp){color:#60718b}
+#page-sales .salesPanelToggle{background:#e8f1ff;color:#1d4ed8;border-color:#a9c9ff}
+#page-sales .salesPanelToggle:hover{background:#dceaff}
+#page-sales table tfoot td,#page-sales table .totalrow td{background:#e7effc;color:#153664;font-weight:800}
+@media(max-width:750px){#page-schedule .scheduleToolbar{padding:10px}#page-schedule .scheduleMonthTitle{padding:10px}#page-unwritten :is(.unwrittenOwnerSection,.unwrittenListSection),#page-sales :is(.salesDashboard,.salesPanel){border-radius:12px}}
+@media print{#page-schedule{background:#fff!important;color:#172b45!important}#page-schedule .pageTitle h2{color:#172b45!important}}
