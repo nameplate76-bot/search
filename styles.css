@@ -1095,3 +1095,12 @@ body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* V160 mobile registration steps */
 .siteCreatePager{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 0}.siteCreatePager span{font-size:13px;font-weight:700;text-align:center}.siteCreatePager button{min-height:44px}.mobileCreatePages .siteEditTabs{flex-wrap:nowrap;overflow-x:auto;padding:10px 0;gap:6px}.mobileCreatePages .siteEditTabs .chip{flex-shrink:0;min-height:44px}.mobileCreatePages .siteEditFields{touch-action:pan-y}.mobileCreatePages .siteTemplateSearchPanel{margin-top:12px}.mobileCreatePages .dlgHead small{display:block;line-height:1.5}
+
+/* V161: PC 설비별 수량 6열 */
+@media (min-width:801px) and (hover:hover) and (pointer:fine){
+ .siteEditFields.quantityGrid,.detailGrid.quantityGrid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:8px!important;align-items:start}
+ .siteEditFields.quantityGrid .siteField,.detailGrid.quantityGrid .detailItem{min-width:0}
+ .siteEditFields.quantityGrid .siteField>span,.detailGrid.quantityGrid .detailItem>span{min-height:32px;line-height:1.3;display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;overflow-wrap:anywhere}
+ .siteEditFields.quantityGrid .siteField input{width:100%;min-width:0;text-align:center;padding:8px 6px}
+ .siteEditFields.quantityGrid .performanceAutoBtn{width:100%;padding:6px 4px;font-size:12px}
+}
