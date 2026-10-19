@@ -1208,3 +1208,10 @@ body{background:#102957;color:var(--text)}
 #page-sales table tfoot td,#page-sales table .totalrow td{background:#e7effc;color:#153664;font-weight:800}
 @media(max-width:750px){#page-schedule .scheduleToolbar{padding:10px}#page-schedule .scheduleMonthTitle{padding:10px}#page-unwritten :is(.unwrittenOwnerSection,.unwrittenListSection),#page-sales :is(.salesDashboard,.salesPanel){border-radius:12px}}
 @media print{#page-schedule{background:#fff!important;color:#172b45!important}#page-schedule .pageTitle h2{color:#172b45!important}}
+
+/* V166 schedule information cleanup */
+#page-schedule #scheduleScopeNote{display:none}
+#page-schedule #scheduleMessage:empty{display:none}
+#page-schedule .scheduleDashboardFilters>[role="group"]{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+#page-schedule .scheduleDashboardFilters [data-dash-period]{min-height:42px;padding:10px 16px;border-radius:9px}
+#page-schedule .scheduleDashboard>.hint{color:#c8d8f0;line-height:1.7;margin:12px 0 18px}
