@@ -1320,3 +1320,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 /* V179 employee employment details */
 .userEmploymentSection{margin:16px 0;padding:14px;border:1px solid #d6e1f0;border-radius:10px;background:#fff;color:#172b45}.userEmploymentSection h4{margin:0 0 12px}.userEmploymentGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.userEmploymentGrid label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:700;min-width:0}.userEmploymentGrid input{width:100%;min-width:0;padding:9px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172b45;font-size:14px}.userEmploymentSection small{display:block;margin-top:8px}.userEmploymentSection .hint{color:#475569!important;font-size:12px}.userEmploymentCell{text-align:center;min-width:105px}#userEmploymentStatus:empty{display:none}#userForm .userEmploymentSection{grid-column:1/-1}#page-users #userTable th:nth-child(n+23):nth-child(-n+28){min-width:105px}@media(max-width:480px){.userEmploymentGrid{grid-template-columns:1fr}}
+
+/* V180: match the employment information section boundary */
+#userInfoBody :is(.userPanelEditor,.userInfoPermissions){margin:16px 0;padding:14px;border:1px solid #d6e1f0;border-radius:10px;background:#fff;color:#172b45;min-width:0;box-sizing:border-box}
+#userInfoBody :is(.userPanelEditor,.userInfoPermissions) h4{margin:0 0 12px;font-size:17px;line-height:1.5}
