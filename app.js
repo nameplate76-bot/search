@@ -1598,12 +1598,24 @@ function bindUnwrittenHeaderInteractions(root){
   th.addEventListener('dragend',()=>{clearMarks();dragKey=null;setTimeout(()=>{suppressUnwrittenSortClick=false},120)});
  });
 }
+// Print widths follow field identity, independently of screen column resizing/reordering.
+const UNWRITTEN_PRINT_WEIGHTS={no:3,site_name:25,receipt:9,field_end:9,field_inspector:10,elapsed:7,corporation:8,important:21,inspection_type:8};
 function buildUnwrittenPrintHtml(){
  ensureUnwrittenColumnOrder();
  const filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
  const rows=sortedUnwrittenRows(filtered),cols=unwrittenColumnOrder.filter(k=>k!=='actions');
+ const total=cols.reduce((sum,k)=>sum+(UNWRITTEN_PRINT_WEIGHTS[k]||8),0);
+ const colgroup=cols.map(k=>`<col data-print-col="${k}" style="width:${((UNWRITTEN_PRINT_WEIGHTS[k]||8)*100/total).toFixed(6)}%">`).join('');
  const title=unwrittenOwnerFilter==='all'?'미작성 현장 전체':`${unwrittenOwnerFilter} · 미작성 현장`;
- return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,'Malgun Gothic',sans-serif;color:#111;background:white;font-size:10px}h1{font-size:18px}p{font-size:11px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:6px 4px;overflow-wrap:anywhere;white-space:normal;vertical-align:middle}th{background:#edf2f8;text-align:center}thead{display:table-header-group}tr{break-inside:avoid}.center{text-align:center}.uw-col-no{width:4%}.uw-col-site_name{width:23%}.uw-col-important{width:18%}button{display:none}</style></head><body><h1>${esc(title)}</h1><p>총 ${rows.length.toLocaleString()}건 · 출력일시 ${esc(new Date().toLocaleString('ko-KR'))}</p><table><thead><tr>${cols.map(k=>`<th>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr>${cols.map(k=>unwrittenCellHtml(r,k,i)).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">해당하는 미작성 현장이 없습니다.</td></tr>`}</tbody></table></body></html>`;
+ return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+ @page{size:A4 landscape;margin:10mm}
+ *{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif;color:#17243a;background:#fff;font-size:10pt;line-height:1.45}
+ h1{font-size:20pt;line-height:1.2;margin:0 0 3mm;font-weight:800}p.printMeta{font-size:9pt;color:#475569;margin:0 0 5mm;padding-bottom:3mm;border-bottom:0.5mm solid #203c63}
+ table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:0.2mm solid #c3cbd6;padding:2mm 1.2mm;white-space:normal;vertical-align:middle;overflow-wrap:anywhere;word-break:normal;height:auto}
+ th{background:#eaf1fb;color:#172f51;font-size:9pt;font-weight:700;text-align:center;line-height:1.4}thead{display:table-header-group}tbody tr:nth-child(even){background:#f5f7fa}tr{break-inside:avoid;page-break-inside:avoid}
+ .center{text-align:center}td.uw-col-site_name,td.uw-col-important{text-align:left}td.uw-col-site_name{font-weight:700}td:is(.uw-col-receipt,.uw-col-field_end){white-space:nowrap;font-size:9pt;font-variant-numeric:tabular-nums}td.uw-col-no{font-size:9pt}
+ button{display:none}@media print{th,tbody tr:nth-child(even){-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+ </style></head><body><h1>${esc(title)}</h1><p class="printMeta">총 ${rows.length.toLocaleString()}건 · 출력일시 ${esc(new Date().toLocaleString('ko-KR'))}</p><table><colgroup>${colgroup}</colgroup><thead><tr>${cols.map(k=>`<th scope="col">${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr>${cols.map(k=>unwrittenCellHtml(r,k,i)).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">해당하는 미작성 현장이 없습니다.</td></tr>`}</tbody></table></body></html>`;
 }
 function printUnwrittenList(){
  if(!canViewUnwritten())return;
