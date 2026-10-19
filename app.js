@@ -1080,9 +1080,9 @@ async function openSiteReports(id){
 }
 
 function arrangeInspectionDateFields(root,selector,key){
- const order=['138','139','28','29','26','27','32'];
+ const order=['44','45','138','139','28','29','26','27','32','22','23'];
  const nodes=[...root.querySelectorAll(selector)];
- const anchor=nodes.find(n=>['26','27','28','29','32'].includes(n.dataset[key]));if(!anchor)return;
+ const anchor=nodes.find(n=>order.includes(n.dataset[key])&&!['138','139'].includes(n.dataset[key]))||nodes.find(n=>order.includes(n.dataset[key]));if(!anchor)return;
  const marker=document.createComment('inspection-date-order');anchor.before(marker);
  for(const col of order){const node=nodes.find(n=>n.dataset[key]===col);if(node)marker.before(node)}marker.remove();
 }
@@ -1176,10 +1176,9 @@ function renderSiteEditFields(){
  const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`<label class="siteField"><span>점검시작 계획일자</span><input id="siteScheduleStart" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.start)}" ${canEditSchedule()?'':'disabled'}></label><label class="siteField"><span>점검종료 계획일자</span><input id="siteScheduleEnd" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.end)}" ${canEditSchedule()?'':'disabled'}></label><small class="fieldHelp">${siteEditMode==='create'?'계획 시작일을 입력하면 계획 종료일·점검 시작일·점검 종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 수정할 수 있습니다. ':''}점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
  const first=block.querySelector('#siteScheduleStart').closest('label'),last=block.querySelector('#siteScheduleEnd').closest('label');first.dataset.planOrder='138';last.dataset.planOrder='139';
  const help=block.querySelector('small');block.before(first,last);block.remove();help.classList.add('siteScheduleInlineHelp');fieldsRoot.append(help);
- fieldsRoot.querySelectorAll('[data-site-col]').forEach(input=>{const label=input.closest('label');if(label)label.dataset.planOrder=input.dataset.siteCol});
- arrangeInspectionDateFields(fieldsRoot,'[data-plan-order]','planOrder');
  $('siteScheduleStart').oninput=e=>{siteScheduleDraft.start=e.target.value;siteScheduleDraft.changed=true;fillCreateInspectionDates(e.target.value)};$('siteScheduleEnd').oninput=e=>{siteScheduleDraft.end=e.target.value;siteScheduleDraft.changed=true};
  }
+ if(g?.[0]==='진행·담당·계약'){fieldsRoot.querySelectorAll('[data-site-col]').forEach(input=>{const label=input.closest('label');if(label)label.dataset.planOrder=input.dataset.siteCol});arrangeInspectionDateFields(fieldsRoot,'[data-plan-order]','planOrder')}
  if((siteEditGroupIndex===2||siteEditGroupIndex===3)&&window.QuantityOCR){
   const bar=document.createElement('div');bar.className='quantityOcrBar';fieldsRoot.prepend(bar);
   const base=siteEditGroupIndex===2?55:83;
