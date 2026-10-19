@@ -1080,7 +1080,7 @@ async function openSiteReports(id){
 }
 
 function arrangeInspectionDateFields(root,selector,key){
- const order=['44','45','138','139','28','29','26','27','32','22','23'];
+ const order=['44','45','138','139','28','29','26','27','32','40','22','23'];
  const nodes=[...root.querySelectorAll(selector)];
  const anchor=nodes.find(n=>order.includes(n.dataset[key])&&!['138','139'].includes(n.dataset[key]))||nodes.find(n=>order.includes(n.dataset[key]));if(!anchor)return;
  const marker=document.createComment('inspection-date-order');anchor.before(marker);
