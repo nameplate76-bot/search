@@ -1359,7 +1359,7 @@ function isUnwrittenReport(r){return !!String(r?.field_end||reportValue(r,30)||'
 function renderUnwrittenDashboardSummary(){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners');
  const ownerMap=new Map();for(const r of unwrittenRows){const n=reportOwnerName(r);ownerMap.set(n,(ownerMap.get(n)||0)+1)}
- const ownerEntries=[...ownerMap.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'));
+ const ownerEntries=[...ownerMap.entries()].sort((a,b)=>(a[0]==='미배정'?-1:b[0]==='미배정'?1:b[1]-a[1]||a[0].localeCompare(b[0],'ko')));
  if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
  summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi"><span>담당자</span><b>${ownerEntries.filter(([n])=>n!=='미배정').length.toLocaleString()}명</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
@@ -1483,11 +1483,11 @@ function unwrittenCellHtml(r,key,index){
  if(key==='important')return `<td class="importantCell uw-col-important">${esc(reportValue(r,16)||'-')}</td>`;
  if(key==='expiry')return `<td class="uw-col-expiry">${esc(reportValue(r,18)||'-')}</td>`;
  if(key==='elapsed')return `<td class="center uw-col-elapsed ${elapsedClass(days)}">${days===null?'-':days+'일'}</td>`;
- if(key==='corporation')return `<td class="uw-col-corporation">${esc(reportValue(r,24)||'-')}</td>`;
- if(key==='inspection_type')return `<td class="uw-col-inspection_type">${esc(reportValue(r,25)||'-')}</td>`;
- if(key==='receipt')return `<td class="uw-col-receipt">${esc(reportValue(r,27)||'-')}</td>`;
- if(key==='field_end')return `<td class="uw-col-field_end">${esc(String(r.field_end||reportValue(r,30)||'-'))}</td>`;
- if(key==='field_inspector')return `<td class="uw-col-field_inspector">${esc(r.field_inspector||reportValue(r,31)||'-')}</td>`;
+ if(key==='corporation')return `<td class="center uw-col-corporation">${esc(reportValue(r,24)||'-')}</td>`;
+ if(key==='inspection_type')return `<td class="center uw-col-inspection_type">${esc(reportValue(r,25)||'-')}</td>`;
+ if(key==='receipt')return `<td class="center uw-col-receipt">${esc(reportValue(r,27)||'-')}</td>`;
+ if(key==='field_end')return `<td class="center uw-col-field_end">${esc(String(r.field_end||reportValue(r,30)||'-'))}</td>`;
+ if(key==='field_inspector')return `<td class="center uw-col-field_inspector">${esc(r.field_inspector||reportValue(r,31)||'-')}</td>`;
  if(key==='actions')return `<td class="center reportActions uw-col-actions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button>`:''}</td>`;
  return '<td></td>';
 }
@@ -1597,6 +1597,19 @@ function bindUnwrittenHeaderInteractions(root){
   th.addEventListener('drop',e=>{e.preventDefault();const target=th.dataset.uwColKey,rect=th.getBoundingClientRect(),after=e.clientX>rect.left+rect.width/2;clearMarks();const from=dragKey;dragKey=null;setTimeout(()=>{suppressUnwrittenSortClick=false},120);moveUnwrittenColumn(from,target,after)});
   th.addEventListener('dragend',()=>{clearMarks();dragKey=null;setTimeout(()=>{suppressUnwrittenSortClick=false},120)});
  });
+}
+function buildUnwrittenPrintHtml(){
+ ensureUnwrittenColumnOrder();
+ const filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
+ const rows=sortedUnwrittenRows(filtered),cols=unwrittenColumnOrder.filter(k=>k!=='actions');
+ const title=unwrittenOwnerFilter==='all'?'미작성 현장 전체':`${unwrittenOwnerFilter} · 미작성 현장`;
+ return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{font-family:Arial,'Malgun Gothic',sans-serif;color:#111;background:white;font-size:10px}h1{font-size:18px}p{font-size:11px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #999;padding:6px 4px;overflow-wrap:anywhere;white-space:normal;vertical-align:middle}th{background:#edf2f8;text-align:center}thead{display:table-header-group}tr{break-inside:avoid}.center{text-align:center}.uw-col-no{width:4%}.uw-col-site_name{width:23%}.uw-col-important{width:18%}button{display:none}</style></head><body><h1>${esc(title)}</h1><p>총 ${rows.length.toLocaleString()}건 · 출력일시 ${esc(new Date().toLocaleString('ko-KR'))}</p><table><thead><tr>${cols.map(k=>`<th>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr>${cols.map(k=>unwrittenCellHtml(r,k,i)).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">해당하는 미작성 현장이 없습니다.</td></tr>`}</tbody></table></body></html>`;
+}
+function printUnwrittenList(){
+ if(!canViewUnwritten())return;
+ const frame=document.createElement('iframe');frame.title='미작성 현장 리스트 인쇄';frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;width:0;height:0;border:0;left:-10000px';
+ frame.onload=()=>{const win=frame.contentWindow;if(!win)return;win.addEventListener('afterprint',()=>frame.remove(),{once:true});try{win.focus();win.print()}catch(e){frame.remove();alert('인쇄 화면을 열 수 없습니다. 브라우저의 인쇄 기능을 확인해 주세요.')}};
+ frame.srcdoc=buildUnwrittenPrintHtml();document.body.append(frame);
 }
 function renderUnwrittenList(){
  if(!canViewUnwritten())return;
@@ -2439,7 +2452,7 @@ if(isStandalone()){const n=$('standaloneNotice');n?.classList.remove('hidden');$
 enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('contactEditForm'));enableEnterToNext($('userForm'));
 $('permSalesExport').onchange=$('permSalesPrint').onchange=e=>{if(e.target.checked)$('permSales').checked=true};$('permSales').onchange=e=>{if(!e.target.checked){$('permSalesExport').checked=false;$('permSalesPrint').checked=false}};
 $('permSiteCreate').onchange=$('permSiteEdit').onchange=$('permAllSitesExport').onchange=$('permImport').onchange=e=>{if(e.target.checked)$('permSites').checked=true};$('permMoneyView').onchange=e=>{if(e.target.checked)$('permSites').checked=true;else{$('permMoneyCreate').checked=false;$('permMoneyEdit').checked=false}};$('permMoneyCreate').onchange=e=>{if(e.target.checked){$('permMoneyView').checked=true;$('permSites').checked=true;$('permSiteCreate').checked=true}};$('permMoneyEdit').onchange=e=>{if(e.target.checked){$('permMoneyView').checked=true;$('permSites').checked=true;$('permSiteEdit').checked=true}};$('permSites').onchange=e=>{if(!e.target.checked){$('permSiteCreate').checked=false;$('permSiteEdit').checked=false;$('permMoneyView').checked=false;$('permMoneyCreate').checked=false;$('permMoneyEdit').checked=false;$('permAllSitesExport').checked=false;$('permImport').checked=false}};$('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=closeSiteEditor;$('siteEditCancel').onclick=closeSiteEditor;$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteFormAddress').oninput=()=>{if(siteAddressMode==='manual')syncRegionFromSiteAddress()};$('siteFormAddress').onblur=()=>syncRegionFromSiteAddress();$('siteFormAddressDetail').oninput=()=>syncRegionFromSiteAddress();$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
-$('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=()=>{if(canViewUnwritten())setupUnwrittenFields()};$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
+$('unwrittenPrint').onclick=printUnwrittenList;$('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=()=>{if(canViewUnwritten())setupUnwrittenFields()};$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
 
 // V168: presentation only. Existing data, permissions, export and save handlers are reused.
 let salesDesignView='owners', userDesignPanelId=null;
@@ -2473,7 +2486,7 @@ function setupPortalDesign(){
  const searchActions=$('siteCreateBtn').parentElement,dbMenu=document.createElement('details');dbMenu.className='portalDbMenu';dbMenu.innerHTML='<summary>DB 관리</summary><div class="portalDbMenuItems"></div>';searchActions.insertBefore(dbMenu,$('allSitesExportBtn'));for(const id of ['allSitesExportBtn','dbImportBtn','dbDeleteAllBtn'])dbMenu.lastElementChild.append($(id));
  const syncDbMenu=()=>dbMenu.classList.toggle('hidden',[...dbMenu.lastElementChild.children].every(b=>b.classList.contains('hidden')));new MutationObserver(syncDbMenu).observe(dbMenu.lastElementChild,{subtree:true,attributes:true,attributeFilter:['class']});syncDbMenu();dbMenu.addEventListener('click',e=>{if(e.target.closest('button'))dbMenu.open=false});document.addEventListener('click',e=>{if(!dbMenu.contains(e.target))dbMenu.open=false});
  const scheduleActions=document.querySelector('.scheduleInlineActions');document.querySelector('#page-schedule .pageTitle').append(scheduleActions);
- const legend=document.querySelector('.scheduleLegend'),help=document.createElement('details');help.className='portalHelp scheduleHelp';help.innerHTML='<summary>달력 표시·사용 안내</summary>';legend.before(help);help.append(legend);
+ document.querySelector('.scheduleLegend')?.remove();
  const sales=$('page-sales'),head=document.createElement('div');head.className='pageTitle salesDesignTitle';head.innerHTML='<div><h2>매출 관리</h2><p>담당자별 할당·작성 매출 및 현장별 상세 내역을 조회합니다.</p></div>';
  sales.prepend(head);head.append(document.querySelector('.salesPanelAdminActions'));
  const nav=document.createElement('div');nav.className='salesViewTabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','매출 관리 메뉴');nav.innerHTML=[['owners','담당자별 현황'],['months','월별 현황'],['list','상세 목록']].map(([key,label])=>`<button type="button" role="tab" data-sales-view="${key}" aria-controls="${{owners:'salesDashboard',months:'salesMonthlyOverview',list:'salesPanel'}[key]}">${label}</button>`).join('');head.after(nav);

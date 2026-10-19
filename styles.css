@@ -1301,3 +1301,8 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 /* V172: center unwritten list headings except site name and important notes. */
 #page-unwritten .unwrittenTable thead th:not(.uw-col-site_name):not(.uw-col-important){text-align:center!important}
+
+/* V176: readable inspector title and stable column alignment */
+#page-schedule .scheduleInspectorFieldset legend{background:#fff;color:#173f7a!important;font-size:16px;font-weight:800;line-height:1.5;padding:3px 10px;border-radius:6px}
+#page-unwritten .unwrittenTable td:is(.uw-col-receipt,.uw-col-field_end,.uw-col-field_inspector,.uw-col-elapsed,.uw-col-corporation,.uw-col-inspection_type){text-align:center!important}
+#unwrittenPrint{white-space:nowrap;flex-shrink:0;min-height:40px}
