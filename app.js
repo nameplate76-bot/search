@@ -31,7 +31,7 @@ let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null;
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
@@ -499,17 +499,33 @@ async function fetchPaged(table,select='*',mutator=null){let from=0,all=[];const
 function applySearchCache(){
  lastSites=siteColumnFiltersEnabled?[...searchSourceRows]:searchSourceRows.filter(filterOk);selectedSiteIds.clear();$('searchMeta').textContent=`검색 ${searchSourceRows.length.toLocaleString()}건 · 현재 조건 ${lastSites.length.toLocaleString()}건`;renderSites();
 }
+let searchLoadingState=null;
+function stopSearchLoading(request=null){
+ const state=searchLoadingState;if(request!==null&&state?.request!==request)return;
+ if(state){clearTimeout(state.delay);clearInterval(state.clock)}searchLoadingState=null;
+ $('searchLoading')?.classList.add('hidden');$('siteResults')?.classList.remove('searchResultsLoading');$('siteResults')?.removeAttribute('inert');$('siteResults')?.setAttribute('aria-busy','false');
+ const button=$('searchBtn');if(button){button.removeAttribute('aria-busy');button.textContent='검색'}
+}
+function startSearchLoading(request){
+ stopSearchLoading();const state={request,started:Date.now(),delay:null,clock:null};searchLoadingState=state;
+ $('siteResults').setAttribute('aria-busy','true');$('siteResults').setAttribute('inert','');$('searchBtn').setAttribute('aria-busy','true');$('searchBtn').textContent='검색 중…';
+ state.delay=setTimeout(()=>{
+  if(searchLoadingState!==state||request!==searchRequestSeq)return;
+  $('searchLoading').classList.remove('hidden');$('siteResults').classList.add('searchResultsLoading');
+  const update=()=>{const seconds=Math.floor((Date.now()-state.started)/1000);$('searchLoadingElapsed').textContent=`경과 ${seconds}초`;$('searchLoadingHint').textContent=seconds>=8?'자료를 불러오는 데 시간이 걸리고 있습니다. 잠시만 기다려 주세요.':'검색이 완료되면 목록이 자동으로 표시됩니다.'};update();state.clock=setInterval(update,1000);
+ },180);
+}
 async function searchSites(force=false){
  if(!can('can_view_staff_sites'))return;
  const q=siteColumnFiltersEnabled?'':$('siteQuery').value.trim(),sameQuery=searchCacheReady&&searchCacheQuery===q;
- if(!force&&sameQuery&&cacheFresh(searchLoadedAt)){applySearchCache();return}
- const requestId=++searchRequestSeq,requestAccount=me?.id;$('searchMeta').textContent='검색 중...';
+ if(!force&&sameQuery&&cacheFresh(searchLoadedAt)){searchRequestSeq++;stopSearchLoading();applySearchCache();return}
+ const requestId=++searchRequestSeq,requestAccount=me?.id;$('searchMeta').textContent='검색 중...';startSearchLoading(requestId);
  try{
   const rows=await fetchPaged('staff_site_search_list','*',query=>{query=query.order('excel_row',{ascending:true}).order('source_id',{ascending:true});if(q){const term=q.replace(/[%_,()]/g,' ').trim();query=query.or(`site_name.ilike.%${term}%,previous_name.ilike.%${term}%,region.ilike.%${term}%,sn.ilike.%${term}%,document_owner.ilike.%${term}%,field_inspector.ilike.%${term}%,sales_manager.ilike.%${term}%`)}return query});
   if(canViewSchedule()){const plans=await fetchSitePlanDates();const map=new Map(plans.map(p=>[Number(p.source_id),p]));rows.forEach(r=>{const plan=map.get(Number(r.source_id));r.schedule_plan_start=plan?.plan_start||'';r.schedule_plan_end=plan?.plan_end||''})}
   if(requestId!==searchRequestSeq||requestAccount!==me?.id||!can('can_view_staff_sites'))return;
   searchSourceRows=rows;searchCacheQuery=q;searchCacheReady=true;searchLoadedAt=Date.now();applySearchCache();return true;
- }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML='';return false}
+ }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteResults').innerHTML='';return false}finally{stopSearchLoading(requestId)}
 }
 function refilterSearchSites(){const q=siteColumnFiltersEnabled?'':$('siteQuery').value.trim();if(searchCacheReady&&searchCacheQuery===q){applySearchCache();return}searchSites(false)}
 function siteStatusLabel(r){const s=statusOf(r);return s==='complete'?'보고서 완료':s==='unwritten'?'보고서 미작성':s==='checking'?'점검 진행 중':s==='target'?'점검대상':'전체 진행 중'}
