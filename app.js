@@ -27,11 +27,11 @@ let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
 let searchSourceRows=[],searchCacheQuery='',searchCacheReady=false,searchLoadedAt=0,searchRequestSeq=0;
 let unwrittenCacheReady=false,unwrittenLoadedAt=0,unwrittenLoadPromise=null,unwrittenRequestSeq=0;
-let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null;
+let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null,salesLoadRequest=0;
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;stopSalesLoading();salesLoadRequest++;salesLoadPromise=null;salesCacheReady=false;salesLoadedAt=0}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
@@ -1973,15 +1973,32 @@ function renderSalesDashboard(){
  summary.innerHTML=`<div class="salesDashTableHelp"><strong>열 이동:</strong> 제목을 좌우로 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계선을 좌우로 드래그하세요. 설정은 사용자별로 자동 저장됩니다.</div><div class="salesDashTableWrap"><table id="salesDashSummaryTable" class="salesDashTable salesDashReorderable"><thead><tr>${headers}</tr></thead><tbody>${rows||`<tr><td colspan="${summaryOrder.length}" class="salesDashEmpty">자료가 없습니다.</td></tr>`}</tbody><tfoot><tr>${footer}</tr></tfoot></table></div>`;
  const summaryTable=$('salesDashSummaryTable');bindSalesDashSummaryHeaderInteractions(summaryTable);scheduleTableColumnResize(summaryTable,'sales-dashboard-summary');renderSalesMonthlyOverview();saveSalesDashboardPrefs();
 }
+let salesLoadingState=null;
+function stopSalesLoading(request=null){
+ const state=salesLoadingState;if(request!==null&&state?.request!==request)return;
+ if(state){clearTimeout(state.delay);clearInterval(state.clock);for(const [button,disabled] of state.buttons)button.disabled=disabled}salesLoadingState=null;
+ $('salesLoading')?.classList.add('hidden');$('page-sales')?.classList.remove('salesDataLoading');
+ for(const id of ['salesDashboard','salesMonthlyOverview','salesPanel']){const panel=$(id);panel?.setAttribute('aria-busy','false');panel?.removeAttribute('inert')}
+}
+function startSalesLoading(request){
+ stopSalesLoading();$('salesLoadingError').classList.add('hidden');
+ const buttons=['salesExport','salesPrint'].map($).filter(Boolean).map(button=>[button,button.disabled]);
+ const state={request,started:Date.now(),delay:null,clock:null,buttons};salesLoadingState=state;
+ for(const [button] of buttons)button.disabled=true;
+ for(const id of ['salesDashboard','salesMonthlyOverview','salesPanel']){$(id)?.setAttribute('aria-busy','true');$(id)?.setAttribute('inert','')}
+ state.delay=setTimeout(()=>{if(salesLoadingState!==state||request!==salesLoadRequest)return;$('salesLoading').classList.remove('hidden');$('page-sales').classList.add('salesDataLoading');const update=()=>{const seconds=Math.floor((Date.now()-state.started)/1000);$('salesLoadingElapsed').textContent=`경과 ${seconds}초`;$('salesLoadingHint').textContent=seconds>=8?'매출 자료를 불러오는 데 시간이 걸리고 있습니다. 잠시만 기다려 주세요.':'조회가 완료되면 매출 차트와 표가 자동으로 표시됩니다.'};update();state.clock=setInterval(update,1000)},180);
+}
 async function loadSales(force=false){
- if(!canViewSales())return;
- if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){renderSales();return}
+ if(!canViewSales())return false;
+ if(!force&&salesCacheReady&&cacheFresh(salesLoadedAt)){salesLoadRequest++;stopSalesLoading();$('salesLoadingError').classList.add('hidden');renderSales();return true}
  if(salesLoadPromise&&!force)return salesLoadPromise;
+ const request=++salesLoadRequest,account=me?.id,current=()=>request===salesLoadRequest&&account===me?.id&&canViewSales();startSalesLoading(request);
  salesLoadPromise=(async()=>{try{
   const allocationData=await fetchPaged('staff_sales_source_v107','*',q=>q.order('excel_row',{ascending:true}).order('id',{ascending:true}));
+  if(!current())return;
   const uniqueRows=[...new Map((allocationData||[]).map(r=>[String(r.id),r])).values()];
-  salesRows=uniqueRows.filter(r=>r.sales_year&&r.sales_month&&salesReportCompleted(r));salesAssignedRows=buildSalesAssignments(uniqueRows);salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();
- }catch(e){alert('매출 자료 조회 오류: '+e.message)}finally{salesLoadPromise=null}})();
+  salesRows=uniqueRows.filter(r=>r.sales_year&&r.sales_month&&salesReportCompleted(r));salesAssignedRows=buildSalesAssignments(uniqueRows);salesCacheReady=true;salesLoadedAt=Date.now();salesImported=false;fillSalesFilters();renderSales();return true;
+ }catch(e){if(!current())return;$('salesLoadingErrorText').textContent='매출 자료를 불러오지 못했습니다: '+e.message+((salesRows.length||salesAssignedRows.length)?' · 아래에 남아 있는 자료는 이전 조회 결과입니다.':'');$('salesLoadingError').classList.remove('hidden');return false}finally{if(request===salesLoadRequest)salesLoadPromise=null;stopSalesLoading(request)}})();
  return salesLoadPromise;
 }
 function fillSalesFilters(){
@@ -2545,7 +2562,7 @@ function setupPortalDesign(){
  const sales=$('page-sales'),head=document.createElement('div');head.className='pageTitle salesDesignTitle';head.innerHTML='<div><h2>매출 관리</h2><p>담당자별 할당·작성 매출 및 현장별 상세 내역을 조회합니다.</p></div>';
  sales.prepend(head);head.append(document.querySelector('.salesPanelAdminActions'));
  const nav=document.createElement('div');nav.className='salesViewTabs';nav.setAttribute('role','tablist');nav.setAttribute('aria-label','매출 관리 메뉴');nav.innerHTML=[['owners','담당자별 현황'],['months','월별 현황'],['list','상세 목록']].map(([key,label])=>`<button type="button" role="tab" data-sales-view="${key}" aria-controls="${{owners:'salesDashboard',months:'salesMonthlyOverview',list:'salesPanel'}[key]}">${label}</button>`).join('');head.after(nav);
- const shared=document.createElement('div');shared.id='salesSharedControls';shared.className='salesSharedControls';nav.after(shared);shared.append(document.querySelector('.salesDashboardControls'));
+ const shared=document.createElement('div');shared.id='salesSharedControls';shared.className='salesSharedControls';nav.after(shared);shared.after($('salesLoading'),$('salesLoadingError'));$('salesLoadingRetry').onclick=()=>loadSales(true);shared.append(document.querySelector('.salesDashboardControls'));
  const explanation=document.querySelector('.salesDashboardHead'),salesHelp=document.createElement('details');salesHelp.className='portalHelp salesCalculationHelp';salesHelp.innerHTML='<summary>매출 집계 기준</summary>';shared.append(salesHelp);salesHelp.append(explanation);
  const labels=[['salesYear','해당 연도'],['salesMonth','월'],['salesOwner','담당자']];labels.forEach(([id,text])=>{const select=$(id),label=document.createElement('label');label.htmlFor=id;label.textContent=text;select.before(label);label.append(select);select.setAttribute('aria-label',text+' 선택')});
  nav.querySelectorAll('button').forEach((b,i,all)=>{b.onclick=()=>setSalesDesignView(b.dataset.salesView);b.onkeydown=e=>{let next=i;if(e.key==='ArrowRight')next=(i+1)%all.length;else if(e.key==='ArrowLeft')next=(i+all.length-1)%all.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=all.length-1;else return;e.preventDefault();all[next].click();all[next].focus()}});setSalesDesignView('owners');
