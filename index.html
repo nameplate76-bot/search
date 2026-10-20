@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261020-v184">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261021-v185">
 <script>
 (function(){
-  const BUILD='20261020-v184';
+  const BUILD='20261021-v185';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -63,6 +63,9 @@
 
 /* V184: same loading language for sales charts and lists */
 #page-sales.salesDataLoading :is(#salesDashboard,#salesMonthlyOverview,#salesPanel){display:none!important}.salesLoadingOverview{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;margin-bottom:22px}.salesLoadingChart{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;padding:14px 14px 0;height:145px;border-bottom:1px solid #dce5f2;background:#f8fafd}.salesLoadingChart i{display:block;flex:1;max-width:35px;min-width:8px;border-radius:5px 5px 0 0;background:#e2e9f3;animation:salesLoadingPulse 1.8s ease-in-out infinite}.salesLoadingSummary{display:flex;flex-direction:column;justify-content:space-around;gap:12px;padding:12px}.salesLoadingSummary i{height:15px;background:#e4e9f1;border-radius:5px;animation:salesLoadingPulse 1.8s ease-in-out infinite}.salesLoadingSummary i:nth-child(even){width:75%}#salesLoadingError{display:flex;gap:12px;align-items:center;justify-content:space-between}#salesLoadingRetry{white-space:nowrap}@keyframes salesLoadingPulse{50%{opacity:.4}}@media(max-width:750px){.salesLoadingOverview{grid-template-columns:1fr;gap:0}.salesLoadingChart{height:95px}.salesLoadingSummary{display:none}#salesLoadingError{align-items:stretch;flex-direction:column}}@media(prefers-reduced-motion:reduce){.salesLoadingChart i,.salesLoadingSummary i{animation:none!important}}
+
+/* V185 selected-month matrix does not need a 12-month minimum width */
+#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
 </style><style id="bundled-schedule-contact-style">
 /* V155: 일정 상세의 연락처 조회 전용 영역 */
 .scheduleContactPanel{background:#f7faff;border:1px solid #d5e2f4;border-radius:10px;padding:12px;min-width:0}
@@ -336,7 +339,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V184</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V185</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -505,7 +508,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261020-v184"></script><script src="fields.js?v=20261020-v184"></script><script src="quantity-ocr.js?v=20261020-v184"></script><script id="bundled-report-files-js" data-build="V184">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261021-v185"></script><script src="fields.js?v=20261021-v185"></script><script src="quantity-ocr.js?v=20261021-v185"></script><script id="bundled-report-files-js" data-build="V185">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -623,7 +626,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261020-v184"></script><script id="bundled-inspection-schedule-js" data-build="V184">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261021-v185"></script><script id="bundled-inspection-schedule-js" data-build="V185">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -651,7 +654,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V184';
+root.STAFF_SCHEDULE_VERSION='V185';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -799,7 +802,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V184">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V185">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2646,15 +2649,16 @@ function bindSalesDashSummaryHeaderInteractions(table){
 function salesDashboardMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
 function salesDashboardRate(written,allocated){return allocated>0?written/allocated*100:null}
 function salesMonthlyOverviewData(){
+ const monthly=salesDashboardPeriod==='monthly',selectedMonth=Number($('salesDashMonth')?.value)||new Date().getMonth()+1;
  const year=$('salesDashYear')?.value||$('salesYear')?.value||'';
- const ownerList=(salesDashboardOwners&&salesDashboardOwners.size?[...salesDashboardOwners]:salesDashboardOwnerNames()).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ko'));
+ const ownerList=(monthly?[...salesDashboardOwners]:(salesDashboardOwners&&salesDashboardOwners.size?[...salesDashboardOwners]:salesDashboardOwnerNames())).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ko'));
  const selected=new Set(ownerList);
- const months=Array.from({length:12},(_,i)=>({month:i+1,allocated:0,written:0,allocatedCount:0,writtenCount:0}));
+ const months=(monthly?[selectedMonth]:Array.from({length:12},(_,i)=>i+1)).map(month=>({month,allocated:0,written:0,allocatedCount:0,writtenCount:0}));
  const monthMap=new Map(months.map(x=>[x.month,x]));
  const detailMap=new Map();
  const summaryMap=new Map(ownerList.map(o=>[o,{owner:o,allocated:0,written:0,allocatedCount:0,writtenCount:0}]));
  function ensureDetail(month,owner){const key=`${month}|${owner}`;if(!detailMap.has(key))detailMap.set(key,{month,owner,allocated:0,written:0,allocatedCount:0,writtenCount:0});return detailMap.get(key)}
- salesAssignedRows.filter(a=>String(a.allocation_year||'')===String(year)&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{
+ salesAssignedRows.filter(a=>String(a.allocation_year||'')===String(year)&&(!monthly||Number(a.allocation_month)===selectedMonth)&&selected.has(String(a.owner_name||'').trim())).forEach(a=>{
    const owner=String(a.owner_name||'').trim(),month=Math.max(1,Math.min(12,Number(a.allocation_month)||0));if(!month)return;
    const amount=salesNumber(a.allocation_amount),count=Math.max(0,Math.round(salesNumber(a.assigned_count)));
    const writtenAmount=salesNumber(a.written_amount),writtenCount=Math.max(0,Math.round(salesNumber(a.written_count)));
@@ -2664,33 +2668,34 @@ function salesMonthlyOverviewData(){
    if(sum){sum.allocated+=amount;sum.allocatedCount+=count;sum.written+=writtenAmount;sum.writtenCount+=writtenCount}
  });
  const detailRows=[...detailMap.values()].sort((a,b)=>a.month-b.month||a.owner.localeCompare(b.owner,'ko'));
- const summaryRows=[...summaryMap.values()].filter(x=>x.allocated||x.written||x.allocatedCount||x.writtenCount).sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
+ const summaryRows=[...summaryMap.values()].filter(x=>monthly||x.allocated||x.written||x.allocatedCount||x.writtenCount).sort((a,b)=>b.written-a.written||b.allocated-a.allocated||a.owner.localeCompare(b.owner,'ko'));
  const totals=months.reduce((acc,m)=>{acc.allocated+=m.allocated;acc.written+=m.written;acc.allocatedCount+=m.allocatedCount;acc.writtenCount+=m.writtenCount;return acc},{allocated:0,written:0,allocatedCount:0,writtenCount:0});
- return {year,owners:ownerList,months,detailRows,summaryRows,totals};
+ return {year,monthly,selectedMonth,owners:ownerList,months,detailRows,summaryRows,totals};
 }
 function salesMonthlyOverviewMoney(v){return `${Math.round(salesNumber(v)).toLocaleString('ko-KR')}원`}
 function salesMonthlyOverviewRate(w,a){return a>0?(w/a*100):null}
 function salesMonthlyAmountLabel(v){return (v/1000000).toLocaleString('ko-KR',{maximumFractionDigits:0})}
 function renderSalesMonthlyOverviewChart(data){
  const root=$('salesMonthlyChart');if(!root)return;
- if(!data.owners.length){root.innerHTML='<div class="salesMonthlyChartEmpty">담당자를 한 명 이상 선택하면 1월부터 12월까지의 월별 차트가 표시됩니다.</div>';return}
- const maxAmount=Math.max(1,...data.months.flatMap(m=>[m.allocated,m.written]));
- const maxCount=Math.max(1,...data.months.flatMap(m=>[m.allocatedCount,m.writtenCount]));
- const width=1120,height=360,padL=72,padR=54,padT=24,padB=52,plotW=width-padL-padR,plotH=height-padT-padB,groupW=plotW/12,barW=Math.min(28,groupW*0.23),centerOffset=Math.min(16,groupW*0.18);
+ if(!data.owners.length){root.innerHTML='<div class="salesMonthlyChartEmpty">담당자를 한 명 이상 선택하면 차트가 표시됩니다.</div>';return}
+ const chartRows=data.monthly?data.summaryRows.map(r=>({...r,month:data.selectedMonth,label:r.owner})):data.months;
+ const maxAmount=Math.max(1,...chartRows.flatMap(m=>[m.allocated,m.written]));
+ const maxCount=Math.max(1,...chartRows.flatMap(m=>[m.allocatedCount,m.writtenCount]));
+ const width=data.monthly?Math.max(600,chartRows.length*120):1120,height=360,padL=72,padR=54,padT=24,padB=52,plotW=width-padL-padR,plotH=height-padT-padB,groupW=plotW/Math.max(1,chartRows.length),barW=Math.min(28,groupW*0.23),centerOffset=Math.min(16,groupW*0.18);
  const amountTicks=5,countTicks=5;
  const grid=[];for(let i=0;i<=amountTicks;i++){const y=padT+plotH-(plotH*(i/amountTicks));const val=Math.round(maxAmount/amountTicks*i);grid.push({y,val})}
  const pointsA=[],pointsW=[],bars=[],labels=[],hoverBands=[];
- data.months.forEach((m,idx)=>{const cx=padL+groupW*idx+groupW/2;const ah=(m.allocated/maxAmount)*plotH,wh=(m.written/maxAmount)*plotH;const ay=padT+plotH-ah,wy=padT+plotH-wh;
+ chartRows.forEach((m,idx)=>{const cx=padL+groupW*idx+groupW/2;const ah=(m.allocated/maxAmount)*plotH,wh=(m.written/maxAmount)*plotH;const ay=padT+plotH-ah,wy=padT+plotH-wh;
   bars.push(`<rect x="${(cx-centerOffset-barW/2).toFixed(1)}" y="${ay.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,ah).toFixed(1)}" rx="4" fill="#bfdbfe" stroke="#93c5fd"></rect>`);
   bars.push(`<rect x="${(cx+centerOffset-barW/2).toFixed(1)}" y="${wy.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,wh).toFixed(1)}" rx="4" fill="#2563eb"></rect>`);
   const pyA=padT+plotH-(m.allocatedCount/maxCount)*plotH,pyW=padT+plotH-(m.writtenCount/maxCount)*plotH;pointsA.push(`${cx.toFixed(1)},${pyA.toFixed(1)}`);pointsW.push(`${cx.toFixed(1)},${pyW.toFixed(1)}`);
-  labels.push(`<text x="${cx.toFixed(1)}" y="${height-22}" text-anchor="middle" font-size="11" fill="#475467">${m.month}월</text>`);
+  labels.push(`<text x="${cx.toFixed(1)}" y="${height-22}" text-anchor="middle" font-size="11" fill="#475467">${esc(m.label||m.month+'월')}</text>`);
   hoverBands.push(`<rect class="salesMonthlyHoverBand" data-month-index="${idx}" x="${(padL+groupW*idx).toFixed(1)}" y="${padT}" width="${groupW.toFixed(1)}" height="${plotH}" fill="transparent"></rect>`);
  });
  const countAxis=[];for(let i=0;i<=countTicks;i++){const y=padT+plotH-(plotH*(i/countTicks));const val=Math.round(maxCount/countTicks*i);countAxis.push(`<text x="${width-10}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#667085">${val}</text>`)}
  root.innerHTML=`<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="월별 매출액 및 건수 현황 차트"><rect x="0" y="0" width="${width}" height="${height}" fill="#fff"></rect>${grid.map(g=>`<line x1="${padL}" y1="${g.y.toFixed(1)}" x2="${width-padR}" y2="${g.y.toFixed(1)}" stroke="#e5e7eb"></line><text x="${padL-10}" y="${(g.y+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#667085">${salesMonthlyAmountLabel(g.val)}</text>`).join('')}<text x="${padL-4}" y="14" text-anchor="start" font-size="11" fill="#667085">매출액(백만원)</text><text x="${width-padR+8}" y="14" text-anchor="start" font-size="11" fill="#667085">건수(건)</text>${countAxis.join('')}<line x1="${padL}" y1="${padT+plotH}" x2="${width-padR}" y2="${padT+plotH}" stroke="#cdd5df"></line>${bars.join('')}<polyline fill="none" stroke="#16a34a" stroke-width="3" points="${pointsA.join(' ')}"></polyline><polyline fill="none" stroke="#f97316" stroke-width="3" points="${pointsW.join(' ')}"></polyline>${pointsA.map(p=>{const[x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#16a34a" stroke-width="2"></circle>`}).join('')}${pointsW.map(p=>{const[x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="#f97316" stroke-width="2"></circle>`}).join('')}${labels.join('')}${hoverBands.join('')}</svg><div class="salesMonthlyTooltip" id="salesMonthlyTooltip"></div>`;
  const tip=$('salesMonthlyTooltip');let touchTimer=0;
- const showTip=(idx,e)=>{const m=data.months[idx];if(!m||!tip)return;tip.innerHTML=`<strong>${m.month}월</strong><div class="salesMonthlyTooltipRow"><span>할당 매출액</span><b>${esc(salesMonthlyOverviewMoney(m.allocated))}</b></div><div class="salesMonthlyTooltipRow"><span>작성 매출액</span><b>${esc(salesMonthlyOverviewMoney(m.written))}</b></div><div class="salesMonthlyTooltipRow"><span>할당 건수</span><b>${m.allocatedCount.toLocaleString()}건</b></div><div class="salesMonthlyTooltipRow"><span>작성 건수</span><b>${m.writtenCount.toLocaleString()}건</b></div>`;const r=root.getBoundingClientRect();const x=e.clientX-r.left+root.scrollLeft+14,y=e.clientY-r.top+root.scrollTop-26;tip.style.left=Math.max(6,x)+'px';tip.style.top=Math.max(6,y)+'px';tip.classList.add('show')};
+ const showTip=(idx,e)=>{const m=chartRows[idx];if(!m||!tip)return;tip.innerHTML=`<strong>${esc(m.label?data.year+'년 '+data.selectedMonth+'월 · '+m.label:m.month+'월')}</strong><div class="salesMonthlyTooltipRow"><span>할당 매출액</span><b>${esc(salesMonthlyOverviewMoney(m.allocated))}</b></div><div class="salesMonthlyTooltipRow"><span>작성 매출액</span><b>${esc(salesMonthlyOverviewMoney(m.written))}</b></div><div class="salesMonthlyTooltipRow"><span>할당 건수</span><b>${m.allocatedCount.toLocaleString()}건</b></div><div class="salesMonthlyTooltipRow"><span>작성 건수</span><b>${m.writtenCount.toLocaleString()}건</b></div>`;const r=root.getBoundingClientRect();const x=e.clientX-r.left+root.scrollLeft+14,y=e.clientY-r.top+root.scrollTop-26;tip.style.left=Math.max(6,x)+'px';tip.style.top=Math.max(6,y)+'px';tip.classList.add('show')};
  const hideTip=()=>tip?.classList.remove('show');
  root.querySelectorAll('.salesMonthlyHoverBand').forEach(el=>{const idx=Number(el.dataset.monthIndex);el.onpointerenter=e=>showTip(idx,e);el.onpointermove=e=>showTip(idx,e);el.onpointerleave=hideTip;el.onpointerdown=e=>{showTip(idx,e);clearTimeout(touchTimer);touchTimer=setTimeout(hideTip,2400)}});
 }
@@ -2706,12 +2711,12 @@ function renderSalesMonthlyOverviewTables(data){
  ];
  const format=(v,kind)=>kind==='money'?Math.round(salesNumber(v)).toLocaleString('ko-KR')+'원':Math.round(salesNumber(v)).toLocaleString('ko-KR')+'건';
  const body=data.owners.map(owner=>{
-   const rows=metricDefs.map((md,ri)=>{let total=0;const monthCells=Array.from({length:12},(_,i)=>{const row=detailMap.get(`${owner}|${i+1}`),v=row?salesNumber(row[md.key]):0;total+=v;return `<td class="monthCol num">${format(v,md.kind)}</td>`}).join('');return `<tr class="${ri===0?'ownerGroupStart':''}">${ri===0?`<td class="ownerCol stickyOwner" rowspan="4">${esc(owner)}</td>`:''}<td class="metricCol stickyMetric ${md.cls}">${md.label}</td>${monthCells}<td class="totalCol num">${format(total,md.kind)}</td></tr>`}).join('');
+   const rows=metricDefs.map((md,ri)=>{let total=0;const monthCells=data.months.map(m=>{const row=detailMap.get(`${owner}|${m.month}`),v=row?salesNumber(row[md.key]):0;total+=v;return `<td class="monthCol num">${format(v,md.kind)}</td>`}).join('');return `<tr class="${ri===0?'ownerGroupStart':''}">${ri===0?`<td class="ownerCol stickyOwner" rowspan="4">${esc(owner)}</td>`:''}<td class="metricCol stickyMetric ${md.cls}">${md.label}</td>${monthCells}${data.monthly?'':`<td class="totalCol num">${format(total,md.kind)}</td>`}</tr>`}).join('');
    return rows;
  }).join('');
- const totalByMonth=Array.from({length:12},(_,i)=>{const m=data.months[i];return {allocated:m?.allocated||0,written:m?.written||0,allocatedCount:m?.allocatedCount||0,writtenCount:m?.writtenCount||0}});
- const foot=metricDefs.map((md,ri)=>{let grand=0;const cells=totalByMonth.map(m=>{const v=salesNumber(m[md.key]);grand+=v;return `<td class="monthCol num">${format(v,md.kind)}</td>`}).join('');return `<tr>${ri===0?'<th class="ownerCol stickyOwner" rowspan="4">전체 합계</th>':''}<th class="metricCol stickyMetric">${md.label}</th>${cells}<th class="totalCol num">${format(grand,md.kind)}</th></tr>`}).join('');
- detail.innerHTML=`<table id="salesMonthlyDetailTable" class="salesMonthlyTable salesMonthlyMatrix"><thead><tr><th class="ownerCol stickyOwner">담당자</th><th class="metricCol stickyMetric">항목</th>${Array.from({length:12},(_,i)=>`<th class="monthCol">${i+1}월</th>`).join('')}<th class="totalCol">합계</th></tr></thead><tbody>${body}</tbody><tfoot>${foot}</tfoot></table>`;
+ const totalByMonth=data.months.map(m=>{return {allocated:m?.allocated||0,written:m?.written||0,allocatedCount:m?.allocatedCount||0,writtenCount:m?.writtenCount||0}});
+ const foot=metricDefs.map((md,ri)=>{let grand=0;const cells=totalByMonth.map(m=>{const v=salesNumber(m[md.key]);grand+=v;return `<td class="monthCol num">${format(v,md.kind)}</td>`}).join('');return `<tr>${ri===0?'<th class="ownerCol stickyOwner" rowspan="4">전체 합계</th>':''}<th class="metricCol stickyMetric">${md.label}</th>${cells}${data.monthly?'':`<th class="totalCol num">${format(grand,md.kind)}</th>`}</tr>`}).join('');
+ detail.innerHTML=`<table id="salesMonthlyDetailTable" class="salesMonthlyTable salesMonthlyMatrix"><thead><tr><th class="ownerCol stickyOwner">담당자</th><th class="metricCol stickyMetric">항목</th>${data.months.map(m=>`<th class="monthCol">${m.month}월</th>`).join('')}${data.monthly?'':'<th class="totalCol">합계</th>'}</tr></thead><tbody>${body}</tbody><tfoot>${foot}</tfoot></table>`;
  const monthFooterRate=salesMonthlyOverviewRate(data.totals.written,data.totals.allocated);
  const summaryRows=data.summaryRows.map(r=>{const rate=salesMonthlyOverviewRate(r.written,r.allocated),countRate=salesMonthlyOverviewRate(r.writtenCount,r.allocatedCount);return `<tr><td>${esc(r.owner)}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.allocated))}</td><td class="num">${esc(salesMonthlyOverviewMoney(r.written))}</td><td class="num salesMonthlyRate">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td><td class="num">${r.allocatedCount.toLocaleString()}</td><td class="num">${r.writtenCount.toLocaleString()}</td><td class="num salesMonthlyRate">${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</td></tr>`}).join('');
  const summaryCards=data.summaryRows.map(r=>{const rate=salesMonthlyOverviewRate(r.written,r.allocated),countRate=salesMonthlyOverviewRate(r.writtenCount,r.allocatedCount);return `<article class="salesMonthlySummaryMobileCard"><h4>${esc(r.owner)}</h4><div class="salesMonthlySummaryMobileGrid"><div><span>할당 매출액</span><b>${esc(salesMonthlyOverviewMoney(r.allocated))}</b></div><div><span>작성 매출액</span><b>${esc(salesMonthlyOverviewMoney(r.written))}</b></div><div><span>매출 달성률</span><b class="salesMonthlyRate">${rate===null?'-':rate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div><div><span>할당 건수</span><b>${r.allocatedCount.toLocaleString()}건</b></div><div><span>작성 건수</span><b>${r.writtenCount.toLocaleString()}건</b></div><div><span>건수 달성률</span><b class="salesMonthlyRate">${countRate===null?'-':countRate.toLocaleString('ko-KR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%'}</b></div></div></article>`}).join('');
@@ -2732,6 +2737,20 @@ function salesAllOwnerAnnualWritten(year){
 function renderSalesMonthlyOverview(){
  const title=$('salesMonthlyTitle'),kpis=$('salesMonthlyKpis');if(!title||!kpis)return;
  const data=salesMonthlyOverviewData(); const year=data.year||'연도';
+ const overview=$('salesMonthlyOverview');overview.classList.toggle('isMonthly',data.monthly);
+ const labels=overview.querySelectorAll('.salesMonthlySectionTitle strong'),help=overview.querySelectorAll('.salesMonthlyTableCard .salesMonthlySectionTitle small'),intro=overview.querySelector('.salesMonthlyHead p');
+ for(const node of [...labels,...help,intro].filter(Boolean))if(!node.dataset.annualText)node.dataset.annualText=node.textContent;
+ if(data.monthly){
+  const period=`${year}년 ${data.selectedMonth}월`;title.textContent=`${period} 담당자별 매출 현황`;
+  intro.textContent=`조회 대상: ${period} · ${data.owners.length?data.owners.join(', '):'담당자를 선택하세요'}. 선택한 월과 담당자의 할당·작성 금액 및 건수만 표시합니다.`;
+  labels[0].textContent=`${period} 담당자별 매출액 및 건수`;labels[1].textContent=`${period} 담당자별 매출 현황`;labels[2].textContent=`${period} 담당자별 요약`;
+  help[0].textContent='선택한 월의 자료만 표시합니다. 담당자와 항목은 고정됩니다.';help[1].textContent='선택한 월·담당자의 합계와 달성률';
+  const t=data.totals,rate=salesMonthlyOverviewRate(t.written,t.allocated),countRate=salesMonthlyOverviewRate(t.writtenCount,t.allocatedCount);
+  kpis.innerHTML=[['선택월 할당 매출',salesMonthlyOverviewMoney(t.allocated)],['선택월 작성 매출',salesMonthlyOverviewMoney(t.written)],['선택월 할당 건수',t.allocatedCount.toLocaleString()+'건'],['선택월 작성 건수',t.writtenCount.toLocaleString()+'건'],['매출 달성률',rate===null?'-':rate.toLocaleString('ko-KR',{maximumFractionDigits:1})+'%'],['건수 달성률',countRate===null?'-':countRate.toLocaleString('ko-KR',{maximumFractionDigits:1})+'%']].map(([label,value])=>`<div><span>${label}</span><b>${esc(value)}</b><small>${esc(period)} · 선택 담당자 기준</small></div>`).join('');
+  renderSalesMonthlyOverviewChart(data);renderSalesMonthlyOverviewTables(data);return;
+ }
+ for(const node of [...labels,...help,intro].filter(Boolean))node.textContent=node.dataset.annualText;
+
  const allWritten=salesAllOwnerAnnualWritten(data.year);
  title.textContent=`${year}년 월별 담당자별 매출 현황`;
  const rate=salesMonthlyOverviewRate(data.totals.written,data.totals.allocated);
@@ -2756,7 +2775,7 @@ function renderSalesDashboard(){
  if(!salesDashboardInitialized)return;
  const kpi=$('salesDashKpis'),chart=$('salesDashChart'),summary=$('salesDashSummary');if(!kpi||!chart||!summary)return;
  if(!salesDashboardOwners.size){
-  kpi.innerHTML='';chart.innerHTML='<div class="salesDashEmpty">대시보드에서 조회할 담당자를 한 명 이상 선택해 주세요.</div>';summary.innerHTML='';saveSalesDashboardPrefs();return;
+  kpi.innerHTML='';chart.innerHTML='<div class="salesDashEmpty">대시보드에서 조회할 담당자를 한 명 이상 선택해 주세요.</div>';summary.innerHTML='';if(salesDashboardPeriod==='monthly')renderSalesMonthlyOverview();saveSalesDashboardPrefs();return;
  }
  const d=salesDashboardAggregates(),periodLabel=salesDashboardPeriod==='annual'?`${d.year}년 연간`:`${d.year}년 ${d.month}월`;
  const totalRate=salesDashboardRate(d.totalWritten,d.totalAllocated),maxAmount=Math.max(0,...d.items.flatMap(x=>[x.allocated,x.written])),maxCount=Math.max(0,...d.items.flatMap(x=>[x.allocatedCount,x.writtenCount]));
