@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261021-v185">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261021-v186">
 <script>
 (function(){
-  const BUILD='20261021-v185';
+  const BUILD='20261021-v186';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -66,6 +66,7 @@
 
 /* V185 selected-month matrix does not need a 12-month minimum width */
 #salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
+
 </style><style id="bundled-schedule-contact-style">
 /* V155: 일정 상세의 연락처 조회 전용 영역 */
 .scheduleContactPanel{background:#f7faff;border:1px solid #d5e2f4;border-radius:10px;padding:12px;min-width:0}
@@ -318,7 +319,20 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 /* V172: center unwritten list headings except site name and important notes. */
 #page-unwritten .unwrittenTable thead th:not(.uw-col-site_name):not(.uw-col-important){text-align:center!important}
 </style>
-</head>
+<style id="user-compact-density-v186">/* V186: dense user compact list only */
+#page-users.userCompactTable #userTable{min-width:0}
+#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{padding:5px 6px!important;font-size:13px!important;line-height:1.35!important;white-space:nowrap;min-width:0!important;height:auto}
+#page-users.userCompactTable #userTable th.userSortableHeader{padding:7px 6px!important}
+#page-users.userCompactTable #userTable .userSelectCol{width:44px!important;min-width:40px!important}
+#page-users.userCompactTable #userTable .userSortIndicator{margin-left:3px;font-size:9px}
+#page-users.userCompactTable #userTable select{font-size:13px;padding:3px 4px;min-height:26px;height:26px;max-width:100%}
+#page-users.userCompactTable #userTable .userActions{display:flex;flex-wrap:nowrap;gap:4px;min-width:0;align-items:center}
+#page-users.userCompactTable #userTable .userActions button{font-size:12px;min-height:28px;height:28px;padding:3px 7px;line-height:20px;border-radius:6px;white-space:nowrap;margin:0}
+#page-users.userCompactTable #userTable .userTablePhone{gap:3px;font-size:13px;min-height:26px;white-space:nowrap}
+#page-users.userCompactTable #userTable .userRowSelect{width:16px;height:16px;margin:0;vertical-align:middle}
+#page-users.userCompactTable #userTable td.userEmploymentCell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:800px){#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{padding:7px 6px!important}#page-users.userCompactTable #userTable .userActions button{min-height:34px;height:34px}#page-users.userCompactTable #userTable .userRowSelect{width:18px;height:18px}#page-users.userCompactTable #userTable .userTablePhone{min-height:34px}}
+</style></head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
 <div id="loginView" class="loginShell">
@@ -339,7 +353,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V185</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V186</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -508,7 +522,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261021-v185"></script><script src="fields.js?v=20261021-v185"></script><script src="quantity-ocr.js?v=20261021-v185"></script><script id="bundled-report-files-js" data-build="V185">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261021-v186"></script><script src="fields.js?v=20261021-v186"></script><script src="quantity-ocr.js?v=20261021-v186"></script><script id="bundled-report-files-js" data-build="V186">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -626,7 +640,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261021-v185"></script><script id="bundled-inspection-schedule-js" data-build="V185">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261021-v186"></script><script id="bundled-inspection-schedule-js" data-build="V186">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -654,7 +668,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V185';
+root.STAFF_SCHEDULE_VERSION='V186';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -802,7 +816,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V185">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V186">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1012,7 +1026,7 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
 }
 function installTableColumnResize(table,tableName){
  const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
- if(userTable)tableName=compact?'users-compact':'users';
+ if(userTable)tableName=compact?'users-compact-v186':'users';
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length)return;
  const visibleHeaders=headers.filter(th=>getComputedStyle(th).display!=='none'),resizeMode=compact?'compact':'full';
@@ -1033,8 +1047,10 @@ function installTableColumnResize(table,tableName){
   const key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
-  const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
-  const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:rectWidth);
+  const compactWidths={0:44,1:76,2:110,3:140,4:72,5:52,22:104,23:96,24:90,25:64,26:64,27:104,28:200};
+  const min=compact?(i===0?40:i===1?60:i===2?80:i===3?120:i===28?180:52):th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
+  const baseWidth=compact?(compactWidths[i]||72):rectWidth;
+  const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:baseWidth);
   col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;
   const handle=document.createElement('div');handle.className='columnResizer';handle.setAttribute('role','separator');handle.setAttribute('aria-orientation','vertical');handle.setAttribute('aria-label',`${String(th.textContent||'열').replace(/\s+/g,' ').trim()} 열 폭 조절`);handle.draggable=false;
   handle.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
@@ -3281,7 +3297,7 @@ function setupUserTableSorting(){const table=$('userTable'),headers=[...table.tH
 function renderUsers(rows){
  const tb=$('userTable').querySelector('tbody');
  const perms=['approved','can_use_staff_portal','can_view_staff_sites','can_view_staff_unwritten','can_view_staff_schedule','can_edit_staff_schedule','can_create_staff_sites','can_edit_staff_sites','can_view_money','can_create_money','can_edit_money','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}${EMPLOYMENT_FIELDS.map(([key])=>`<td class="userEmploymentCell">${esc(p[key]||'-')}</td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${(isAdmin()||self)?`<button data-reset="${p.id}">비밀번호</button>${isAdmin()&&!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
+ tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}${EMPLOYMENT_FIELDS.map(([key])=>`<td class="userEmploymentCell" title="${esc(p[key]||'-')}">${esc(p[key]||'-')}</td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${(isAdmin()||self)?`<button data-reset="${p.id}">비밀번호</button>${isAdmin()&&!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
  tb.querySelectorAll('tr[data-user-row]').forEach(tr=>{
   syncUserRowDependencies(tr);
   tr.querySelectorAll('[data-k]').forEach(el=>el.onchange=()=>{syncUserRowDependencies(tr,el.dataset.k);markUserRowDirty(tr,true);syncUserDesignEditor()});

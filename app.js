@@ -208,7 +208,7 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
 }
 function installTableColumnResize(table,tableName){
  const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
- if(userTable)tableName=compact?'users-compact':'users';
+ if(userTable)tableName=compact?'users-compact-v186':'users';
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length)return;
  const visibleHeaders=headers.filter(th=>getComputedStyle(th).display!=='none'),resizeMode=compact?'compact':'full';
@@ -229,8 +229,10 @@ function installTableColumnResize(table,tableName){
   const key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
-  const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
-  const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:rectWidth);
+  const compactWidths={0:44,1:76,2:110,3:140,4:72,5:52,22:104,23:96,24:90,25:64,26:64,27:104,28:200};
+  const min=compact?(i===0?40:i===1?60:i===2?80:i===3?120:i===28?180:52):th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
+  const baseWidth=compact?(compactWidths[i]||72):rectWidth;
+  const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:baseWidth);
   col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;
   const handle=document.createElement('div');handle.className='columnResizer';handle.setAttribute('role','separator');handle.setAttribute('aria-orientation','vertical');handle.setAttribute('aria-label',`${String(th.textContent||'열').replace(/\s+/g,' ').trim()} 열 폭 조절`);handle.draggable=false;
   handle.addEventListener('click',e=>{e.preventDefault();e.stopPropagation()});
@@ -2477,7 +2479,7 @@ function setupUserTableSorting(){const table=$('userTable'),headers=[...table.tH
 function renderUsers(rows){
  const tb=$('userTable').querySelector('tbody');
  const perms=['approved','can_use_staff_portal','can_view_staff_sites','can_view_staff_unwritten','can_view_staff_schedule','can_edit_staff_schedule','can_create_staff_sites','can_edit_staff_sites','can_view_money','can_create_money','can_edit_money','can_export_staff_sites','can_view_staff_sales','can_export_staff_sales','can_print_staff_sales','can_import_staff_sites','can_manage_staff_users'];
- tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}${EMPLOYMENT_FIELDS.map(([key])=>`<td class="userEmploymentCell">${esc(p[key]||'-')}</td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${(isAdmin()||self)?`<button data-reset="${p.id}">비밀번호</button>${isAdmin()&&!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
+ tb.innerHTML=(rows||[]).map(p=>{const admin=p.role==='admin',self=String(p.id)===String(me?.id),selected=selectedUserIds.has(String(p.id));return `<tr data-user-row="${p.id}" class="${selected?'userRowSelected':''}" tabindex="0"><td class="userSelectCol"><input type="checkbox" class="userRowSelect" data-user-select="${p.id}" ${selected?'checked':''} ${!isAdmin()||self?'disabled':''} aria-label="${esc(p.name||p.user_id||'직원')} 선택" title="${self?'현재 로그인 계정은 삭제할 수 없습니다.':'삭제할 직원 선택'}"></td><td class="userInfoClickable">${esc(p.name||'')}</td><td class="userInfoClickable">${esc(p.user_id||'')}</td><td>${p.phone?`<a class="userTablePhone" href="tel:${esc(cleanPhone(p.phone))}" data-user-phone-call="${esc(p.phone)}">📞 ${esc(formatPhone(p.phone))}</a>`:'-'}</td><td><select data-u="${p.id}" data-k="role" ${!isAdmin()?'disabled':''}><option value="viewer" ${!admin?'selected':''}>일반</option><option value="admin" ${admin?'selected':''}>관리자</option></select></td>${perms.map(k=>`<td class="permCell"><input type="checkbox" data-u="${p.id}" data-k="${k}" ${p[k]?'checked':''} ${(admin&&k!=='approved')||(!isAdmin()&&k==='approved')?'disabled':''}></td>`).join('')}${EMPLOYMENT_FIELDS.map(([key])=>`<td class="userEmploymentCell" title="${esc(p[key]||'-')}">${esc(p[key]||'-')}</td>`).join('')}<td><div class="userActions"><button class="primary userSaveBtn" data-save-user="${p.id}" disabled>저장됨</button>${(isAdmin()||self)?`<button data-reset="${p.id}">비밀번호</button>${isAdmin()&&!self?`<button data-del="${p.id}">삭제</button>`:''}`:''}</div></td></tr>`}).join('');
  tb.querySelectorAll('tr[data-user-row]').forEach(tr=>{
   syncUserRowDependencies(tr);
   tr.querySelectorAll('[data-k]').forEach(el=>el.onchange=()=>{syncUserRowDependencies(tr,el.dataset.k);markUserRowDirty(tr,true);syncUserDesignEditor()});
