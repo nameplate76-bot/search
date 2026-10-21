@@ -2015,6 +2015,7 @@ function renderSalesMonthlyOverview(){
   renderSalesMonthlyOverviewChart(data);renderSalesMonthlyOverviewTables(data);return;
  }
  for(const node of [...labels,...help,intro].filter(Boolean))node.textContent=node.dataset.annualText;
+ if(labels[2])labels[2].textContent=`${year}년 담당자별 요약`;
 
  const allWritten=salesAllOwnerAnnualWritten(data.year);
  title.textContent=`${year}년 월별 담당자별 매출 현황`;
