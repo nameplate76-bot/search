@@ -782,6 +782,7 @@ function filteredSiteRows(rows,exceptKey=null){
  return rows.filter(row=>[...siteColumnFilters].every(([key,values])=>key===exceptKey||!allowed.has(key)||values.has(siteFilterValue(row,key))));
 }
 function siteColumnFilterToolbarHtml(count){
+ if(!window.matchMedia('(min-width: 801px)').matches)return '';
  const columns=activeSiteListColumns().filter(c=>c.field),active=columns.filter(c=>siteColumnFilters.has(c.key));
  return `<div class="siteColumnFilterToolbar"><button type="button" class="primary" data-site-filter-enable ${siteColumnFiltersEnabled?'disabled':''}>필터추가</button><button type="button" class="ghost" data-site-filter-disable ${siteColumnFiltersEnabled?'':'disabled'}>필터해제</button>${siteColumnFiltersEnabled?`<label>열 필터 <select data-site-filter-column><option value="">항목 선택</option>${columns.map(c=>`<option value="${esc(c.key)}">${esc(siteListColumn(c.key).label)}${siteColumnFilters.has(c.key)?' · 적용중':''}</option>`).join('')}</select></label><span role="status">전체 DB 필터 결과 ${count.toLocaleString()} / ${lastSites.length.toLocaleString()}건${active.length?` · ${active.length}개 열 적용중`:''}</span>`:''}</div>`;
 }
