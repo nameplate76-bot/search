@@ -1315,7 +1315,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-users #userTable thead th:nth-child(2).userSortActive{background:#dceaff}
 #page-users.userCompactTable #userTable{min-width:800px}
 #page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:none}
-#page-users.userCompactTable #userTable td{white-space:normal;overflow-wrap:anywhere}
+
 @media print{#page-users #userTable :is(th,td):nth-child(2){position:static;box-shadow:none}#page-users.userCompactTable #userTable col:nth-child(n+7):nth-child(-n+22){display:table-column!important}}
 
 /* V179 employee employment details */
@@ -1335,20 +1335,6 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 /* V185 selected-month matrix does not need a 12-month minimum width */
 #salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
-
-/* V186: dense user compact list only */
-#page-users.userCompactTable #userTable{min-width:0}
-#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{padding:5px 6px!important;font-size:13px!important;line-height:1.35!important;white-space:nowrap;min-width:0!important;height:auto}
-#page-users.userCompactTable #userTable th.userSortableHeader{padding:7px 6px!important}
-#page-users.userCompactTable #userTable .userSelectCol{width:44px!important;min-width:40px!important}
-#page-users.userCompactTable #userTable .userSortIndicator{margin-left:3px;font-size:9px}
-#page-users.userCompactTable #userTable select{font-size:13px;padding:3px 4px;min-height:26px;height:26px;max-width:100%}
-#page-users.userCompactTable #userTable .userActions{display:flex;flex-wrap:nowrap;gap:4px;min-width:0;align-items:center}
-#page-users.userCompactTable #userTable .userActions button{font-size:12px;min-height:28px;height:28px;padding:3px 7px;line-height:20px;border-radius:6px;white-space:nowrap;margin:0}
-#page-users.userCompactTable #userTable .userTablePhone{gap:3px;font-size:13px;min-height:26px;white-space:nowrap}
-#page-users.userCompactTable #userTable .userRowSelect{width:16px;height:16px;margin:0;vertical-align:middle}
-#page-users.userCompactTable #userTable td.userEmploymentCell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:800px){#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{padding:7px 6px!important}#page-users.userCompactTable #userTable .userActions button{min-height:34px;height:34px}#page-users.userCompactTable #userTable .userRowSelect{width:18px;height:18px}#page-users.userCompactTable #userTable .userTablePhone{min-height:34px}}
 
 /* Positive equipment quantities: shared by read-only and editing views. */
 .quantityGrid .siteField.positiveQuantity>span,.quantityGrid .detailItem.positiveQuantity>span{background:#dbeafe!important;color:#173d75!important;font-weight:700;border-radius:6px;padding:6px 8px;display:block}

@@ -208,7 +208,7 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
 }
 function installTableColumnResize(table,tableName){
  const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
- if(userTable)tableName=compact?'users-compact-v186':'users';
+ if(userTable)tableName='users';
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  const headers=[...table.querySelectorAll('thead tr:first-child > th')];if(!headers.length)return;
  const visibleHeaders=headers.filter(th=>getComputedStyle(th).display!=='none'),resizeMode=compact?'compact':'full';
@@ -229,9 +229,8 @@ function installTableColumnResize(table,tableName){
   const key=tableResizeHeaderKey(th,i),rectWidth=measuredWidths[i]||60;
   th.dataset.resizeKeyResolved=key;
   if(!Object.prototype.hasOwnProperty.call(col.dataset,'originalStyle'))col.dataset.originalStyle=col.getAttribute('style')||'';
-  const compactWidths={0:44,1:76,2:110,3:140,4:72,5:52,22:104,23:96,24:90,25:64,26:64,27:104,28:200};
-  const min=compact?(i===0?40:i===1?60:i===2?80:i===3?120:i===28?180:52):th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
-  const baseWidth=compact?(compactWidths[i]||72):rectWidth;
+  const min=th.classList.contains('siteSelectCol')?44:th.classList.contains('col-no')||th.classList.contains('uw-col-no')?54:60;
+  const baseWidth=rectWidth;
   const saved=Number(stored[key]),width=Math.max(min,Number.isFinite(saved)&&saved>0?saved:baseWidth);
   col.style.setProperty('width',`${width}px`,'important');resolved[key]=width;
   const handle=document.createElement('div');handle.className='columnResizer';handle.setAttribute('role','separator');handle.setAttribute('aria-orientation','vertical');handle.setAttribute('aria-label',`${String(th.textContent||'열').replace(/\s+/g,' ').trim()} 열 폭 조절`);handle.draggable=false;
