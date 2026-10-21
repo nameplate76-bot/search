@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261022-v201">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261022-v202">
 <script>
 (function(){
-  const BUILD='20261022-v201';
+  const BUILD='20261022-v202';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -371,7 +371,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V201</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V202</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -540,7 +540,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261022-v201"></script><script src="fields.js?v=20261022-v201"></script><script src="quantity-ocr.js?v=20261022-v201"></script><script id="bundled-report-files-js" data-build="V201">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261022-v202"></script><script src="fields.js?v=20261022-v202"></script><script src="quantity-ocr.js?v=20261022-v202"></script><script id="bundled-report-files-js" data-build="V202">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -658,7 +658,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261022-v201"></script><script id="bundled-inspection-schedule-js" data-build="V201">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261022-v202"></script><script id="bundled-inspection-schedule-js" data-build="V202">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -686,7 +686,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V201';
+root.STAFF_SCHEDULE_VERSION='V202';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -834,7 +834,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V201">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V202">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1865,6 +1865,24 @@ function siteFinancialRawInput(v,col){
  if(c===52)return String(n/100);
  return v;
 }
+// 문서작성 매출: 숫자·괄호·사칙연산만 해석합니다.
+function calculateDocumentRevenueFormula(value){
+ const raw=String(value??'').trim();if(!raw.startsWith('='))return raw;
+ if(raw.length>500)throw new Error('수식은 500자 이내로 입력하세요.');
+ const text=raw.slice(1).replace(/\s/g,'');let pos=0;
+ const fail=()=>{throw new Error('숫자와 +, -, *, /, 괄호로 수식을 입력하세요.')};
+ const finite=n=>{if(!Number.isFinite(n))throw new Error('계산 결과가 너무 크거나 올바르지 않습니다.');return n};
+ function primary(){if(text[pos]==='+'){pos++;return primary()}if(text[pos]==='-'){pos++;return -primary()}if(text[pos]==='('){pos++;const n=expression();if(text[pos++]!==')')fail();return n}const match=text.slice(pos).match(/^(?:(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d*)?|\.\d+)/);if(!match)fail();pos+=match[0].length;return finite(Number(match[0].replace(/,/g,'')))}
+ function product(){let n=primary();while(text[pos]==='*'||text[pos]==='/'){const op=text[pos++],right=primary();if(op==='/'&&right===0)throw new Error('0으로 나눌 수 없습니다.');n=finite(op==='*'?n*right:n/right)}return n}
+ function expression(){let n=product();while(text[pos]==='+'||text[pos]==='-'){const op=text[pos++],right=product();n=finite(op==='+'?n+right:n-right)}return n}
+ const result=expression();if(pos!==text.length)fail();const rounded=Math.sign(result)*Math.round(Math.abs(result));if(!Number.isSafeInteger(rounded))throw new Error('계산 결과가 정확하게 처리할 수 있는 금액 범위를 초과했습니다.');return String(Object.is(rounded,-0)?0:rounded);
+}
+function commitDocumentRevenueFormula(input=null){
+ const value=input?input.value:siteEditValues[49];
+ try{const result=calculateDocumentRevenueFormula(value);if(String(value??'').trim().startsWith('=')){siteEditValues[49]=result;if(input)input.value=siteMoneyInput(result,50);syncBindingRatioFromAmounts(true)}if(input)input.setCustomValidity('');return true}
+ catch(error){if(input)input.setCustomValidity(error.message);notify($('siteEditMsg'),'문서작성 매출 수식 오류: '+error.message);return false}
+}
+
 function siteMoneyNumber(v){const raw=String(v??'').trim().replace(/[,원\s]/g,'');if(raw==='')return null;const n=Number(raw);return Number.isFinite(n)?n:null}
 function calculatedInspectionType(){
  const hasCount=col=>{const raw=String(siteEditValues[col-1]??'').trim().replace(/,/g,'');return raw!==''&&Number.isFinite(Number(raw))};
@@ -2152,6 +2170,7 @@ function renderSiteEditFields(){
   if(f.col===14)return `<label class="siteField"><span>${esc(siteDisplayFieldLabel(f))}</span><select data-site-col="14" aria-label="${esc(siteDisplayFieldLabel(f))}">${maintenanceManagerSelectOptions(siteEditValues[13])}</select><small class="fieldHelp">O / X / 공란 중 선택합니다.</small></label>`;
   let help=f.col===26?'<small class="fieldHelp">입력하거나 변경하면 전자파일 접수일자에 같은 날짜가 자동 입력됩니다.</small>':'';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
   if(f.col===25||f.col===49){const help=f.col===25?'계약 횟수와 선임 계약 여부 기준 자동입력':'성능점검 + 유지점검 + 유지관리자 선임 금액 자동합계';return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="${f.col}" type="text" value="${esc(v)}" readonly aria-readonly="true"><small class="fieldHelp">${help}</small></label>`}
+  if(f.col===50)return `<label class="siteField financialField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="50" data-money-input="1" type="text" value="${esc(v)}" placeholder="예: =(1000000-500000)/2" aria-describedby="documentRevenueFormulaHelp"><small class="fieldHelp" id="documentRevenueFormulaHelp">숫자 또는 =로 시작하는 수식 입력 · Enter 또는 입력칸을 벗어나면 계산 · 소수 첫째 자리 반올림</small></label>`;
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
@@ -2179,7 +2198,7 @@ function renderSiteEditFields(){
  applySiteInputLanguageHints(fieldsRoot);
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
-  siteEditValues[col-1]=inp.value;
+  siteEditValues[col-1]=inp.value;if(col===50)inp.setCustomValidity('');
   if([10,12,14].includes(col))syncInspectionType(true);
   if([46,47,48].includes(col))syncContractAmount(true);
   if(col===26)syncElectronicReceiptFromYellowFile(inp.value);
@@ -2190,8 +2209,9 @@ function renderSiteEditFields(){
   if(siteEditMode==='create'&&col===4)scheduleSiteNameSuggestions(inp.value);
   refreshQuantityHighlights(fieldsRoot);
  });
- $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if([46,47,48].includes(col))syncContractAmount(true);if(col===50||col===51)syncBindingRatioFromAmounts(true)});
+ $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);if(col===50&&!commitDocumentRevenueFormula(inp))return;inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if([46,47,48].includes(col))syncContractAmount(true);if(col===50||col===51)syncBindingRatioFromAmounts(true)});
  $('siteEditFields').querySelectorAll('[data-performance-auto]').forEach(btn=>btn.onclick=()=>{const col=Number(btn.dataset.performanceAuto);resetPerformanceConfirmedToAuto(col);renderSiteEditFields()});
+ const revenueInput=fieldsRoot.querySelector('[data-site-col="50"]');if(revenueInput)revenueInput.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){if(!commitDocumentRevenueFormula(revenueInput)){e.preventDefault();e.stopPropagation();revenueInput.reportValidity()}}};
  const nextBtn=$('applyNextSnBtn');if(nextBtn)nextBtn.onclick=()=>applyNextSiteSn(true);
  const nameInput=$('siteNameLookupInput');if(nameInput){nameInput.onfocus=()=>{if(String(nameInput.value||'').trim())scheduleSiteNameSuggestions(nameInput.value,true)};nameInput.onblur=()=>setTimeout(hideSiteNameSuggestions,180)}
  syncRegionFromSiteAddress();syncFieldEndFromPlan();refreshQuantityHighlights(fieldsRoot);
@@ -2310,7 +2330,7 @@ function closeSiteEditor(){
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';mountSiteEditor(true);resetSiteEditor();if(mobileCreatePages())siteEditGroupIndex=-1;$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);setTimeout(()=>{if(!mobileCreatePages())$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';mountSiteEditor(false);resetSiteEditor();siteEditRow=r;siteScheduleDraft={start:r.schedule_plan_start||'',end:r.schedule_plan_end||'',inspectors:r.schedule_inspectors||'',changed:false};$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 function sitePayload(){syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
-async function saveSiteEdit(e){e.preventDefault();siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
+async function saveSiteEdit(e){e.preventDefault();if(!commitDocumentRevenueFormula($('siteEditFields')?.querySelector('[data-site-col="50"]')))return;siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:siteScheduleDraft.inspectors||String(siteEditValues[30]||'')}:{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
  const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);
