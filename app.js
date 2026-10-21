@@ -703,7 +703,7 @@ function activeSiteListColumns(){
 function activeSiteListKeys(){return activeSiteListColumns().map(c=>c.key)}
 function siteListOrderStorageKey(){return `staff_site_list_column_order:${me?.id||'guest'}`}
 let siteListColumnOrder=[];
-let siteListSort={key:null,dir:'asc'};
+let siteListSort={key:'field_1',dir:'asc'};
 let suppressSiteSortClick=false;
 const siteListCollator=new Intl.Collator('ko-KR',{numeric:true,sensitivity:'base'});
 function ensureSiteListColumnOrder(){
@@ -722,7 +722,7 @@ function ensureSiteListColumnOrder(){
  if(actionIndex>=0)next.splice(actionIndex,0,...missing);else next.push(...missing);
  if(!next.includes('actions'))next.push('actions');
  siteListColumnOrder=next;
- if(siteListSort.key&&!valid.includes(siteListSort.key))siteListSort={key:null,dir:'asc'};
+ if(siteListSort.key&&siteListSort.key!=='field_1'&&!valid.includes(siteListSort.key))siteListSort={key:'field_1',dir:'asc'};
  return siteListColumnOrder;
 }
 function siteListColumn(key){
@@ -738,6 +738,7 @@ function siteFieldDisplayValue(r,field){
  return formatDisplayCell(raw,field.col);
 }
 function siteListSortValue(r,key){
+ if(key==='field_1')return r?.safe_values?.[0]??r?.sn??'';
  const c=siteListColumn(key);
  return c.prop?(canViewSchedule()?r[c.prop]||'':''):c.field?siteFieldDisplayValue(r,c.field):'';
 }
