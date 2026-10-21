@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261021-v188">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261021-v189">
 <script>
 (function(){
-  const BUILD='20261021-v188';
+  const BUILD='20261021-v189';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -326,6 +326,10 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .quantityGrid .detailItem.positiveQuantity>b{display:block;padding:8px}
 .quantityGrid .siteField.positiveQuantity input[data-site-col]:focus{outline:2px solid #2563eb;outline-offset:1px}
 </style>
+<style id="board-design-v189">
+/* V189 boards match navy portal / white working panels */
+.boardPage .boardPanel,.boardEditor>.boardPanel{background:#fff;color:#20334d;border:1px solid #cbd8e9;border-radius:12px;padding:20px;margin-bottom:16px}.boardSearch{display:flex;flex-wrap:wrap;gap:12px;align-items:end}.boardSearch label,.boardEditGrid label{display:grid;gap:7px;font-weight:700;min-width:0}.boardSearch input,.boardSearch select,.boardEditGrid input,.boardEditGrid select,.boardEditGrid textarea{width:100%;min-width:0;background:#fff;color:#172b49;border:1px solid #b9c9df;border-radius:8px;padding:10px;font:inherit}.boardQueryLabel{flex:1;min-width:180px!important}.boardStatus,.boardMeta{color:#526780;line-height:1.7}.boardTable{width:100%;min-width:700px}.boardTable th{text-align:center;white-space:nowrap}.boardTable td{vertical-align:middle}.boardTable .boardTitle{background:none;border:0;color:#175bb2;font-weight:800;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:4px;font-size:15px}.boardTable td:first-child{min-width:110px}.boardBody{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;padding:24px 0;min-height:100px}.boardActions,.boardPager{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}.boardPager{justify-content:center}.boardEditGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.boardWide{grid-column:1/-1}.boardEditGrid input[readonly]{background:#f1f5fa;color:#526780}.boardEditGrid small{font-weight:400;line-height:1.6}.boardPermissionGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}.boardPermissionGrid fieldset{border:1px solid #bdcde2;border-radius:8px;padding:14px}.boardPermissionGrid label{display:inline-flex;align-items:center;gap:6px;margin:8px}.boardPermissionGrid input{width:18px;height:18px}.boardEmpty{padding:24px;color:#526780;text-align:center}.boardPermissionEditor p{line-height:1.6;color:#405775}.boardPage button{min-height:40px}.boardPanel h3{font-size:21px;overflow-wrap:anywhere}.boardPage .danger{background:#b42318;color:#fff;border:1px solid #b42318}@media(max-width:800px){.boardPage .boardPanel{padding:14px}.boardEditGrid,.boardPermissionGrid{grid-template-columns:1fr}.boardSearch>*{flex:1 1 140px}.boardSearch button{flex-basis:calc(50% - 12px)}.boardActions button{flex:1 1 auto}.boardMeta{font-size:13px}.boardPage .pageTitle{flex-wrap:wrap;gap:12px}}
+</style>
 </head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
@@ -347,7 +351,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V188</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V189</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -516,7 +520,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261021-v188"></script><script src="fields.js?v=20261021-v188"></script><script src="quantity-ocr.js?v=20261021-v188"></script><script id="bundled-report-files-js" data-build="V188">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261021-v189"></script><script src="fields.js?v=20261021-v189"></script><script src="quantity-ocr.js?v=20261021-v189"></script><script id="bundled-report-files-js" data-build="V189">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -634,7 +638,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261021-v188"></script><script id="bundled-inspection-schedule-js" data-build="V188">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261021-v189"></script><script id="bundled-inspection-schedule-js" data-build="V189">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -662,7 +666,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V188';
+root.STAFF_SCHEDULE_VERSION='V189';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -810,7 +814,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V188">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V189">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -848,7 +852,7 @@ function invalidateDataCaches(scope='all'){
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function activePageName(){return document.querySelector('.page.active')?.id?.replace(/^page-/,'')||savedPage()}
-async function refreshActiveData(force=false){const name=activePageName();if(name==='schedule')return loadSchedule();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force)}
+async function refreshActiveData(force=false){const name=activePageName();if(name==='schedule')return loadSchedule();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force);if(BOARD_KINDS[name])return loadBoard(name)}
 // Re-read committed rows, even when their list is behind a detail page.
 async function refreshAfterSiteSave(id){
  const page=activePageName(),group=$('detailTabs').querySelector('[data-g].active')?.dataset.g||'0';
@@ -896,6 +900,68 @@ const canManageUsers=()=>isAdmin()||can('can_manage_staff_users');
 const canViewMoney=()=>isAdmin()||can('can_view_money');
 const canCreateMoney=()=>isAdmin()||can('can_create_money');
 const canEditMoney=()=>isAdmin()||can('can_edit_money');
+// V189 공지사항·자료실: 권한은 DB에서 재검사하며 UI는 없는 작업을 숨깁니다.
+const BOARD_KINDS={notice:'공지사항',resource:'자료실'},BOARD_ACTIONS={view:'조회',create:'등록',edit:'수정',delete:'삭제'};
+let boardState={notice:{offset:0,rows:[],seq:0},resource:{offset:0,rows:[],seq:0}},boardPermissionSeq=0;
+function boardCan(kind,action){return !!me?.approved&&!!me?.can_use_staff_portal&&(isAdmin()||!!me?._boardPermissions?.[kind+'_'+action])}
+function boardDay(value){return value?new Date(value).toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'}):''}
+function boardError(e){return '처리하지 못했습니다: '+(e?.message||String(e))+'. 처음 적용하는 경우 V189 DB 설정을 확인하세요.'}
+async function fetchBoardPermissions(profile){try{const {data,error}=await sb.rpc('staff_board_permissions_get',{p_user_id:profile.id});if(error)throw error;profile._boardPermissions=data&&typeof data==='object'?data:{};profile._boardReady=true}catch(e){profile._boardPermissions={};profile._boardReady=false}return profile}
+function updateBoardNav(){for(const kind of Object.keys(BOARD_KINDS))$(kind+'Nav')?.classList.toggle('hidden',!boardCan(kind,'view'))}
+function clearBoards(){boardPermissionSeq++;for(const kind of Object.keys(BOARD_KINDS)){const s=boardState[kind];s.seq++;s.rows=[];s.edit=null;const root=$('page-'+kind);root?.querySelector('.boardList')?.replaceChildren();root?.querySelector('.boardEditor')?.replaceChildren();if(root)root.classList.add('hidden')}}
+function initBoards(){for(const [kind,name] of Object.entries(BOARD_KINDS)){
+ const nav=document.createElement('button');nav.id=kind+'Nav';nav.dataset.page=kind;nav.className='hidden';nav.textContent=name;$('mainNav').append(nav);
+ const page=document.createElement('section');page.id='page-'+kind;page.className='page boardPage';page.innerHTML=`<div class="pageTitle"><h2>${name}</h2><div class="actions"><button type="button" class="primary boardCreate">+ ${name} 등록</button><button type="button" class="ghost boardRefresh">새로고침</button></div></div><div class="boardPanel"><form class="boardSearch"><label>검색 항목<select name="field"><option value="post_date">날짜(게시일)</option><option value="title" selected>제목</option><option value="created_at">등록날짜</option><option value="author_name">등록자</option><option value="body">내용</option></select></label><label class="boardQueryLabel">검색어<input name="query" maxlength="200" placeholder="검색어 또는 YYYY-MM-DD"></label>${kind==='resource'?'<label>분류<select name="category"><option value="">전체</option><option>점검표 양식</option><option>공문 양식</option><option>기타</option></select></label>':''}<button type="submit" class="primary">검색</button><button type="button" class="ghost boardReset">검색 해제</button></form><p class="boardStatus" role="status" aria-live="polite"></p><div class="boardList"></div><div class="boardPager"><button type="button" class="ghost boardPrev">이전</button><span></span><button type="button" class="ghost boardNext">다음</button></div></div><div class="boardEditor hidden"></div>`;
+ $('page-search').parentNode.append(page);
+ page.querySelector('.boardCreate').onclick=()=>openBoardEditor(kind);
+ page.querySelector('.boardRefresh').onclick=()=>{if(!page.querySelector('.boardEditor').classList.contains('hidden')&&!confirm('작성 중인 내용을 닫고 목록을 새로고침할까요?'))return;loadBoard(kind)};
+ page.querySelector('form').onsubmit=e=>{e.preventDefault();boardState[kind].offset=0;loadBoard(kind)};
+ page.querySelector('.boardReset').onclick=()=>{page.querySelector('form').reset();boardState[kind].offset=0;loadBoard(kind)};
+ for(const [cls,delta]of [['boardPrev',-50],['boardNext',50]])page.querySelector('.'+cls).onclick=()=>{boardState[kind].offset=Math.max(0,boardState[kind].offset+delta);loadBoard(kind)};
+}}
+async function loadBoard(kind){
+ const s=boardState[kind],seq=++s.seq,account=me?.id,page=$('page-'+kind),msg=page.querySelector('.boardStatus');
+ page.classList.remove('hidden');page.querySelector('.boardPanel').classList.remove('hidden');page.querySelector('.boardEditor').classList.add('hidden');page.querySelector('.boardEditor').replaceChildren();s.edit=null;
+ page.querySelector('.boardCreate').classList.toggle('hidden',!boardCan(kind,'create'));page.querySelector('.boardList').replaceChildren();msg.textContent='불러오는 중…';
+ try{
+ await fetchBoardPermissions(me);if(seq!==s.seq||account!==me?.id)return;updateBoardNav();if(!boardCan(kind,'view'))throw new Error('조회 권한이 없습니다.');if(!me._boardReady)throw new Error('공지사항·자료실 DB 설정이 필요합니다.');
+ page.querySelector('.boardCreate').classList.toggle('hidden',!boardCan(kind,'create'));
+ const form=page.querySelector('.boardSearch');const {data,error}=await sb.rpc('staff_board_list',{p_kind:kind,p_field:form.elements.field.value,p_query:form.elements.query.value.trim(),p_category:form.elements.category?.value||'',p_offset:s.offset});if(error)throw error;
+ if(seq!==s.seq||account!==me?.id)return;s.rows=data?.rows||[];s.total=Number(data?.total||0);renderBoardList(kind);msg.textContent=`총 ${s.total.toLocaleString('ko-KR')}건 · 최신 등록순`;
+ }catch(e){if(seq!==s.seq||account!==me?.id)return;s.rows=[];s.total=0;page.querySelector('.boardCreate').classList.add('hidden');renderBoardList(kind);msg.textContent=boardError(e)}
+}
+function renderBoardList(kind){const s=boardState[kind],page=$('page-'+kind);page.querySelector('.boardList').innerHTML=s.rows.length?`<div class="tableWrap"><table class="boardTable"><thead><tr>${kind==='resource'?'<th>분류</th>':''}<th>제목</th><th>게시일</th><th>등록날짜</th><th>등록자</th>${kind==='resource'?'<th>첨부파일</th>':''}</tr></thead><tbody>${s.rows.map(r=>`<tr>${kind==='resource'?`<td>${esc(r.category)}</td>`:''}<td><button type="button" class="boardTitle" data-board-open="${esc(r.id)}">${esc(r.title)}</button></td><td>${esc(r.post_date)}</td><td>${boardDay(r.created_at)}</td><td>${esc(r.author_name)}</td>${kind==='resource'?`<td><button type="button" class="ghost" data-board-download="${esc(r.id)}">↓ ${esc(r.file_name)}</button></td>`:''}</tr>`).join('')}</tbody></table></div>`:'<p class="boardEmpty">등록된 내용 또는 검색 결과가 없습니다.</p>';
+ page.querySelectorAll('[data-board-open]').forEach(b=>b.onclick=()=>showBoardDetail(kind,s.rows.find(r=>r.id===b.dataset.boardOpen)));
+ page.querySelectorAll('[data-board-download]').forEach(b=>b.onclick=()=>downloadBoardFile(kind,s.rows.find(r=>r.id===b.dataset.boardDownload),b));
+ page.querySelector('.boardPrev').disabled=s.offset===0;page.querySelector('.boardNext').disabled=s.offset+50>=s.total;page.querySelector('.boardPager span').textContent=s.total?`${Math.floor(s.offset/50)+1} / ${Math.ceil(s.total/50)} 페이지`:'0건';
+}
+function boardEditorHost(kind){const page=$('page-'+kind);page.querySelector('.boardPanel').classList.add('hidden');page.querySelector('.boardCreate').classList.add('hidden');const root=page.querySelector('.boardEditor');root.classList.remove('hidden');return root}
+function showBoardDetail(kind,row){if(!row||!boardCan(kind,'view'))return;const root=boardEditorHost(kind);root.innerHTML=`<article class="boardPanel"><h3>${esc(row.title)}</h3><div class="boardMeta">${kind==='resource'?`분류: ${esc(row.category)} · `:''}게시일: ${esc(row.post_date)} · 등록날짜: ${boardDay(row.created_at)} · 등록자: ${esc(row.author_name)}<br>최근 수정: ${esc(new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}))}</div><div class="boardBody">${esc(row.body||'내용 없음')}</div><div class="boardActions">${kind==='resource'?`<button type="button" class="primary boardDownload">↓ 파일 내려받기 · ${esc(row.file_name)}</button>`:''}${boardCan(kind,'edit')?'<button type="button" class="primary boardEdit">수정</button>':''}${boardCan(kind,'delete')?'<button type="button" class="danger boardDelete">삭제</button>':''}<button type="button" class="ghost boardBack">목록으로</button></div><p role="status" class="boardDetailMsg"></p></article>`;
+ root.querySelector('.boardBack').onclick=()=>loadBoard(kind);if(root.querySelector('.boardEdit'))root.querySelector('.boardEdit').onclick=()=>openBoardEditor(kind,row);if(root.querySelector('.boardDelete'))root.querySelector('.boardDelete').onclick=()=>deleteBoardPost(kind,row,root);if(root.querySelector('.boardDownload'))root.querySelector('.boardDownload').onclick=e=>downloadBoardFile(kind,row,e.currentTarget);
+}
+function openBoardEditor(kind,row=null){if(!boardCan(kind,row?'edit':'create'))return;boardState[kind].edit=row;const root=boardEditorHost(kind);root.innerHTML=`<form class="boardPanel boardEditForm"><h3>${BOARD_KINDS[kind]} ${row?'수정':'등록'}</h3><div class="boardEditGrid"><label>게시일 *<input name="post_date" type="date" required value="${esc(row?.post_date||boardDay(new Date()))}"></label><label>등록날짜<input readonly value="${row?boardDay(row.created_at):'저장 시 자동 기록'}"></label><label>등록자<input readonly value="${esc(row?.author_name||me?.name||me?.user_id||'')}"></label>${kind==='resource'?`<label>분류 *<select name="category">${['점검표 양식','공문 양식','기타'].map(c=>`<option${c===row?.category?' selected':''}>${c}</option>`).join('')}</select></label>`:''}<label class="boardWide">제목 *<input name="title" required maxlength="200" value="${esc(row?.title||'')}"></label><label class="boardWide">내용${kind==='notice'?' *':''}<textarea name="body" rows="10" maxlength="50000" ${kind==='notice'?'required':''}>${esc(row?.body||'')}</textarea></label>${kind==='resource'?`<label class="boardWide">첨부파일 ${row?'교체(선택)':'*'}<input type="file" name="file" ${row?'':'required'}><small>${row?`현재 파일: ${esc(row.file_name)} · 새 파일을 선택하면 교체합니다. `:''}파일당 최대 20MB, 자료 1건당 파일 1개</small></label>`:''}</div><div class="boardActions"><button type="submit" class="primary">저장</button><button type="button" class="ghost boardCancel">취소</button></div><p class="boardEditMsg" role="status" aria-live="polite"></p></form>`;
+ const form=root.querySelector('form');form.onsubmit=e=>{e.preventDefault();saveBoardPost(kind,row,form)};root.querySelector('.boardCancel').onclick=()=>row?showBoardDetail(kind,row):loadBoard(kind);
+}
+async function cleanupBoardFile(path){if(!path)return '';try{const {error}=await sb.storage.from('staff-board-files').remove([path]);if(error)throw error;return ''}catch(e){return ' 이전 또는 임시 첨부파일 정리에 실패했습니다. 관리자에게 파일 저장소 정리를 요청하세요.'}}
+async function saveBoardPost(kind,row,form){if(form.dataset.saving==='true'||!boardCan(kind,row?'edit':'create'))return;const msg=form.querySelector('.boardEditMsg'),buttons=[...form.querySelectorAll('button')],account=me?.id;let uploaded=null,committed=false;
+ try{if(!form.reportValidity())return;const title=form.elements.title.value.trim(),body=form.elements.body.value.trim();if(!title||kind==='notice'&&!body)throw new Error('필수 내용을 입력하세요.');const file=form.elements.file?.files?.[0];if(file&&(file.size<1||file.size>20*1024*1024))throw new Error('첨부파일은 0보다 크고 20MB 이하여야 합니다.');form.dataset.saving='true';buttons.forEach(b=>b.disabled=true);msg.textContent='저장 중…';
+ const payload={kind,title,body,post_date:form.elements.post_date.value,category:form.elements.category?.value||''};
+ if(file){uploaded=`resource/${account}/${uuid()}`;const {error}=await sb.storage.from('staff-board-files').upload(uploaded,file,{upsert:false,contentType:'application/octet-stream'});if(error)throw error;Object.assign(payload,{file_path:uploaded,file_name:file.name,file_size:file.size})}
+ if(account!==me?.id)throw new Error('로그인 사용자가 변경되었습니다.');
+ let q=sb.from('staff_board_posts');q=row?q.update(payload).eq('id',row.id).eq('updated_at',row.updated_at):q.insert(payload);const {data,error}=await q.select('id');if(error)throw error;if(!data?.length)throw new Error('권한이 변경되었거나 다른 사용자가 수정했습니다. 목록을 새로고침해 주세요.');committed=true;
+ const warning=uploaded&&row?.file_path?await cleanupBoardFile(row.file_path):'';if(account!==me?.id)return;boardState[kind].offset=0;await loadBoard(kind);if(warning)$('page-'+kind).querySelector('.boardStatus').textContent='저장되었습니다.'+warning;
+ }catch(e){const warning=uploaded&&!committed?await cleanupBoardFile(uploaded):'';if(account===me?.id)msg.textContent=boardError(e)+warning}finally{delete form.dataset.saving;buttons.forEach(b=>b.disabled=false)}
+}
+async function deleteBoardPost(kind,row,root){if(root.dataset.deleting==='true'||!boardCan(kind,'delete')||!confirm(`“${row.title}”을 삭제할까요?`))return;const msg=root.querySelector('.boardDetailMsg'),buttons=[...root.querySelectorAll('button')],account=me?.id;try{root.dataset.deleting='true';buttons.forEach(b=>b.disabled=true);msg.textContent='삭제 중…';const {data,error}=await sb.from('staff_board_posts').delete().eq('id',row.id).eq('updated_at',row.updated_at).select('id');if(error)throw error;if(!data?.length)throw new Error('권한이 변경되었거나 다른 사용자가 수정했습니다. 목록을 새로고침해 주세요.');const warning=await cleanupBoardFile(row.file_path);if(account!==me?.id)return;boardState[kind].offset=0;await loadBoard(kind);if(warning)$('page-'+kind).querySelector('.boardStatus').textContent='게시물은 삭제되었습니다.'+warning}catch(e){if(account===me?.id)msg.textContent=boardError(e)}finally{delete root.dataset.deleting;buttons.forEach(b=>b.disabled=false)}}
+async function downloadBoardFile(kind,row,button){if(kind!=='resource'||!row||!boardCan(kind,'view'))return;const account=me?.id;try{button.disabled=true;const {data,error}=await sb.storage.from('staff-board-files').download(row.file_path);if(error)throw error;if(account!==me?.id)return;const url=URL.createObjectURL(data),a=document.createElement('a');a.href=url;a.download=row.file_name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000)}catch(e){alert(boardError(e))}finally{button.disabled=false}}
+async function attachBoardPermissionEditor(profile){if(!canManageUsers())return;const seq=++boardPermissionSeq,root=document.createElement('section');root.className='userInfoPermissions boardPermissionEditor';root.innerHTML='<h4>공지사항·자료실 권한</h4><p role="status">권한 불러오는 중…</p>';$('userInfoBody').append(root);
+ try{const {data,error}=await sb.rpc('staff_board_permissions_get',{p_user_id:profile.id});if(error)throw error;if(seq!==boardPermissionSeq||!root.isConnected)return;const admin=profile.role==='admin',permissions=data||{};
+ root.innerHTML=`<h4>공지사항·자료실 권한</h4><p>등록·수정·삭제 권한에는 조회 권한이 필요합니다.${admin?' 관리자는 모든 권한을 가집니다.':''}</p><div class="boardPermissionGrid">${Object.entries(BOARD_KINDS).map(([kind,label])=>`<fieldset><legend>${label}</legend>${Object.entries(BOARD_ACTIONS).map(([action,text])=>`<label><input type="checkbox" data-board-permission="${kind}_${action}"${admin||permissions[kind+'_'+action]?' checked':''}${admin?' disabled':''}>${text}</label>`).join('')}</fieldset>`).join('')}</div>${admin?'':'<button type="button" class="primary boardPermissionSave">공지사항·자료실 권한 저장</button>'}<p class="boardPermissionMsg" role="status"></p>`;
+ root.querySelectorAll('[data-board-permission]').forEach(input=>input.onchange=()=>{const [kind,action]=input.dataset.boardPermission.split('_');if(action==='view'&&!input.checked)root.querySelectorAll(`[data-board-permission^="${kind}_"]`).forEach(x=>x.checked=false);else if(input.checked)root.querySelector(`[data-board-permission="${kind}_view"]`).checked=true});
+ const save=root.querySelector('.boardPermissionSave');if(save)save.onclick=async()=>{const msg=root.querySelector('.boardPermissionMsg');try{save.disabled=true;const values=Object.fromEntries([...root.querySelectorAll('[data-board-permission]')].map(x=>[x.dataset.boardPermission,x.checked]));const {data,error}=await sb.rpc('staff_board_permissions_save',{p_user_id:profile.id,p_permissions:values});if(error)throw error;if(profile.id===me?.id){me._boardPermissions=data;updateBoardNav()}msg.textContent='공지사항·자료실 권한을 저장했습니다. 대상 사용자는 메뉴를 다시 열거나 새로고침하면 적용됩니다.'}catch(e){msg.textContent=boardError(e)}finally{save.disabled=false}};
+ }catch(e){if(seq===boardPermissionSeq&&root.isConnected)root.querySelector('p').textContent=boardError(e)}
+}
+
 function uuid(){
   try{
     if(globalThis.crypto?.randomUUID)return globalThis.crypto.randomUUID();
@@ -1222,11 +1288,12 @@ function launchRoute(app){
  openWithFallback(appUrl,fallback);
 }
 
-async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').select('*').eq('id',user.id).maybeSingle();if(error)throw error;return data}
+async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').select('*').eq('id',user.id).maybeSingle();if(error)throw error;return data?await fetchBoardPermissions(data):data}
 async function boot(){const{data:{session}}=await sb.auth.getSession();if(!session)return showLogin();const p=await profileFor(session.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();showLogin();notify($('loginMsg'),'사용이 승인되지 않은 계정입니다. 관리자에게 문의하세요.');return}me=p;applyDisplayFieldPreference(p);applyUnwrittenDisplayFieldPreference(p);showApp()}
-function showLogin(){if(window.STAFF_SCHEDULE_UI)window.STAFF_SCHEDULE_UI.clear();siteColumnFiltersEnabled=false;siteColumnFilters.clear();$('siteColumnFilterDlg')?.close();salesDashboardInitialized=false;salesDashboardOwners.clear();salesDashboardPeriod='annual';$('loginView').classList.remove('hidden');$('appView').classList.add('hidden')}
+function showLogin(){clearBoards();if(window.STAFF_SCHEDULE_UI)window.STAFF_SCHEDULE_UI.clear();siteColumnFiltersEnabled=false;siteColumnFilters.clear();$('siteColumnFilterDlg')?.close();salesDashboardInitialized=false;salesDashboardOwners.clear();salesDashboardPeriod='annual';$('loginView').classList.remove('hidden');$('appView').classList.add('hidden')}
 function activePageStorageKey(){return `staff_active_page:${me?.id||'guest'}`}
 function pageAllowed(name){
+ if(BOARD_KINDS[name])return boardCan(name,'view');
  if(name==='site-create')return canCreateSite();
  if(name==='search')return can('can_view_staff_sites');
  if(name==='schedule')return canViewSchedule();
@@ -1242,6 +1309,7 @@ function savedPage(){
 }
 function rememberPage(name){try{if(me&&pageAllowed(name))localStorage.setItem(activePageStorageKey(),name)}catch(e){}}
 function showApp(){
+ updateBoardNav();
  if(!canViewSchedule())window.STAFF_SCHEDULE_UI?.clear();
  $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');
  $('userBadge').textContent=`${me.name||me.user_id||''} · ${isAdmin()?'관리자':'일반 사용자'}`;
@@ -1292,6 +1360,7 @@ async function login(){
   }
 }
 function showPage(name,save=true){
+ if(BOARD_KINDS[name]&&!boardCan(name,'view'))return alert('조회 권한이 없습니다.');
  if(name==='site-create'&&!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');
  if(name==='search'&&!can('can_view_staff_sites'))return alert('현장 검색 권한이 없습니다.');
  if(name==='schedule'&&!canViewSchedule())return alert('점검일정 조회 권한이 없습니다.');
@@ -1305,6 +1374,7 @@ function showPage(name,save=true){
  if(name==='sales'){applySalesPanelCollapsed(salesDesignView==='list'?false:readSalesPanelCollapsed());loadSales(false);}
  if(name!=='users'&&$('userInfoDlg').classList.contains('userInfoInline'))closeUserDesignPanel();
  if(name==='users')loadUsers(false);
+ if(BOARD_KINDS[name])loadBoard(name);
  requestAnimationFrame(()=>{if(name==='search')scheduleTableColumnResize(document.querySelector('#siteResults .desktopSiteTable'),'search-v73');if(name==='unwritten'){const t=document.querySelector('#unwrittenList .unwrittenTable');scheduleTableColumnResize(t,'unwritten');scheduleUnwrittenFreezeLayout(t)};if(name==='sales'){scheduleTableColumnResize($('salesTable'),'sales');scheduleSalesFreezeLayout($('salesTable'))};if(name==='users')scheduleTableColumnResize($('userTable'),'users')});
 }
 async function refreshDbStatus(){if(!me)return;try{const{count,error}=await sb.from('staff_site_search').select('*',{count:'exact',head:true});if(error)throw error;const el=$('dbStatus');if((count||0)>0){el.className='statusBanner ok';el.innerHTML=`<strong>현장 DB ${Number(count).toLocaleString()}건</strong>이 서버에 저장되어 있습니다. 승인된 직원은 PC와 휴대폰에서 동일한 자료를 조회합니다.`}else{el.className='statusBanner warn';el.innerHTML=`<strong>현장 DB가 비어 있습니다.</strong> 관리자 계정에서 [전체 DB 엑셀 갱신]으로 현장 Excel을 등록하거나 [현장 직접등록]을 이용하세요.`}}catch(e){$('dbStatus').className='statusBanner warn';$('dbStatus').textContent='DB 상태 확인 실패: '+e.message}}
@@ -3246,7 +3316,7 @@ function openUserInfo(id){
  const inline=$('page-users').classList.contains('active')&&window.matchMedia('(min-width: 1101px)').matches;
  if(!inline&&$('userInfoDlg').open)$('userInfoDlg').close();
  if(inline)$('page-users').querySelector('.usersWorkspace').append($('userInfoDlg'));else document.body.append($('userInfoDlg'));
- userDesignPanelId=String(p.id);attachUserDesignEditor(p);
+ userDesignPanelId=String(p.id);attachUserDesignEditor(p);attachBoardPermissionEditor(p);
  if(inline){$('userInfoDlg').classList.add('userInfoInline');$('page-users').classList.add('hasUserPanel');if(!$('userInfoDlg').open)$('userInfoDlg').show()}else{$('userInfoDlg').classList.remove('userInfoInline');if(!$('userInfoDlg').open)$('userInfoDlg').showModal()}
 }
 async function saveUserPhone(id){
@@ -3406,6 +3476,7 @@ function setupPortalDesign(){
  $('userInfoClose').onclick=closeUserDesignPanel;$('userInfoDlg').addEventListener('close',()=>{$('page-users').classList.remove('hasUserPanel');$('userInfoDlg').classList.remove('userInfoInline');userDesignPanelId=null});
 }
 
+initBoards();
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));$('searchBtn').onclick=()=>searchSites(true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter')searchSites(true)};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
 async function refreshSearchScheduleDates(){
