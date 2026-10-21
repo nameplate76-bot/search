@@ -1347,3 +1347,6 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 /* V191: eight independent per-employee permissions in the existing table/editor. */
 #page-users.userCompactTable #userTable .userBoardPermissionCol{display:none}#userTable .userBoardPermissionCol{text-align:center;white-space:nowrap;min-width:110px}.userBoardPermissionFlag{background:#eef5ff;border:1px solid #bfd3ef;border-radius:7px;padding:9px!important}#userBoardPermissionsStatus:empty{display:none}#userBoardPermissionsStatus{color:#ffe0c2!important}#userTable .userActions{min-width:220px}
+
+/* V193 actionable permission-schema recovery */
+.permissionRecovery{background:#fff7e9;color:#61400d;border:1px solid #efca88;border-radius:10px;padding:16px;margin:0 0 16px}.permissionRecovery p{margin:0 0 12px;line-height:1.6}.permissionRecovery .actions{display:flex;gap:10px;flex-wrap:wrap}.permissionRecovery details{margin-top:12px}.permissionRecovery summary{cursor:pointer;font-weight:700}.permissionRecovery pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:#713b12}#userPermissionRetry:disabled{opacity:.65}
