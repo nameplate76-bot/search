@@ -1405,13 +1405,14 @@ async function applySiteTemplate(sourceId,options={}){
   siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));
   clearSiteTemplateWorkValues();
   for(const col of [10,11,12,13,14,15])siteEditValues[col-1]=contractExcluded?'':normalizeCell(original[col-1]??'',col);
+  if(!contractExcluded)for(const col of [35,36,37,38,39])siteEditValues[col-1]=normalizeCell(original[col-1]??'',col);
   if(canCreateMoney())for(const col of [46,47,48,49])siteEditValues[col-1]=moneyExcluded?'':normalizeCell(original[col-1]??'',col);
   siteScheduleDraft={start:'',end:'',inspectors:'',changed:false};
   sitePerformanceManualCols.clear();seedPerformanceConfirmedBlanks();
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
-  $('siteFormPhone').value=formatPhoneList(data?.client_phone||'');$('siteFormEmail').value=data?.client_email||'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
+  $('siteFormPhone').value=formatPhoneList(response.data.client_phone??data?.client_phone??'');$('siteFormEmail').value=response.data.client_email??data?.client_email??'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
   if(mobileCreatePages()&&options.fromSearch)siteEditGroupIndex=0;hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
-  const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 계약·진행 완료 조건에 해당하여 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
+  const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 계약·진행 완료 조건에 해당하여 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목과 제출 수량 5개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
    $('siteEditHint').textContent=`유사 현장 “${copiedName}” 정보를 불러왔습니다. 신규 S/N은 ${siteEditValues[0]||'-'}으로 유지됩니다. 필요한 내용을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
