@@ -1349,3 +1349,9 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-users.userCompactTable #userTable .userRowSelect{width:16px;height:16px;margin:0;vertical-align:middle}
 #page-users.userCompactTable #userTable td.userEmploymentCell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:800px){#page-users.userCompactTable #userTable th,#page-users.userCompactTable #userTable td{padding:7px 6px!important}#page-users.userCompactTable #userTable .userActions button{min-height:34px;height:34px}#page-users.userCompactTable #userTable .userRowSelect{width:18px;height:18px}#page-users.userCompactTable #userTable .userTablePhone{min-height:34px}}
+
+/* Positive equipment quantities: shared by read-only and editing views. */
+.quantityGrid .siteField.positiveQuantity>span,.quantityGrid .detailItem.positiveQuantity>span{background:#dbeafe!important;color:#173d75!important;font-weight:700;border-radius:6px;padding:6px 8px;display:block}
+.quantityGrid .siteField.positiveQuantity input[data-site-col],.quantityGrid .detailItem.positiveQuantity>b{background:#eff6ff!important;color:#173d75!important;border:1px solid #7eace8!important;font-weight:700;border-radius:6px}
+.quantityGrid .detailItem.positiveQuantity>b{display:block;padding:8px}
+.quantityGrid .siteField.positiveQuantity input[data-site-col]:focus{outline:2px solid #2563eb;outline-offset:1px}
