@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261022-v209">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261022-v210">
 <script>
 (function(){
-  const BUILD='20261022-v209';
+  const BUILD='20261022-v210';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -350,6 +350,18 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <style id="filter-performance-v199">
 .siteFilterPager{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;margin:12px 0;background:#fff;border:1px solid #bfd3ef;border-radius:10px;color:#173d75}.siteFilterPager label{display:flex;align-items:center;gap:6px}.siteFilterPager small{flex-basis:100%;color:#475569}
 </style>
+<style id="schedule-table-v210">
+/* V210: 집계표 행 구분선 및 월간 3열 화면 맞춤 */
+#page-schedule .scheduleDashboardTable th,#page-schedule .scheduleDashboardTable td{border-bottom:1px solid #9bb7db!important;border-right:1px solid #d2deed!important;box-sizing:border-box}
+#page-schedule .scheduleDashboardTable th:last-child,#page-schedule .scheduleDashboardTable td:last-child{border-right:0!important}
+#page-schedule .scheduleDashboardTableWrap{min-width:0;max-width:100%}
+#page-schedule .scheduleDashboardMonthlyTable{width:100%!important;min-width:0!important;max-width:100%;table-layout:fixed}
+#page-schedule .scheduleDashboardMonthlyTable .schedulePersonCol{width:40%}
+#page-schedule .scheduleDashboardMonthlyTable .scheduleMonthCountCol{width:24%}
+#page-schedule .scheduleDashboardMonthlyTable .scheduleYearCountCol{width:36%}
+#page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{width:auto!important;min-width:0!important;max-width:none!important;white-space:normal!important;overflow-wrap:anywhere;padding:9px 6px}
+@media(max-width:800px){#page-schedule .scheduleDashboardSplit>.scheduleDashboardPanel{padding:10px;min-width:0}#page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{font-size:12px;padding:9px 4px;line-height:1.5}}
+</style>
 </head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
@@ -371,7 +383,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V209</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V210</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -540,7 +552,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261022-v209"></script><script src="fields.js?v=20261022-v209"></script><script src="quantity-ocr.js?v=20261022-v209"></script><script id="bundled-report-files-js" data-build="V209">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261022-v210"></script><script src="fields.js?v=20261022-v210"></script><script src="quantity-ocr.js?v=20261022-v210"></script><script id="bundled-report-files-js" data-build="V210">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -658,7 +670,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261022-v209"></script><script id="bundled-inspection-schedule-js" data-build="V209">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261022-v210"></script><script id="bundled-inspection-schedule-js" data-build="V210">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -686,7 +698,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V209';
+root.STAFF_SCHEDULE_VERSION='V210';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -775,7 +787,7 @@ root.createStaffSchedule=function(deps){
  const months=person?person.months:data.months,total=person?person.annual:data.annual;
  const monthly=dashboardPeriod==='monthly',values=monthly?people.map(p=>p.months[month-1]):months,labels=monthly?people.map(p=>p.name):months.map((_,i)=>`${i+1}월`),max=Math.max(1,...values);
  const bars=values.map((v,i)=>`<div class="scheduleChartRow"><span>${esc(labels[i])}</span><div class="scheduleChartTrack"><div class="scheduleChartBar" style="width:${v/max*100}%"></div></div><strong class="scheduleStatistic">${v.toLocaleString()}건</strong></div>`).join('');
- $('scheduleCalendar').innerHTML=`<section class="scheduleDashboard"><div class="scheduleDashboardFilters"><div role="group" aria-label="집계 기간"><button data-dash-period="annual" class="${!monthly?'primary':''}">연간 집계</button><button data-dash-period="monthly" class="${monthly?'primary':''}">월간 집계</button></div></div><div class="scheduleDashboardCards"><article><span>${year}년 현장 건수</span><strong class="scheduleStatistic">${total.toLocaleString()}건</strong></article><article><span>${year}년 ${month}월 현장 건수</span><strong class="scheduleStatistic">${months[month-1].toLocaleString()}건</strong></article><article><span>집계 점검원</span><strong class="scheduleStatistic">${people.length.toLocaleString()}명</strong></article></div><p class="hint">점검계획 기준 집계입니다. 같은 현장은 월별·연별 각각 1건이며, 여러 달에 걸친 일정은 해당 월마다 반영됩니다. 공동 점검은 각 점검원에게 1건씩 반영하므로 담당자별 합계와 전체 현장 건수는 다를 수 있습니다.</p><div class="scheduleDashboardSplit"><div class="scheduleDashboardPanel"><h3>${monthly?`${year}년 ${month}월 담당자별 점검 건수`:`${year}년 월별 점검 건수${person?' · '+esc(person.name):''}`}</h3><div class="scheduleDashboardChart" role="img" aria-label="점검 건수 막대 차트. 아래 표에서 정확한 수치를 확인할 수 있습니다.">${bars||'<p>등록된 점검계획이 없습니다.</p>'}</div></div><div class="scheduleDashboardPanel"><h3>담당자별 ${monthly?'월간':'연간·월별'} 점검 집계표</h3><div class="scheduleDashboardTableWrap"><table class="scheduleDashboardTable"><thead><tr><th scope="col">점검원</th>${monthly?`<th scope="col">${month}월</th>`:months.map((_,i)=>`<th scope="col">${i+1}월</th>`).join('')}<th scope="col">연간(중복 제외)</th></tr></thead><tbody>${people.map(p=>`<tr><th scope="row">${esc(p.name)}</th>${(monthly?[p.months[month-1]]:p.months).map(v=>`<td class="scheduleStatistic">${v.toLocaleString()}</td>`).join('')}<td class="scheduleStatistic">${p.annual.toLocaleString()}</td></tr>`).join('')||`<tr><td colspan="${monthly?3:14}">조회할 점검계획이 없습니다.</td></tr>`}</tbody><tfoot><tr><th>현장 건수(중복 제외)</th>${(monthly?[months[month-1]]:months).map(v=>`<td class="scheduleStatistic">${v.toLocaleString()}</td>`).join('')}<td class="scheduleStatistic">${total.toLocaleString()}</td></tr></tfoot></table></div></div></div></section>`;
+ $('scheduleCalendar').innerHTML=`<section class="scheduleDashboard"><div class="scheduleDashboardFilters"><div role="group" aria-label="집계 기간"><button data-dash-period="annual" class="${!monthly?'primary':''}">연간 집계</button><button data-dash-period="monthly" class="${monthly?'primary':''}">월간 집계</button></div></div><div class="scheduleDashboardCards"><article><span>${year}년 현장 건수</span><strong class="scheduleStatistic">${total.toLocaleString()}건</strong></article><article><span>${year}년 ${month}월 현장 건수</span><strong class="scheduleStatistic">${months[month-1].toLocaleString()}건</strong></article><article><span>집계 점검원</span><strong class="scheduleStatistic">${people.length.toLocaleString()}명</strong></article></div><p class="hint">점검계획 기준 집계입니다. 같은 현장은 월별·연별 각각 1건이며, 여러 달에 걸친 일정은 해당 월마다 반영됩니다. 공동 점검은 각 점검원에게 1건씩 반영하므로 담당자별 합계와 전체 현장 건수는 다를 수 있습니다.</p><div class="scheduleDashboardSplit"><div class="scheduleDashboardPanel"><h3>${monthly?`${year}년 ${month}월 담당자별 점검 건수`:`${year}년 월별 점검 건수${person?' · '+esc(person.name):''}`}</h3><div class="scheduleDashboardChart" role="img" aria-label="점검 건수 막대 차트. 아래 표에서 정확한 수치를 확인할 수 있습니다.">${bars||'<p>등록된 점검계획이 없습니다.</p>'}</div></div><div class="scheduleDashboardPanel"><h3>담당자별 ${monthly?'월간':'연간·월별'} 점검 집계표</h3><div class="scheduleDashboardTableWrap"><table class="scheduleDashboardTable${monthly?' scheduleDashboardMonthlyTable':''}">${monthly?'<colgroup><col class="schedulePersonCol"><col class="scheduleMonthCountCol"><col class="scheduleYearCountCol"></colgroup>':''}<thead><tr><th scope="col">점검원</th>${monthly?`<th scope="col">${month}월</th>`:months.map((_,i)=>`<th scope="col">${i+1}월</th>`).join('')}<th scope="col">연간(중복 제외)</th></tr></thead><tbody>${people.map(p=>`<tr><th scope="row">${esc(p.name)}</th>${(monthly?[p.months[month-1]]:p.months).map(v=>`<td class="scheduleStatistic">${v.toLocaleString()}</td>`).join('')}<td class="scheduleStatistic">${p.annual.toLocaleString()}</td></tr>`).join('')||`<tr><td colspan="${monthly?3:14}">조회할 점검계획이 없습니다.</td></tr>`}</tbody><tfoot><tr><th>현장 건수(중복 제외)</th>${(monthly?[months[month-1]]:months).map(v=>`<td class="scheduleStatistic">${v.toLocaleString()}</td>`).join('')}<td class="scheduleStatistic">${total.toLocaleString()}</td></tr></tfoot></table></div></div></div></section>`;
  $('scheduleCalendar').querySelectorAll('[data-dash-period]').forEach(b=>b.onclick=()=>{dashboardPeriod=b.dataset.dashPeriod;render()});
  if($('scheduleInspector'))$('scheduleInspector').onchange=e=>{selectedInspector=e.target.value;render()};
  }
@@ -834,7 +846,7 @@ root.createStaffSchedule=function(deps){
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
 
-</script><script id="bundled-app-js" data-build="V209">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V210">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';

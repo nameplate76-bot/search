@@ -1358,3 +1358,14 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .siteFilterValues .siteDateYear,.siteFilterValues .siteDateMonth{border:0;margin:0}.siteFilterValues .siteDateYear>summary,.siteFilterValues .siteDateMonth>summary{display:list-item;cursor:pointer;padding:7px 6px;list-style-position:inside;white-space:nowrap}.siteFilterValues summary input{vertical-align:middle;margin:0 8px 0 3px}.siteFilterValues summary span{font-weight:700;display:inline}.siteFilterValues summary small{margin-left:12px}.siteDateMonths{margin-left:20px;border-left:1px dotted #b3c5df;padding-left:8px}.siteDateDays{margin-left:23px;border-left:1px dotted #b3c5df;padding-left:10px}.siteFilterValues .siteDateDay{padding:6px 8px}.siteDateFilterDlg .siteFilterValues{min-height:180px}.siteFilterValues summary:focus-visible{outline:2px solid #2563eb;border-radius:4px}
 
 .siteFilterPager{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px;margin:12px 0;background:#fff;border:1px solid #bfd3ef;border-radius:10px;color:#173d75}.siteFilterPager label{display:flex;align-items:center;gap:6px}.siteFilterPager small{flex-basis:100%;color:#475569}
+
+/* V210: 집계표 행 구분선 및 월간 3열 화면 맞춤 */
+#page-schedule .scheduleDashboardTable th,#page-schedule .scheduleDashboardTable td{border-bottom:1px solid #9bb7db!important;border-right:1px solid #d2deed!important;box-sizing:border-box}
+#page-schedule .scheduleDashboardTable th:last-child,#page-schedule .scheduleDashboardTable td:last-child{border-right:0!important}
+#page-schedule .scheduleDashboardTableWrap{min-width:0;max-width:100%}
+#page-schedule .scheduleDashboardMonthlyTable{width:100%!important;min-width:0!important;max-width:100%;table-layout:fixed}
+#page-schedule .scheduleDashboardMonthlyTable .schedulePersonCol{width:40%}
+#page-schedule .scheduleDashboardMonthlyTable .scheduleMonthCountCol{width:24%}
+#page-schedule .scheduleDashboardMonthlyTable .scheduleYearCountCol{width:36%}
+#page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{width:auto!important;min-width:0!important;max-width:none!important;white-space:normal!important;overflow-wrap:anywhere;padding:9px 6px}
+@media(max-width:800px){#page-schedule .scheduleDashboardSplit>.scheduleDashboardPanel{padding:10px;min-width:0}#page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{font-size:12px;padding:9px 4px;line-height:1.5}}
