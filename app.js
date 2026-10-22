@@ -240,7 +240,7 @@ function enableEnterToNext(form,{siteEditor=false}={}){
   // 전화번호 등 여러 줄 입력이 필요한 경우 Shift+Enter는 줄바꿈으로 남겨둡니다.
   if(el.tagName==='TEXTAREA'&&e.shiftKey)return;
   e.preventDefault();e.stopPropagation();
-  if(siteEditor&&siteEditMode==='create'&&siteEditGroups[siteEditGroupIndex]?.[0]==='진행·담당·계약'&&$('siteEditFields')?.contains(el)){moveCreateProgressInputNext(el);return}
+  if(siteEditor&&siteEditGroups[siteEditGroupIndex]?.[0]==='진행·담당·계약'&&$('siteEditFields')?.contains(el)){moveCreateProgressInputNext(el);return}
   if(siteEditor&&el.matches('[data-site-col]')){moveSiteEditDataFieldNext(el);return}
   moveEnterNavNext(form,el);
  });
