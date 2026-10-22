@@ -1103,7 +1103,7 @@ const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31
 function siteTemplateBaseName(value){let text=String(value||'');for(let before;before!==text;){before=text;text=text.replace(/\([^()]*\)|（[^（）]*）/g,'')}return text.replace(/\s+/g,'').trim()}
 function siteTemplateContractCompleted(values){
  const completed=(contract,progress)=>{const a=String(values[contract-1]??'').trim().replace(/,/g,''),b=String(values[progress-1]??'').trim().replace(/,/g,'');return a!==''&&b!==''&&Number.isFinite(Number(a))&&Number(a)>0&&Number(a)===Number(b)};
- return completed(10,11)||completed(12,13);
+ return completed(10,11)&&completed(12,13);
 }
 function siteTemplateMoneyExcluded(targetName,sourceName,values){return !!siteTemplateBaseName(sourceName)&&siteTemplateBaseName(targetName)===siteTemplateBaseName(sourceName)&&siteTemplateContractCompleted(values)}
 function fillCreateInspectionDates(value){
@@ -1334,7 +1334,7 @@ function renderSiteEditFields(){
   if(f.col===14)return `<label class="siteField"><span>${esc(siteDisplayFieldLabel(f))}</span><select data-site-col="14" aria-label="${esc(siteDisplayFieldLabel(f))}">${maintenanceManagerSelectOptions(siteEditValues[13])}</select><small class="fieldHelp">O / X / 공란 중 선택합니다.</small></label>`;
   let help=f.col===26?'<small class="fieldHelp">입력하거나 변경하면 전자파일 접수일자에 같은 날짜가 자동 입력됩니다.</small>':'';if(f.col===29)help='<small class="fieldHelp">이 날짜는 내부 현장점검 종료 기준일에도 자동으로 적용됩니다.</small>';
   if(f.col===25||f.col===49){const help=f.col===25?'계약 횟수와 선임 계약 여부 기준 자동입력':'성능점검 + 유지점검 + 유지관리자 선임 금액 자동합계';return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="${f.col}" type="text" value="${esc(v)}" readonly aria-readonly="true"><small class="fieldHelp">${help}</small></label>`}
-  if(f.col===50)return `<label class="siteField financialField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="50" data-money-input="1" type="text" value="${esc(v)}" placeholder="예: =(1000000-500000)/2" aria-describedby="documentRevenueFormulaHelp"><small class="fieldHelp" id="documentRevenueFormulaHelp">숫자 또는 =로 시작하는 수식 입력 · Enter 또는 입력칸을 벗어나면 계산 · 소수 첫째 자리 반올림</small></label>`;
+  if(f.col===50)return `<label class="siteField financialField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="50" data-money-input="1" type="text" value="${esc(v)}" placeholder="예 : 값 또는 수식 =(1000000-500000)/2 입력" aria-describedby="documentRevenueFormulaHelp"><small class="fieldHelp" id="documentRevenueFormulaHelp">숫자 또는 =로 시작하는 수식 입력 · Enter 또는 입력칸을 벗어나면 계산 · 소수 첫째 자리 반올림</small></label>`;
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
@@ -1433,7 +1433,7 @@ async function applySiteTemplate(sourceId,options={}){
   if(keepSn&&currentSn)siteEditValues[0]=currentSn;
   $('siteFormPhone').value=formatPhoneList(response.data.client_phone??data?.client_phone??'');$('siteFormEmail').value=response.data.client_email??data?.client_email??'';$('siteFormAddress').value=data?.site_address||'';$('siteAddressQuery').value=data?.site_address||'';$('siteFormAddressDetail').value='';setSiteAddressMode('search');syncRegionFromSiteAddress();
   if(mobileCreatePages()&&options.fromSearch)siteEditGroupIndex=0;hideSiteNameSuggestions();renderSiteEditTabs();renderSiteEditFields();
-  const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 계약·진행 완료 조건에 해당하여 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목과 제출 수량 5개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
+  const copiedName=String(data?.site_name||'');const contractNote=contractExcluded?' 성능점검과 유지관리 모두 완료되어 계약·진행 등 6개 항목은 비웠습니다.':' 계약·진행 등 6개 항목과 제출 수량 5개 항목을 원본과 동일하게 불러왔습니다.';const moneyNote=canCreateMoney()?(moneyExcluded?' 동일 현장의 계약·진행 완료 조건에 해당하여 계약 관련 금액은 비웠습니다.':' 원본의 계약 관련 금액을 불러왔습니다.'):'';
   if(options.fromSearch){
    renderSelectedSiteTemplate({source_id:Number(sourceId),site_name:copiedName,sn:data?.sn||'',region:data?.region||'',report_grade:data?.report_grade||''},keepSn?currentSn:'');
    $('siteEditHint').textContent=`유사 현장 “${copiedName}” 정보를 불러왔습니다. 신규 S/N은 ${siteEditValues[0]||'-'}으로 유지됩니다. 필요한 내용을 수정한 뒤 저장하면 새 현장으로 추가됩니다.`;
