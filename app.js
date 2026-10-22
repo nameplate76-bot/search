@@ -593,7 +593,7 @@ function startSearchLoading(request){
 function showSearchIdle(){searchRequestSeq++;stopSearchLoading();lastSites=[];selectedSiteIds.clear();$('searchMeta').textContent='검색어를 입력하거나, 빈 검색창으로 전체 현장을 조회하세요.';$('siteResults').innerHTML=siteColumnFilterToolbarHtml(0)+'<div class="siteCard" role="status">현장명·지역·S/N·담당자로 검색하세요. 검색창을 비우고 검색 버튼 또는 Enter를 누르면 전체 현장을 조회합니다.</div>';bindSiteColumnFilters($('siteResults'))}
 async function searchSites(force=false,submit=false){
  if(!can('can_view_staff_sites'))return;
- if(submit){const term=$('siteQuery').value.trim().replace(/[%_,()]/g,' ').trim();searchActiveQuery=term;searchSubmitted=true;if(siteColumnFiltersEnabled){siteColumnFiltersEnabled=false;siteColumnFilters.clear()}}
+ if(submit){siteListSort={key:'field_1',dir:'desc'};const term=$('siteQuery').value.trim().replace(/[%_,()]/g,' ').trim();searchActiveQuery=term;searchSubmitted=true;if(siteColumnFiltersEnabled){siteColumnFiltersEnabled=false;siteColumnFilters.clear()}}
  if(!searchSubmitted){showSearchIdle();return true}
  const q=searchActiveQuery,sameQuery=searchCacheReady&&searchCacheQuery===q;
  if(!force&&sameQuery&&cacheFresh(searchLoadedAt)){searchRequestSeq++;stopSearchLoading();applySearchCache();return}
@@ -712,7 +712,7 @@ function activeSiteListColumns(){
 function activeSiteListKeys(){return activeSiteListColumns().map(c=>c.key)}
 function siteListOrderStorageKey(){return `staff_site_list_column_order:${me?.id||'guest'}`}
 let siteListColumnOrder=[];
-let siteListSort={key:'field_1',dir:'asc'};
+let siteListSort={key:'field_1',dir:'desc'};
 let suppressSiteSortClick=false;
 const siteListCollator=new Intl.Collator('ko-KR',{numeric:true,sensitivity:'base'});
 function ensureSiteListColumnOrder(){
@@ -731,7 +731,7 @@ function ensureSiteListColumnOrder(){
  if(actionIndex>=0)next.splice(actionIndex,0,...missing);else next.push(...missing);
  if(!next.includes('actions'))next.push('actions');
  siteListColumnOrder=next;
- if(siteListSort.key&&siteListSort.key!=='field_1'&&!valid.includes(siteListSort.key))siteListSort={key:'field_1',dir:'asc'};
+ if(siteListSort.key&&siteListSort.key!=='field_1'&&!valid.includes(siteListSort.key))siteListSort={key:'field_1',dir:'desc'};
  return siteListColumnOrder;
 }
 function siteListColumn(key){
@@ -954,7 +954,7 @@ function renderSites(){
    ensureSiteListColumnOrder();
    const sorted=sortedSiteRows(filtered),visible=siteResultsArePaged()?siteFilterPageRowsFor(sorted):sorted.slice(0,600);
    const selectHead=isAdmin()?'<th class="center siteSelectCol"><input type="checkbox" data-site-select-master aria-label="현재 표시된 현장 전체선택"></th>':'';
-   const rows=visible.map((r,i)=>`<tr class="siteListRow" data-detail="${r.source_id}" tabindex="0" aria-label="${esc(r.site_name)} 상세조회">${isAdmin()?`<td class="center siteSelectCol"><input type="checkbox" class="siteRowCheck" data-site-select="${r.source_id}" aria-label="${esc(r.site_name)} 선택"></td>`:''}${siteListColumnOrder.map(key=>siteListCellHtml(r,key,i)).join('')}</tr>`).join('');
+   const rows=visible.map((r,i)=>`<tr class="siteListRow" data-detail="${r.source_id}" tabindex="0" aria-label="${esc(r.site_name)} 상세조회">${isAdmin()?`<td class="center siteSelectCol"><input type="checkbox" class="siteRowCheck" data-site-select="${r.source_id}" aria-label="${esc(r.site_name)} 선택"></td>`:''}${siteListColumnOrder.map(key=>siteListCellHtml(r,key,i+(siteResultsArePaged()?(siteFilterPage-1)*siteFilterPageSize:0))).join('')}</tr>`).join('');
    const headers=siteListColumnOrder.map(siteListHeaderHtml).join('');
    root.innerHTML=`<div class="desktopSiteList"><div class="siteListActionRow">${siteSelectionBarHtml(visible)}<div class="siteFreezeToolbar"><div class="siteFreezeButtons"><button type="button" class="ghost siteFreezeSelectBtn" data-site-freeze-select>📌 틀 고정 위치 선택</button><button type="button" class="ghost" data-site-freeze-clear>🔓 틀 고정 해제</button></div><span class="siteFreezeStatus" data-site-freeze-status></span></div>${filterToolbar}</div><div class="desktopListHint"><strong>틀 고정:</strong> 위치 선택 버튼 → 원하는 셀 클릭 (선택 셀의 위쪽·왼쪽 고정) · <strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계 드래그</div><div class="desktopSiteTableWrap"><table class="desktopSiteTable"><thead><tr>${selectHead}${headers}</tr></thead><tbody>${rows||`<tr><td colspan="${siteListColumnOrder.length+(isAdmin()?1:0)}">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</td></tr>`}</tbody></table></div></div>${!siteResultsArePaged()&&filtered.length>600?'<div class="listLimitNotice">화면 성능을 위해 정렬된 결과 중 처음 600건만 표시합니다. 전체선택은 현재 표시된 행을 대상으로 합니다.</div>':''}`;
    root.insertAdjacentHTML('beforeend',siteFilterPagerHtml(filtered.length));bindSiteFilterPager(root);bindSiteListHeaderInteractions(root);bindSiteColumnFilters(root);
@@ -971,12 +971,12 @@ function renderSites(){
    return;
  }
  const sortedMobile=sortedSiteRows(filtered),visible=siteResultsArePaged()?siteFilterPageRowsFor(sortedMobile):sortedMobile.slice(0,600);
- root.innerHTML=filterToolbar+siteSelectionBarHtml(visible)+(filtered.length?'':'<div class="siteCard">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</div>')+visible.map(r=>{
+ root.innerHTML=filterToolbar+siteSelectionBarHtml(visible)+(filtered.length?'':'<div class="siteCard">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</div>')+visible.map((r,i)=>{
   const fieldsHtml=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule()))).map(meta=>{const v=meta.prop?r[meta.prop]||'':formatDisplayCell(r.safe_values?.[meta.col-1]??'',meta.col);return `<div><span>${esc(siteCompactFieldLabel(meta,'search'))}</span><b>${esc(v||'-')}</b></div>`}).join('');
   const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';
   const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';
   const select=isAdmin()?`<label class="mobileSiteSelect"><input type="checkbox" class="siteCardCheck" data-site-select="${r.source_id}"> 선택</label>`:'';
-  return `<article class="siteCard"><div class="siteSelectionMeta">${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}</div>${mobileSiteStageHtml(r)}<div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
+  return `<article class="siteCard"><div class="siteSelectionMeta"><strong class="siteResultNumber">No. ${i+1+(siteResultsArePaged()?(siteFilterPage-1)*siteFilterPageSize:0)}</strong>${select}<span>${manual}</span></div><div class="miniGrid selectedFieldsGrid">${fieldsHtml}</div>${mobileSiteStageHtml(r)}<div class="siteActions">${edit}<button data-report-files="${r.source_id}">보고서</button><button data-detail="${r.source_id}">상세 조회</button></div></article>`
  }).join('')+(!siteResultsArePaged()&&filtered.length>600?`<div class="siteCard">화면 성능을 위해 처음 600건만 표시합니다. 전체선택은 현재 표시된 카드만 대상으로 합니다.</div>`:'');
  root.querySelectorAll('[data-report-files]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteReports(Number(b.dataset.reportFiles))});
  root.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>openDetail(Number(b.dataset.detail)));
