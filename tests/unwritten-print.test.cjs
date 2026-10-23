@@ -1,0 +1,24 @@
+const fs=require('fs'),path=require('path'),assert=require('node:assert/strict'),{JSDOM}=require('jsdom');
+const base=path.join(__dirname,'..'),html=fs.readFileSync(path.join(base,'index.html'),'utf8'),d=new JSDOM(html,{url:'https://portal.test',runScripts:'outside-only',pretendToBeVisual:true}),w=d.window,doc=w.document;
+w.matchMedia=q=>({matches:q.includes('min-width'),addEventListener(){}});w.CSS={escape:String};w.scrollTo=()=>{};let alerts=[];w.alert=s=>alerts.push(s);w.HTMLDialogElement.prototype.show=w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'))};
+w.eval(fs.readFileSync(path.join(__dirname,'design-fixture.js'),'utf8')+'\nwindow.__qa.client=client;');
+const qa=w.__qa;
+qa.sites.splice(3);qa.sites.forEach((r,i)=>{r.safe_values=Array(137).fill('');r.safe_values[3]=r.site_name=i===0?'긴 현장명 <학교> (26년)':'현장'+i;r.safe_values[18]=i===0?'':'담당자A';r.document_owner=i===0?'':'담당자A';r.field_end='2026-10-10';r.report_complete_date=''});
+for(const f of ['fields.js','schedule-holidays.js','inspection-schedule.js','report-files.js'])w.eval(fs.readFileSync(path.join(base,f),'utf8'));
+const app=html.match(/<script id="bundled-app-js"[^>]*>([\s\S]*?)<\/script>/)[1];w.eval(app.replace(/\}\)\(\);\s*$/,`window.test176={showPage,buildUnwrittenPrintHtml,printUnwrittenList,setFields(keys){unwrittenDisplayFields=keys;unwrittenColumnOrder=[]},setOrder(keys){unwrittenColumnOrder=keys}};})();`));
+(async()=>{await new Promise(r=>setTimeout(r,40));const api=w.test176;api.showPage('unwritten');await new Promise(r=>setTimeout(r,40));
+assert(!doc.querySelector('.scheduleLegend'));assert(!doc.querySelector('.scheduleHelp'));
+assert.deepEqual(Array.from(doc.querySelectorAll('#unwrittenOwners [data-owner]')).map(x=>x.dataset.owner),['all','미배정','담당자A']);
+for(const k of ['receipt','field_end','field_inspector','elapsed','corporation','inspection_type'])assert(doc.querySelector('#unwrittenList td.uw-col-'+k).classList.contains('center'));
+let out=new JSDOM(api.buildUnwrittenPrintHtml()).window.document;assert.equal(out.querySelectorAll('tbody tr').length,3);assert(out.body.textContent.includes('긴 현장명 <학교> (26년)'));assert(!out.querySelector('button'));assert(!out.querySelector('학교'));
+doc.querySelector('[data-owner="미배정"]').click();out=new JSDOM(api.buildUnwrittenPrintHtml()).window.document;assert.equal(out.querySelectorAll('tbody tr').length,1);assert(out.querySelector('h1').textContent.includes('미배정'));
+const th=doc.querySelector('th[data-uw-col-key="receipt"]');th.click();const headings=Array.from(doc.querySelectorAll('#unwrittenList th')).filter(x=>x.dataset.uwColKey!=='actions').map(x=>x.textContent.replace(/ [▲▼]/g,''));assert.deepEqual(Array.from(out.querySelectorAll('th')).map(x=>x.textContent),headings);
+// Real colgroup widths are assigned before header layout; date and no no longer share equal widths.
+const widths=Object.fromEntries(Array.from(out.querySelectorAll('col')).map(c=>[c.dataset.printCol,parseFloat(c.style.width)]));
+assert.equal(widths.site_name,25);assert.equal(widths.important,21);assert.equal(widths.no,3);assert.equal(widths.receipt,9);assert.equal(widths.elapsed,7);
+assert(Math.abs(Object.values(widths).reduce((a,b)=>a+b,0)-100)<0.001);
+assert(out.querySelector('style').textContent.includes('size:A4 landscape'));assert(out.querySelector('style').textContent.includes('display:table-header-group'));
+api.setOrder(['no','receipt','important','site_name','field_end','field_inspector','elapsed','corporation','inspection_type','actions']);let reordered=new JSDOM(api.buildUnwrittenPrintHtml()).window.document;assert.equal(reordered.querySelectorAll('col')[1].dataset.printCol,'receipt');assert.equal(reordered.querySelector('col[data-print-col="site_name"]').style.width,'25%');
+api.setFields(['site_name','receipt']);let subset=new JSDOM(api.buildUnwrittenPrintHtml()).window.document;const parts=Array.from(subset.querySelectorAll('col')).map(c=>parseFloat(c.style.width));assert.equal(parts.length,3);assert(Math.abs(parts.reduce((a,b)=>a+b,0)-100)<0.001);assert.equal(subset.querySelectorAll('th').length,3);
+api.setFields(['site_name']);assert.equal(new JSDOM(api.buildUnwrittenPrintHtml()).window.document.querySelectorAll('th').length,2);
+assert(doc.getElementById('unwrittenPrint').onclick);console.log('PASS V177 proportional widths, reorder/subset normalization, A4 landscape, repeated header: help removed, unassigned first, six cells centered, print all/owner scope, full name escaped, actions omitted, column order retained');w.close()})().catch(e=>{console.error(e);w.close();process.exit(1)});

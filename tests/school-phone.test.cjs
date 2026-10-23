@@ -9,7 +9,7 @@ const el = id => { if (!elements.has(id)) elements.set(id, {value:'',textContent
 const context = vm.createContext({console,JSON,Number,String,Array,Set,
  $:el, isAdmin:()=>true, canEditSite:()=>true,canCreateSite:()=>true,
  notify:(e,text)=>{e.textContent=text},regionFromAddress:()=> '경기',
- invalidateDataCaches:()=>{},refreshActiveData:async()=>{},refreshDbStatus:async()=>{},setTimeout:()=>{},
+ refreshAfterSiteSave:async()=>{},closeSiteEditor:()=>{},invalidateDataCaches:()=>{},refreshActiveData:async()=>{},refreshDbStatus:async()=>{},setTimeout:()=>{},
  syncAddressToSameSiteName:async()=>({synced:false}),
  syncInspectionType:()=>{},syncContractAmount:()=>{},syncRegionFromSiteAddress:()=>{},syncFieldEndFromPlan:()=>{},syncBindingRatioFromAmounts:()=>{},
  siteAddressMode:'manual', addressInputMode:'manual',siteEditMode:'edit',siteScheduleDraft:{start:'',end:'',inspectors:'',changed:false},siteEditValues:Array(137).fill(''),

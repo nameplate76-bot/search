@@ -9,5 +9,5 @@ const weekdays=Array.from({length:31},(_,i)=>core.key(2026,5,i+1)).filter(k=>{co
 const singles=weekdays.map(k=>({...row,plan_start:k,plan_end:k}));assert.equal(core.stats(singles.slice(0,9),2026,5,h).ratio,.5);assert.equal(core.stats(singles.slice(0,9),2026,5,h).tone,'low');assert.equal(core.stats(singles.slice(0,10),2026,5,h).tone,'high');assert.equal(core.stats(singles,2026,5,h).count,1);
 const weekend={...row,plan_start:'2026-05-09',plan_end:'2026-05-10'};assert.equal(core.stats([weekend],2026,5,h).covered,0);assert.equal(core.stats([weekend],2026,5,h).count,1);
 const cross={...row,plan_start:'2026-12-31',plan_end:'2027-01-02'};assert.equal(core.stats([cross],2026,12,h).count,1);assert.equal(core.stats([cross],2027,1,{}).count,1);
-assert.equal(core.monthDays(2028,2),29);assert.equal(core.monthDays(2026,2),28);assert.equal(core.grid(2026,6)[0],'2026-06-01');assert.equal(core.grid(2026,2)[6],'2026-02-01');assert.equal(core.grid(2028,2).filter(Boolean).length,29);
-console.log('PASS: inclusive ranges, unique counts, 0/50/>50/100%, holiday exclusions, weekends, year crossing, leap year, Monday-first calendar');
+assert.equal(core.monthDays(2028,2),29);assert.equal(core.monthDays(2026,2),28);assert.equal(core.grid(2026,6)[1],'2026-06-01');assert.equal(core.grid(2026,2)[0],'2026-02-01');assert.equal(core.grid(2028,2).filter(Boolean).length,29);
+console.log('PASS: inclusive ranges, unique counts, 0/50/>50/100%, holiday exclusions, weekends, year crossing, leap year, Sunday-first calendar');

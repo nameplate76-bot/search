@@ -66,7 +66,7 @@ function open(ctx){
    try{const restored=await request('mapping');if(!closed&&!mappingDirty&&restored.mapping){const m=restored.mapping;q('[data-folder]').value=m.folder||'';q('[data-date]').value=m.reference_date||'';q('[data-preferred]').value=selectedFilesText(m);q('[data-save-status]').textContent='기존 보고서 경로를 확인하여 복구했습니다. 현재 표시된 값은 서버에 저장된 연결정보입니다.'}}catch(e){}
   }
   if(!data.connected){status('이 현장에 보고서 폴더가 연결되지 않았습니다. 관리자에게 연결 설정을 요청하세요.');return}
-  if(!['R7','R8'].includes(data.bridge_version)){status('지정 파일만 조회하려면 연결 PC의 report-bridge/server.py를 이번 R7 버전으로 교체하고 연결 프로그램을 재시작하세요.');return}
+  if(!['R7','R8'].includes(data.bridge_version)){status('연결 PC의 report-bridge/server.py를 R8 버전으로 교체하고 연결 프로그램을 재시작하세요.');return}
   const files=data.files||[];if(!files.length){status('지정된 보고서를 찾지 못했습니다. 관리자에게 조회할 파일명(확장자 포함), 폴더 위치와 선택한 파일 확인을 요청하세요. 허용할 파일을 선택하고 저장하지 않으면 목록을 표시하지 않습니다.');return}
   q('[data-list]').innerHTML=`<table><thead><tr><th>파일명</th><th>현장 폴더 안의 위치</th><th>수정일</th><th>크기</th><th>열람·다운로드</th></tr></thead><tbody>${files.map((f,i)=>`<tr><td>${escape(f.name)}</td><td>${escape(f.folder==='.'?'현장 폴더':f.folder)}</td><td>${escape(new Date(f.modified*1000).toLocaleString('ko-KR'))}</td><td>${(Number(f.size)/1024/1024).toFixed(2)} MB</td><td>${f.pdf?`<button type="button" data-file-id="${i}" data-view="1">PDF 열람</button>`:''}<button type="button" data-file-id="${i}">다운로드</button></td></tr>`).join('')}</tbody></table>`;
   q('[data-list]').querySelectorAll('[data-file-id]').forEach(b=>b.onclick=()=>fileAction(files[Number(b.dataset.fileId)],b.dataset.view==='1'));status(`${data.recovery_message?data.recovery_message+' ':''}${files.length}개 파일을 찾았습니다. 관리자가 지정한 파일만 조회·열람·다운로드할 수 있습니다.`);
