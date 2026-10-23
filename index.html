@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261023-v219">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261023-v220">
 <script>
 (function(){
-  const BUILD='20261023-v219';
+  const BUILD='20261023-v220';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -384,7 +384,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V219</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V220</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -553,7 +553,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261023-v219"></script><script src="fields.js?v=20261023-v219"></script><script src="quantity-ocr.js?v=20261023-v219"></script><script id="bundled-report-files-js" data-build="V219">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261023-v220"></script><script src="fields.js?v=20261023-v220"></script><script src="quantity-ocr.js?v=20261023-v220"></script><script id="bundled-report-files-js" data-build="V220">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -694,7 +694,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261023-v219"></script><script id="bundled-inspection-schedule-js" data-build="V219">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261023-v220"></script><script id="bundled-inspection-schedule-js" data-build="V220">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -722,7 +722,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V219';
+root.STAFF_SCHEDULE_VERSION='V220';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -842,7 +842,7 @@ root.createStaffSchedule=function(deps){
  }
  function holidayDialog(){
  if(!deps.access().view)return;
- const d=makeDialog('공휴일 관리',`<div class="holidayNotice"><b>공휴일은 공통 적용 · 연차·반차 휴가는 점검원별 적용</b><span>연차 또는 반차 휴가를 입력하면 지정한 점검원에게만 표시됩니다. 일반 직원은 본인 휴가만 등록·취소할 수 있습니다.</span></div><div class="holidayWorkspace"><section class="holidayEditor"><div class="holidaySectionHeading"><h4>공휴일·연차·반차 휴가 등록</h4><button type="button" data-holiday-reset>새로 입력</button></div><form class="holidayForm"><label>날짜 <span class="holidayRequired">필수</span><input name="date" type="date" min="2000-01-01" max="2050-12-31" required></label><div class="holidayDatePreview" data-holiday-preview>달력에서 날짜를 선택해 주세요.</div><label>이름 <span class="holidayRequired">필수</span><input name="name" maxlength="100" placeholder="예: 임시공휴일, 선거일, 연차 휴가, 반차 휴가" required></label><label data-leave-person class="hidden">연차·반차 사용 점검원<input name="person" maxlength="100" list="scheduleLeavePeople" placeholder="점검원 이름"><datalist id="scheduleLeavePeople"></datalist></label><p data-leave-hint class="hint hidden">개인 연차·반차는 공휴일 및 현장 건수에 포함하지 않습니다.</p><fieldset data-holiday-type><legend>이 날짜를 어떻게 적용할까요?</legend><label class="holidayTypeChoice"><input name="holiday" type="radio" value="true" checked><span><b>공휴일로 지정</b><small>달력에 빨간 날짜로 표시하고 평일 등록률 계산에서 제외합니다.</small></span></label><label class="holidayTypeChoice"><input name="holiday" type="radio" value="false"><span><b>평일로 지정</b><small>기본 공휴일 지정을 해제합니다. 토·일요일의 주말 구분은 유지됩니다.</small></span></label></fieldset><p data-msg role="status" aria-live="polite"></p><button type="submit" class="primary holidaySave">공휴일 설정 저장</button></form><p class="holidayEditorHint">오른쪽 목록에서 날짜를 선택하면 등록 내용을 불러올 수 있습니다. 공휴일은 같은 날짜 저장 시 변경됩니다. 연차·반차는 날짜와 점검원별로 추가되며 아래 등록 내역에서 취소합니다.</p></section><section class="holidayListPanel"><div class="holidaySectionHeading"><div><h4>${year}년 공휴일·지정일</h4><p data-holiday-count></p></div></div><label class="holidayFilterLabel">목록 검색<input type="search" data-holiday-filter placeholder="날짜 또는 공휴일 이름 검색" aria-label="공휴일 목록 검색"></label><div class="holidayListLegend"><span>기본 공휴일</span><span>추가·변경</span><span>평일 지정</span></div><div class="holidayList" data-holiday-list></div></section></div><section class="scheduleLeaveListPanel"><h4>연차·반차 휴가 등록 내역</h4><div data-leave-list></div></section><div class="holidayDialogFooter"><span>조회 연도는 점검일정 화면에서 변경할 수 있습니다.</span><button type="button" data-holiday-close>닫기</button></div>`);
+ const d=makeDialog('공휴일 관리',`<div class="holidayNotice"><b>공휴일은 공통 적용 · 연차·반차 휴가는 점검원별 적용</b><span>연차 또는 반차 휴가를 입력하면 지정한 점검원에게만 표시됩니다. 일반 직원은 본인 휴가만 등록·취소할 수 있습니다.</span></div><div class="holidayWorkspace"><section class="holidayEditor"><div class="holidaySectionHeading"><h4>공휴일·연차·반차 휴가 등록</h4><button type="button" data-holiday-reset>새로 입력</button></div><form class="holidayForm"><label>날짜 <span class="holidayRequired">필수</span><input name="date" type="date" min="2000-01-01" max="2050-12-31" required></label><div class="holidayDatePreview" data-holiday-preview>달력에서 날짜를 선택해 주세요.</div><label>이름 <span class="holidayRequired">필수</span><input name="name" maxlength="100" placeholder="예: 임시공휴일, 선거일, 연차 휴가, 반차 휴가" required></label><label data-leave-person class="hidden">연차·반차 사용 점검원<input name="person" maxlength="100" list="scheduleLeavePeople" placeholder="점검원 이름"><datalist id="scheduleLeavePeople"></datalist></label><p data-leave-hint class="hint hidden">연차 휴가는 종일 휴무이며, 반차 휴가는 오전 또는 오후만 휴무입니다. 개인 연차·반차는 공휴일 및 현장 건수에 포함하지 않습니다.</p><fieldset data-holiday-type><legend>이 날짜를 어떻게 적용할까요?</legend><label class="holidayTypeChoice"><input name="holiday" type="radio" value="true" checked><span><b>공휴일로 지정</b><small>달력에 빨간 날짜로 표시하고 평일 등록률 계산에서 제외합니다.</small></span></label><label class="holidayTypeChoice"><input name="holiday" type="radio" value="false"><span><b>평일로 지정</b><small>기본 공휴일 지정을 해제합니다. 토·일요일의 주말 구분은 유지됩니다.</small></span></label></fieldset><p data-msg role="status" aria-live="polite"></p><button type="submit" class="primary holidaySave">공휴일 설정 저장</button></form><p class="holidayEditorHint">오른쪽 목록에서 날짜를 선택하면 등록 내용을 불러올 수 있습니다. 공휴일은 같은 날짜 저장 시 변경됩니다. 연차·반차는 날짜와 점검원별로 추가되며 아래 등록 내역에서 취소합니다.</p></section><section class="holidayListPanel"><div class="holidaySectionHeading"><div><h4>${year}년 공휴일·지정일</h4><p data-holiday-count></p></div></div><label class="holidayFilterLabel">목록 검색<input type="search" data-holiday-filter placeholder="날짜 또는 공휴일 이름 검색" aria-label="공휴일 목록 검색"></label><div class="holidayListLegend"><span>기본 공휴일</span><span>추가·변경</span><span>평일 지정</span></div><div class="holidayList" data-holiday-list></div></section></div><section class="scheduleLeaveListPanel"><h4>연차·반차 휴가 등록 내역</h4><div data-leave-list></div></section><div class="holidayDialogFooter"><span>조회 연도는 점검일정 화면에서 변경할 수 있습니다.</span><button type="button" data-holiday-close>닫기</button></div>`);
  d.classList.add('holidayManagementDialog');
  const form=d.querySelector('form'),msg=d.querySelector('[data-msg]'),filter=d.querySelector('[data-holiday-filter]');
  const canManagePeople=()=>deps.access().all&&deps.access().edit;
@@ -870,7 +870,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V219">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V220">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
