@@ -1369,3 +1369,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #page-schedule .scheduleDashboardMonthlyTable .scheduleYearCountCol{width:36%}
 #page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{width:auto!important;min-width:0!important;max-width:none!important;white-space:normal!important;overflow-wrap:anywhere;padding:9px 6px}
 @media(max-width:800px){#page-schedule .scheduleDashboardSplit>.scheduleDashboardPanel{padding:10px;min-width:0}#page-schedule .scheduleDashboardMonthlyTable th,#page-schedule .scheduleDashboardMonthlyTable td{font-size:12px;padding:9px 4px;line-height:1.5}}
+.holidayListRow{display:flex;align-items:stretch;gap:6px;margin:0 0 6px}
+.holidayListRow .holidayListItem{flex:1;margin:0}
+.holidayDeleteButton{border:1px solid #c54b62;background:#fff1f3;color:#a72c43;border-radius:8px;padding:0 10px;font-weight:800;cursor:pointer}
+.holidayDeleteButton:hover{background:#ffe0e5}
