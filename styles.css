@@ -1003,7 +1003,7 @@ body{width:100%;max-width:100%;overflow-x:hidden}
  .scheduleMobileHelp{display:block;font-size:12px;color:#526581;line-height:1.6;margin:8px 0}
  .scheduleMobileDetails{display:block;margin:12px 0;padding:12px;border:1px solid #c3d5ee;border-radius:10px;background:white;min-width:0}
  .scheduleMobileDetailHead{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
- .scheduleMobileDetailHead h4{font-size:14px;margin:0 0 8px}
+ .scheduleMobileDetailHead h4{font-size:15px;margin:0 0 8px;color:#173f7a!important;font-weight:900;letter-spacing:-.01em;line-height:1.4}
  .scheduleMobileDetailHead button{font-size:12px;padding:6px 8px}
  .scheduleMobileEventList{display:grid;gap:8px;margin-top:8px}
  .scheduleMobileEvent{display:flex;flex-direction:column;gap:5px;text-align:left;width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;background:#ecf4ff;color:#17385d;border:1px solid #bed6f8;border-radius:8px;padding:10px;font-size:13px;line-height:1.5;box-sizing:border-box}
