@@ -1373,3 +1373,5 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .holidayListRow .holidayListItem{flex:1;margin:0}
 .holidayDeleteButton{border:1px solid #c54b62;background:#fff1f3;color:#a72c43;border-radius:8px;padding:0 10px;font-weight:800;cursor:pointer}
 .holidayDeleteButton:hover{background:#ffe0e5}
+.scheduleLeaveActions{display:inline-flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto}
+.scheduleLeaveActions button{min-width:52px}
