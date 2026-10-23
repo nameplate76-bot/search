@@ -26,7 +26,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V224';
+root.STAFF_SCHEDULE_VERSION='V225';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -71,7 +71,7 @@ root.createStaffSchedule=function(deps){
  const displayed=calendarRows(),prefix=key(year,month,1).slice(0,7),today=key(now().getFullYear(),now().getMonth()+1,now().getDate());
  if(!mobileDay||!mobileDay.startsWith(prefix))mobileDay=today.startsWith(prefix)?today:key(year,month,1);
  const daily=onDay(displayed,mobileDay),names=leaveNames(mobileDay),holiday=holidays()[mobileDay];
- panel.innerHTML=`<div class="scheduleMobileDetailHead"><h4>${month}월 ${Number(mobileDay.slice(8))}일 (${['일','월','화','수','목','금','토'][new Date(mobileDay+'T00:00:00Z').getUTCDay()]}) · 현장 ${daily.length}건</h4>${deps.access().edit?'<button type="button" data-mobile-add>+ 일정 등록</button>':''}</div>${holiday?`<p class="scheduleRed">${esc(holiday)}</p>`:''}${names.length?`<p class="scheduleRed scheduleMobileLeaveDetail">${deps.access().all?'휴가 : '+esc(names.join(', ')):'휴가'}</p>`:''}<div class="scheduleMobileEventList">${daily.map(r=>`<button type="button" class="scheduleMobileEvent" data-mobile-plan="${r.source_id}"><strong>${esc(r.site_name)}</strong><span>점검원: ${esc(r.inspectors||'점검원 미입력')}</span><small>${esc(r.plan_start)} ~ ${esc(r.plan_end)}</small></button>`).join('')||'<p class="hint">등록된 점검계획이 없습니다.</p>'}</div>`;
+ panel.innerHTML=`<div class="scheduleMobileDetailHead"><h4>${month}월 ${Number(mobileDay.slice(8))}일 (${['일','월','화','수','목','금','토'][new Date(mobileDay+'T00:00:00Z').getUTCDay()]}) · 현장 ${daily.length}건</h4>${deps.access().edit?'<button type="button" data-mobile-add>+ 일정 등록</button>':''}</div>${holiday?`<p class="scheduleRed">${esc(holiday)}</p>`:''}${names.length?`<p class="scheduleRed scheduleMobileLeaveDetail">${esc(leaveDisplay(mobileDay))}</p>`:''}<div class="scheduleMobileEventList">${daily.map(r=>`<button type="button" class="scheduleMobileEvent" data-mobile-plan="${r.source_id}"><strong>${esc(r.site_name)}</strong><span>점검원: ${esc(r.inspectors||'점검원 미입력')}</span><small>${esc(r.plan_start)} ~ ${esc(r.plan_end)}</small></button>`).join('')||'<p class="hint">등록된 점검계획이 없습니다.</p>'}</div>`;
  $('scheduleCalendar').querySelectorAll('[data-mobile-day]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.mobileDay===mobileDay));b.onclick=()=>{if(Date.now()<swipeClickUntil)return;mobileDay=b.dataset.mobileDay;renderMobileDetails()}});
  panel.querySelectorAll('[data-mobile-plan]').forEach(b=>b.onclick=()=>edit(rows.find(r=>String(r.source_id)===b.dataset.mobilePlan)));
  const add=panel.querySelector('[data-mobile-add]');if(add)add.onclick=()=>edit(null,mobileDay);
