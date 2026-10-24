@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261023-v225">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261023-v226">
 <script>
 (function(){
-  const BUILD='20261023-v225';
+  const BUILD='20261023-v226';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -384,7 +384,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V225</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V226</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -532,7 +532,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
   <div id="siteEditFields" class="siteEditFields"></div>
   <section class="siteContactSection"><h4>관리주체 연락처·주소</h4>
     <div class="siteContactGrid"><label>전화번호<textarea id="siteFormPhone" inputmode="tel" autocomplete="tel" rows="1" placeholder="여러 번호는 /, 쉼표 또는 줄바꿈으로 구분하세요. 예: 010-1234-5678 / 031-123-4567"></textarea><small class="fieldHelp">전화번호가 여러 개면 각각 별도의 전화걸기 버튼으로 표시됩니다. 학교 현장의 일반전화번호를 등록·수정하면 같은 학교명(괄호 뒤 정보 제외)의 관련 현장에 함께 반영됩니다. 각 현장의 휴대폰 번호는 유지됩니다.</small></label><label>이메일<input id="siteFormEmail" lang="en" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" type="email" autocomplete="email" placeholder="예: manager@example.com"><small class="fieldHelp">학교의 관리주체 이메일을 등록·수정하면 같은 학교명(괄호 뒤 정보 제외)의 관련 현장에 함께 반영됩니다.</small></label></div>
-    <div class="siteAddressBox"><label>주소 검색어<div class="addressSearchRow"><input id="siteAddressQuery" autocomplete="off" placeholder="도로명·건물명·지번"><button type="button" id="siteAddressSearchBtn" class="primary">주소 검색</button></div></label><p id="siteAddressMsg" class="addressHelp">검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.</p><label>주소<input id="siteFormAddress" readonly placeholder="검색 결과에서 주소를 선택하세요"></label><label id="siteAddressDetailLabel">상세주소<input id="siteFormAddressDetail" placeholder="동·층·호 등 상세주소(선택)"></label><div class="addressModeButtons"><button type="button" id="siteManualAddressBtn" class="ghost">직접입력</button><button type="button" id="siteSearchAddressModeBtn" class="ghost hidden">주소검색으로 전환</button></div></div>
+    <div class="siteAddressBox"><label>주소 검색어<div class="addressSearchRow"><input id="siteAddressQuery" lang="ko" inputmode="text" autocomplete="off" placeholder="도로명·건물명·지번"><button type="button" id="siteAddressSearchBtn" class="primary">주소 검색</button></div></label><p id="siteAddressMsg" class="addressHelp">검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.</p><label>주소<input id="siteFormAddress" readonly placeholder="검색 결과에서 주소를 선택하세요"></label><label id="siteAddressDetailLabel">상세주소<input id="siteFormAddressDetail" placeholder="동·층·호 등 상세주소(선택)"></label><div class="addressModeButtons"><button type="button" id="siteManualAddressBtn" class="ghost">직접입력</button><button type="button" id="siteSearchAddressModeBtn" class="ghost hidden">주소검색으로 전환</button></div></div>
   </section>
   <div class="dlgFoot siteEditFoot"><button type="button" id="siteEditCancel">취소</button><button class="primary" id="siteEditSave" type="submit">저장</button></div><div id="siteEditMsg" class="msg siteEditMsg"></div>
 </form></dialog>
@@ -553,7 +553,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261023-v225"></script><script src="fields.js?v=20261023-v225"></script><script src="quantity-ocr.js?v=20261023-v225"></script><script id="bundled-report-files-js" data-build="V225">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261023-v226"></script><script src="fields.js?v=20261023-v226"></script><script src="quantity-ocr.js?v=20261023-v226"></script><script id="bundled-report-files-js" data-build="V226">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -694,7 +694,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261023-v225"></script><script id="bundled-inspection-schedule-js" data-build="V225">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261023-v226"></script><script id="bundled-inspection-schedule-js" data-build="V226">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -722,7 +722,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V225';
+root.STAFF_SCHEDULE_VERSION='V226';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -871,7 +871,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V225">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V226">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2222,7 +2222,8 @@ function renderSiteEditFields(){
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
-  return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}" ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
+  const koreanHint=f.col===16?' lang="ko" inputmode="text" autocomplete="off"': '';
+  return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}"${koreanHint} ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  if(g?.[0]==='진행·담당·계약'&&canViewSchedule()){
  const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`<label class="siteField"><span>점검시작 계획일자</span><input id="siteScheduleStart" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.start)}" ${canEditSchedule()?'':'disabled'}></label><label class="siteField"><span>점검종료 계획일자</span><input id="siteScheduleEnd" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.end)}" ${canEditSchedule()?'':'disabled'}></label><small class="fieldHelp">${siteEditMode==='create'?'계획 시작일을 입력하면 계획 종료일·점검 시작일·점검 종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 수정할 수 있습니다. ':''}점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
@@ -3648,5 +3649,4 @@ sb.auth.onAuthStateChange((event,session)=>{
  if(event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED'||event==='SIGNED_IN'||event==='USER_UPDATED')return;
 });boot().catch(e=>{console.error(e);showLogin();notify($('loginMsg'),e.message)});
 })();
-
 </script></body></html>
