@@ -1,5 +1,5 @@
--- V231 점검배정 대시보드, 과거 완료 현장 및 현장정보 목록
--- Supabase SQL Editor에서 전체를 한 번에 실행하세요.
+-- V231.1 점검배정 조회 범위 판정 및 미등록 현장정보
+-- Supabase SQL Editor에서 전체를 한 번에 실행하세요. 재실행 가능.
 BEGIN;
 
 ALTER TABLE public.staff_inspection_schedule
@@ -116,11 +116,14 @@ END $$;
 
 CREATE OR REPLACE FUNCTION public.staff_schedule_assignment_rows()
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
-DECLARE v_result jsonb;
+DECLARE v_result jsonb; v_all boolean; v_name text;
 BEGIN
   IF auth.uid() IS NULL OR NOT public.staff_can_view_schedule() THEN
     RAISE EXCEPTION '점검배정 조회 권한이 없습니다.' USING errcode='42501';
   END IF;
+  v_all := public.staff_can_view_all_schedule();
+  SELECT coalesce(nullif(btrim(p.name),''),p.user_id) INTO v_name
+    FROM public.pjt_profiles p WHERE p.id=auth.uid();
   SELECT coalesce(jsonb_agg(jsonb_build_object(
     'source_id',t.id,'site_name',t.site_name,'sn',t.sn,
     'plan_start',s.plan_start,'plan_end',s.plan_end,
@@ -139,9 +142,9 @@ BEGIN
   ) ORDER BY t.id),'[]'::jsonb) INTO v_result
   FROM public.staff_site_source t
   LEFT JOIN public.staff_inspection_schedule s ON s.source_id=t.id
-  WHERE public.staff_can_view_all_schedule()
-     OR public.staff_schedule_visible(coalesce(nullif(s.inspectors,''),t.field_inspector,''));
-  RETURN v_result;
+  WHERE v_all
+     OR (v_name IS NOT NULL AND v_name=ANY(regexp_split_to_array(btrim(coalesce(nullif(s.inspectors,''),t.field_inspector,'')),'[[:space:],/;·ㆍ、，()（）]+')));
+  RETURN jsonb_build_object('rows',v_result,'scope_all',v_all,'scope_name',coalesce(v_name,''),'scope_total',jsonb_array_length(v_result),'scope_missing',(SELECT count(*) FROM public.staff_site_source t LEFT JOIN public.staff_inspection_schedule s ON s.source_id=t.id WHERE (v_all OR (v_name IS NOT NULL AND v_name=ANY(regexp_split_to_array(btrim(coalesce(nullif(s.inspectors,''),t.field_inspector,'')),'[[:space:],/;·ㆍ、，()（）]+')))) AND coalesce(s.plan_status,'')<>'완료' AND (s.plan_start IS NULL OR s.plan_end IS NULL)));
 END $$;
 REVOKE ALL ON FUNCTION public.staff_schedule_clear_legacy_status(),public.staff_assignment_parse_date(text),public.staff_schedule_sync_legacy_complete(bigint),public.staff_schedule_sync_legacy_complete_trigger(),public.staff_schedule_assignment_rows() FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.staff_schedule_assignment_rows() TO authenticated;
