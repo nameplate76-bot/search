@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261027-v245">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261028-v246">
 <script>
 (function(){
-  const BUILD='20261027-v245';
+  const BUILD='20261028-v246';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -67,7 +67,7 @@
 /* V185 selected-month matrix does not need a 12-month minimum width */
 #salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
 
-/* V245 explicit calendar picker button */
+/* V246 explicit calendar picker button */
 .scheduleDateInputWrap{position:relative;display:block;width:100%;min-width:0}
 .schedulePlanForm .scheduleDateInputWrap>input[name="start"],.schedulePlanForm .scheduleDateInputWrap>input[name="end"]{padding-right:48px}
 .scheduleDateCalendarButton{position:absolute;right:0;top:0;display:grid;place-items:center;width:46px;height:100%;min-height:46px;padding:0;border:0;border-radius:0 9px 9px 0;background:transparent;color:#334155;cursor:pointer;z-index:2}.scheduleDateCalendarButton:hover{background:#eef4ff;color:#1d4ed8}.scheduleDateCalendarButton:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}.scheduleDateCalendarButton svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -390,7 +390,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V245</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V246</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -567,7 +567,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261027-v245"></script><script src="fields.js?v=20261027-v245"></script><script src="quantity-ocr.js?v=20261027-v245"></script><script id="bundled-report-files-js" data-build="V245">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261028-v246"></script><script src="fields.js?v=20261028-v246"></script><script src="quantity-ocr.js?v=20261028-v246"></script><script id="bundled-report-files-js" data-build="V246">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -710,7 +710,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261027-v245"></script><script id="bundled-inspection-schedule-js" data-build="V245">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261028-v246"></script><script id="bundled-inspection-schedule-js" data-build="V246">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -889,7 +889,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V245">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V246">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1937,6 +1937,20 @@ function siteDateInputValue(v){
  m=s.match(/^(\d{2})[.\-/]\s*(\d{1,2})[.\-/]\s*(\d{1,2})/);if(m)return `${2000+Number(m[1])}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
  return'';
 }
+function parseSiteKeyboardDate(value,min='1900-01-01',max='2100-12-31'){
+ const raw=String(value??'').trim();if(!raw)return'';
+ let y,m,d,match=raw.match(/^(\d{4})[-./年]\s*(\d{1,2})[-./月]\s*(\d{1,2})日?$/);
+ if(match){y=Number(match[1]);m=Number(match[2]);d=Number(match[3])}
+ else{const digits=raw.replace(/\D/g,'');if(digits.length!==8)return'';y=Number(digits.slice(0,4));m=Number(digits.slice(4,6));d=Number(digits.slice(6,8))}
+ const iso=`${String(y).padStart(4,'0')}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+ if(!Number.isInteger(y)||!Number.isInteger(m)||!Number.isInteger(d)||m<1||m>12||d<1||d>31||iso<min||iso>max)return'';
+ const check=new Date(`${iso}T00:00:00Z`);return Number.isNaN(check.getTime())||check.toISOString().slice(0,10)!==iso?'':iso;
+}
+function siteDateFieldMarkup(f,value,required,readonly,help){
+ const col=Number(f.col),iso=parseSiteKeyboardDate(value)||siteDateInputValue(value),shown=iso||'';
+ const old=String(value??'').trim(),oldHelp=!iso&&old?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(old)}</small>`:'';
+ return `<label class="siteField${f.financial?' financialField':''}"><span>${esc(siteDisplayFieldLabel(f))}${col===4?' *':''}</span><span class="siteDateInputWrap"><input data-site-col="${col}" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="${esc(shown)}"${required?' required':''}${readonly?' readonly aria-readonly="true"':''}><button type="button" class="siteDateCalendarButton" data-site-open-calendar aria-label="${esc(siteDisplayFieldLabel(f))} 달력 열기"${readonly?' disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></svg></button><input class="siteDatePickerOverlay" type="date" data-site-date-picker min="1900-01-01" max="2100-12-31" value="${esc(shown)}" aria-label="${esc(siteDisplayFieldLabel(f))} 달력 선택" tabindex="-1" ${readonly?'disabled':''}></span>${help||''}${oldHelp}</label>`;
+}
 function maintenanceManagerSelectOptions(v){
  const cur=String(v??'').trim(),base=['','O','X'],vals=base.includes(cur)?base:[...base,cur];
  return vals.map(x=>`<option value="${esc(x)}" ${x===cur?'selected':''}>${x===''?'선택 안 함':(x===cur&&!base.includes(cur)?`기존값: ${esc(x)}`:esc(x))}</option>`).join('');
@@ -2023,9 +2037,9 @@ function syncRegionFromSiteAddress(){
  return region;
 }
 function syncElectronicReceiptFromYellowFile(value){
- siteEditValues[26]=String(value??'');
+ siteEditValues[26]=parseSiteKeyboardDate(value)||String(value??'');
  const input=$('siteEditFields')?.querySelector('[data-site-col="27"]');
- if(input)input.value=siteDateInputValue(siteEditValues[26])||'';
+ if(input){input.value=parseSiteKeyboardDate(siteEditValues[26])||siteDateInputValue(siteEditValues[26])||'';const picker=input.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(picker)picker.value=input.value}
 }
 // 유사 현장의 이번 업무 실적은 새 현장에 복사하지 않습니다.
 const SITE_TEMPLATE_CLEAR_COLS=[2,3,10,11,12,13,16,19,21,22,23,26,27,28,29,30,31,32,33,40,50,51,52];
@@ -2038,8 +2052,8 @@ function siteTemplateMoneyExcluded(targetName,sourceName,values){return !!siteTe
 function fillCreateInspectionDates(value){
  if(siteEditMode!=='create'||!value)return;
  siteScheduleDraft.end=value;siteEditValues[27]=value;siteEditValues[28]=value;
- const end=$('siteScheduleEnd');if(end)end.value=value;
- for(const col of [28,29]){const input=$('siteEditFields')?.querySelector(`[data-site-col="${col}"]`);if(input)input.value=value}
+ const end=$('siteScheduleEnd');if(end){end.value=value;const picker=end.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(picker)picker.value=value}
+ for(const col of [28,29]){const input=$('siteEditFields')?.querySelector(`[data-site-col="${col}"]`);if(input){input.value=value;const picker=input.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(picker)picker.value=value}}
  syncFieldEndFromPlan();
 }
 function clearSiteTemplateWorkValues(){
@@ -2049,7 +2063,7 @@ function clearSiteTemplateWorkValues(){
 function syncFieldEndFromPlan(){
  const plan=String(siteEditValues[28]??'').trim(),end=$('siteEditFields')?.querySelector('[data-site-col="30"]');
  if(plan)siteEditValues[29]=plan;
- if(end){if(plan)end.value=plan;end.readOnly=!!plan;end.toggleAttribute('aria-readonly',!!plan)}
+ if(end){if(plan){end.value=plan;const picker=end.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(picker)picker.value=plan}end.readOnly=!!plan;end.toggleAttribute('aria-readonly',!!plan);const button=end.closest('.siteDateInputWrap')?.querySelector('[data-site-open-calendar]');if(button)button.disabled=!!plan;const picker=end.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(picker)picker.disabled=!!plan}
  return plan;
 }
 const PERFORMANCE_CONFIRM_RULES={
@@ -2204,7 +2218,7 @@ function applySiteInputLanguageHints(root){
   }
  });
 }
-function siteInputType(col){return dateCols.has(col)?'date':'text'}
+function siteInputType(col){return 'text'}
 const mobileCreateMedia=window.matchMedia('(max-width:750px)');
 function mobileCreatePages(){return siteEditMode==='create'&&mobileCreateMedia.matches}
 const mobileCreateTitles=['유사 현장 불러오기','기본정보','진행 담당·계약','유지관리 전체수량','성능점검 전체수량','성능점검수량'];
@@ -2246,6 +2260,7 @@ $('siteCreateEditorHost').addEventListener('touchend',e=>{
 $('siteCreateEditorHost').addEventListener('touchcancel',()=>{createTouchStart=null},{passive:true});
 mobileCreateMedia.addEventListener('change',()=>{if($('page-site-create').classList.contains('active')){if(siteEditGroupIndex<0&&!mobileCreatePages())siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields()}});
 function renderSiteEditTabsDesktop(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
+function siteScheduleDateField(id,label,value,enabled){const iso=parseSiteKeyboardDate(value,'2000-01-01','2050-12-31')||'';return `<label class="siteField"><span>${label}</span><span class="siteDateInputWrap"><input id="${id}" data-site-schedule-date="${id==='siteScheduleStart'?'start':'end'}" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD" value="${esc(iso)}" ${enabled?'':'disabled'}><button type="button" class="siteDateCalendarButton" data-site-open-calendar aria-label="${label} 달력 열기" ${enabled?'':'disabled'}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></svg></button><input class="siteDatePickerOverlay" type="date" data-site-date-picker min="2000-01-01" max="2050-12-31" value="${esc(iso)}" aria-label="${label} 달력 선택" tabindex="-1" ${enabled?'':'disabled'}></span></label>`}
 function renderSiteEditFields(){
  syncMobileCreatePanels();if(mobileCreatePages()&&siteEditGroupIndex===-1){$('siteEditFields').innerHTML='';return}
  syncInspectionType(false);syncContractAmount(false);
@@ -2266,16 +2281,17 @@ function renderSiteEditFields(){
   if(f.col===50)return `<label class="siteField financialField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="50" data-money-input="1" type="text" value="${esc(v)}" placeholder="예 : 값 또는 수식 =(1000000-500000)/2 입력" aria-describedby="documentRevenueFormulaHelp"><small class="fieldHelp" id="documentRevenueFormulaHelp">숫자 또는 =로 시작하는 수식 입력 · Enter 또는 입력칸을 벗어나면 계산 · 소수 첫째 자리 반올림</small></label>`;
   if(f.col===52){const ratio=syncBindingRatioFromAmounts(false);return `<label class="siteField financialField autoRatioField"><span>${esc(siteDisplayFieldLabel(f))}</span><input data-site-col="52" type="text" value="${esc(siteMoneyInput(ratio,52))}" readonly aria-readonly="true"><small class="fieldHelp">자동계산: (제본비 ÷ 금액(VAT 별도)) × 100%</small></label>`}
   const lockedEnd=f.col===30&&!!String(siteEditValues[28]??'').trim();
+  if(dateCols.has(Number(f.col)))return siteDateFieldMarkup(f,v,!!req,lockedEnd,help);
   const perfMeta=PERFORMANCE_CONFIRM_BY_COL[f.col];
   if(perfMeta){const manual=sitePerformanceManualCols.has(f.col);return `<label class="siteField performanceConfirmField${manual?' manualOverride':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><div class="performanceConfirmRow"><input data-site-col="${f.col}" type="text" inputmode="numeric" value="${esc(v)}"><button type="button" class="ghost smallBtn performanceAutoBtn" data-performance-auto="${f.col}">자동계산</button></div><small class="fieldHelp">대상 전체수량 × ${perfMeta.label}${manual?' · 현재 직접 수정값 사용':' · 소수점은 올림'}</small></label>`}
   const koreanHint=f.col===16?' lang="ko" inputmode="text" autocomplete="off"': '';
   return `<label class="siteField${fin}"><span>${esc(siteDisplayFieldLabel(f))}${f.col===4?' *':''}</span><input data-site-col="${f.col}"${koreanHint} ${f.financial?'data-money-input="1" inputmode="decimal" ':''}type="${siteInputType(f.col)}" value="${esc(dateCols.has(Number(f.col))?(siteDateInputValue(v)||''):v)}"${req}${lockedEnd?' readonly aria-readonly="true"':''}>${help}${dateCols.has(Number(f.col))&&!siteDateInputValue(v)&&String(v||'').trim()?`<small class="fieldHelp">기존값은 보존됩니다: ${esc(v)}</small>`:''}</label>`;
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  if(g?.[0]==='진행·담당·계약'&&canViewSchedule()){
- const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`<label class="siteField"><span>점검시작 계획일자</span><input id="siteScheduleStart" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.start)}" ${canEditSchedule()?'':'disabled'}></label><label class="siteField"><span>점검종료 계획일자</span><input id="siteScheduleEnd" type="date" min="2000-01-01" max="2050-12-31" value="${esc(siteScheduleDraft.end)}" ${canEditSchedule()?'':'disabled'}></label><small class="fieldHelp">${siteEditMode==='create'?'계획 시작일을 입력하면 계획 종료일·점검 시작일·점검 종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 수정할 수 있습니다. ':''}점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
+ const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`${siteScheduleDateField('siteScheduleStart','점검시작 계획일자',siteScheduleDraft.start,canEditSchedule())}${siteScheduleDateField('siteScheduleEnd','점검종료 계획일자',siteScheduleDraft.end,canEditSchedule())}<small class="fieldHelp">${siteEditMode==='create'?'계획 시작일을 입력하면 계획 종료일·점검 시작일·점검 종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 수정할 수 있습니다. ':''}점검일정 달력과 동일한 계획일자입니다. 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
  const first=block.querySelector('#siteScheduleStart').closest('label'),last=block.querySelector('#siteScheduleEnd').closest('label');first.dataset.planOrder='138';last.dataset.planOrder='139';
  const help=block.querySelector('small');block.before(first,last);block.remove();help.classList.add('siteScheduleInlineHelp');fieldsRoot.append(help);
- $('siteScheduleStart').oninput=e=>{siteScheduleDraft.start=e.target.value;siteScheduleDraft.changed=true;fillCreateInspectionDates(e.target.value)};$('siteScheduleEnd').oninput=e=>{siteScheduleDraft.end=e.target.value;siteScheduleDraft.changed=true};
+ for(const [id,key] of [['siteScheduleStart','start'],['siteScheduleEnd','end']]){const input=$(id),picker=input.closest('.siteDateInputWrap').querySelector('[data-site-date-picker]'),button=input.closest('.siteDateInputWrap').querySelector('[data-site-open-calendar]');input.oninput=()=>{const raw=input.value.trim(),iso=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31');input.setCustomValidity(raw&&!iso?'날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요. (2000~2050년)':'');if(iso){picker.value=iso;siteScheduleDraft[key]=iso}else if(!raw){picker.value='';siteScheduleDraft[key]=''}siteScheduleDraft.changed=true;if(key==='start'&&iso)fillCreateInspectionDates(iso)};input.onblur=()=>{const raw=input.value.trim();if(!raw){input.setCustomValidity('');return}const iso=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31');if(!iso){input.setCustomValidity('날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요. (2000~2050년)');return}input.value=iso;input.setCustomValidity('');picker.value=iso;siteScheduleDraft[key]=iso;if(key==='start')fillCreateInspectionDates(iso)};picker.onchange=()=>{input.value=picker.value;input.setCustomValidity('');input.dispatchEvent(new Event('input',{bubbles:true}))};button.onclick=()=>{try{if(typeof picker.showPicker==='function')picker.showPicker();else picker.click()}catch{try{picker.click()}catch{}}}}
  }
  if(g?.[0]==='진행·담당·계약'){fieldsRoot.querySelectorAll('[data-site-col]').forEach(input=>{const label=input.closest('label');if(label)label.dataset.planOrder=input.dataset.siteCol});arrangeInspectionDateFields(fieldsRoot,'[data-plan-order]','planOrder')}
  if((siteEditGroupIndex===2||siteEditGroupIndex===3)&&window.QuantityOCR){
@@ -2292,18 +2308,21 @@ function renderSiteEditFields(){
  applySiteInputLanguageHints(fieldsRoot);
  $('siteEditFields').querySelectorAll('[data-site-col]').forEach(inp=>inp.oninput=()=>{
   const col=Number(inp.dataset.siteCol),before=String(siteEditValues[col-1]??'');
-  siteEditValues[col-1]=inp.value;if(col===50)inp.setCustomValidity('');
+  if(dateCols.has(col)){const raw=inp.value.trim(),iso=parseSiteKeyboardDate(raw);siteEditValues[col-1]=iso||raw;const picker=inp.closest('.siteDateInputWrap')?.querySelector('[data-site-date-picker]');if(iso&&picker)picker.value=iso;inp.setCustomValidity(raw&&!iso?'날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.':'')}
+  else siteEditValues[col-1]=inp.value;
+  if(col===50)inp.setCustomValidity('');
   if(col===31)siteScheduleDraft.inspectors=inp.value;
   if([10,12,14].includes(col))syncInspectionType(true);
   if([46,47,48].includes(col))syncContractAmount(true);
-  if(col===26)syncElectronicReceiptFromYellowFile(inp.value);
+  if(col===26)syncElectronicReceiptFromYellowFile(parseSiteKeyboardDate(inp.value)||inp.value);
   if(col===50||col===51)syncBindingRatioFromAmounts(true);
   if(PERFORMANCE_CONFIRM_BY_COL[col])sitePerformanceManualCols.add(col);
   if(PERFORMANCE_CONFIRM_RULES[col])syncPerformanceConfirmed(col,false);
-  if(col===29){if(inp.value)siteEditValues[29]=inp.value;else if(String(siteEditValues[29]??'')===before)siteEditValues[29]='';syncFieldEndFromPlan()}
+  if(col===29){const normalized=parseSiteKeyboardDate(inp.value);if(normalized)siteEditValues[29]=normalized;else if(!inp.value.trim()&&String(siteEditValues[29]??'')===before)siteEditValues[29]='';syncFieldEndFromPlan()}
   if(siteEditMode==='create'&&col===4)scheduleSiteNameSuggestions(inp.value);
   refreshQuantityHighlights(fieldsRoot);
  });
+ $('siteEditFields').querySelectorAll('.siteDateInputWrap').forEach(w=>{const input=w.querySelector('input[data-site-col]'),picker=w.querySelector('[data-site-date-picker]'),button=w.querySelector('[data-site-open-calendar]');if(input){input.addEventListener('blur',()=>{const raw=input.value.trim();if(!raw){input.setCustomValidity('');siteEditValues[Number(input.dataset.siteCol)-1]='';if(picker)picker.value='';return}const iso=parseSiteKeyboardDate(raw);if(!iso){input.setCustomValidity('날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.');return}input.value=iso;input.setCustomValidity('');siteEditValues[Number(input.dataset.siteCol)-1]=iso;if(picker)picker.value=iso})}if(picker)picker.addEventListener('change',()=>{if(!input)return;input.value=picker.value;input.setCustomValidity('');input.dispatchEvent(new Event('input',{bubbles:true}))});if(button&&picker)button.onclick=()=>{try{if(typeof picker.showPicker==='function')picker.showPicker();else picker.click()}catch{try{picker.click()}catch{}}}});
  $('siteEditFields').querySelectorAll('[data-money-input]').forEach(inp=>inp.onblur=()=>{const col=Number(inp.dataset.siteCol);if(col===50&&!commitDocumentRevenueFormula(inp))return;inp.value=siteMoneyInput(inp.value,col);siteEditValues[col-1]=inp.value;if([46,47,48].includes(col))syncContractAmount(true);if(col===50||col===51)syncBindingRatioFromAmounts(true)});
  $('siteEditFields').querySelectorAll('[data-performance-auto]').forEach(btn=>btn.onclick=()=>{const col=Number(btn.dataset.performanceAuto);resetPerformanceConfirmedToAuto(col);renderSiteEditFields()});
  const revenueInput=fieldsRoot.querySelector('[data-site-col="50"]');if(revenueInput)revenueInput.onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){if(!commitDocumentRevenueFormula(revenueInput)){e.preventDefault();e.stopPropagation();revenueInput.reportValidity()}}};
@@ -2426,7 +2445,7 @@ function closeSiteEditor(){
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');siteEditMode='create';mountSiteEditor(true);resetSiteEditor();if(mobileCreatePages())siteEditGroupIndex=-1;$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);setTimeout(()=>{if(!mobileCreatePages())$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';mountSiteEditor(false);resetSiteEditor();siteEditRow=r;siteScheduleDraft={start:r.schedule_plan_start==='완료'?'':(r.schedule_plan_start||''),end:r.schedule_plan_end==='완료'?'':(r.schedule_plan_end||''),inspectors:r.schedule_inspectors||'',changed:false};$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
 function sitePayload(){siteEditValues=siteEditValues.map((v,i)=>normalizeCell(v,i+1));syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
-async function saveSiteEdit(e){e.preventDefault();if(!commitDocumentRevenueFormula($('siteEditFields')?.querySelector('[data-site-col="50"]')))return;siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
+async function saveSiteEdit(e){e.preventDefault();for(const col of dateCols){const raw=String(siteEditValues[col-1]??'').trim();if(raw&&!parseSiteKeyboardDate(raw)){siteEditGroupIndex=siteEditGroups.findIndex(g=>g.some?.(x=>Number(x)===col)||col>=g[1]&&col<=g[2]);siteEditGroupIndex=Math.max(0,siteEditGroupIndex);renderSiteEditTabs();renderSiteEditFields();const bad=$('siteEditFields')?.querySelector(`[data-site-col="${col}"]`);bad?.setCustomValidity('날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.');bad?.reportValidity();return}}for(const [key,label] of [['start','점검시작 계획일자'],['end','점검종료 계획일자']]){const input=$(`siteSchedule${key==='start'?'Start':'End'}`),raw=String(input?.value??'').trim();if(raw&&!parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31')){input?.setCustomValidity(`${label}는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.`);input?.reportValidity();return}}if(!commitDocumentRevenueFormula($('siteEditFields')?.querySelector('[data-site-col="50"]')))return;siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_source_id:savedId,p_data:payload});if(error)throw error;notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
  const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
  const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);

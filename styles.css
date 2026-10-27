@@ -1420,7 +1420,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .unwrittenExemptCard strong{display:block}.unwrittenExemptCard p{margin:5px 0;color:#334155}.unwrittenExemptCard small{color:#64748b}
 @media(max-width:800px){.unwrittenExemptCard{align-items:flex-start;flex-direction:column}.unwrittenExemptCard button{align-self:flex-end}.unwrittenSummary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-/* V245: clickable unwritten dashboard KPI filters */
+/* V246: clickable unwritten dashboard KPI filters */
 #page-unwritten .unwrittenKpi{display:block;width:100%;text-align:left;color:#172b45;font:inherit;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
 #page-unwritten .unwrittenKpi:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(20,30,50,.14)}
 #page-unwritten .unwrittenKpi:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
@@ -1430,3 +1430,15 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .unwrittenExemptTable td{padding:10px 8px;border-top:1px solid #e7edf5;vertical-align:middle}
 #page-unwritten .unwrittenOwnerSection [hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){#page-unwritten .unwrittenKpi{transition:none}}
+
+/* V246: stable four-digit year input for site editor dates */
+.siteDateInputWrap{position:relative;display:block;width:100%;min-width:0}
+.siteDateInputWrap>input[data-site-col],.siteDateInputWrap>input[data-site-schedule-date]{width:100%;padding-right:48px;font-variant-numeric:tabular-nums}
+.siteDateCalendarButton{position:absolute;right:0;top:0;display:grid;place-items:center;width:44px;height:100%;min-height:42px;padding:0;border:0;border-radius:0 9px 9px 0;background:transparent;color:#334155;cursor:pointer;z-index:2}
+.siteDateCalendarButton:hover:not(:disabled){background:#eef4ff;color:#1d4ed8}
+.siteDateCalendarButton:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}
+.siteDateCalendarButton:disabled{opacity:.45;cursor:not-allowed}
+.siteDateCalendarButton svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.siteDateInputWrap .siteDatePickerOverlay{position:absolute;left:50%;top:50%;width:1px;height:1px;min-height:1px;padding:0;opacity:.01;pointer-events:none}
+.siteDateInputWrap .siteDatePickerOverlay:disabled{pointer-events:none}
+@media(prefers-reduced-motion:reduce){.siteDateCalendarButton{transition:none}}
