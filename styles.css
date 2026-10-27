@@ -1384,3 +1384,9 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 @media(max-width:800px){.assignmentSummary{grid-template-columns:1fr 1fr;gap:8px}.assignmentMetric{padding:12px}.assignmentMetric:first-child{grid-column:1/-1}.assignmentMetric>strong{font-size:25px}.assignmentPanel{padding:12px}.assignmentInspectors{display:flex;overflow-x:auto;padding:2px 1px 8px;scrollbar-width:thin}.assignmentInspectorCard{flex:0 0 135px;min-height:68px}.assignmentTable{min-width:1500px}}
  
 .assignmentPage .pageTitle h2,.assignmentPanel .sectionHead h3{color:#10284a!important;font-weight:800}.assignmentClickableRow{cursor:pointer}.assignmentClickableRow:hover td{background:#edf4ff;color:#123b70}.assignmentClickableRow:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}.assignmentClickableRow td:first-child{font-weight:700;color:#17365d}
+
+/* V234: fixed assignment header and account-specific saved columns */
+#assignmentTableWrap{max-height:min(68vh,720px);overflow:auto;overscroll-behavior:contain;position:relative;scrollbar-gutter:stable;}
+#assignmentTable thead th{position:sticky;top:0;z-index:6;background:#e7effc;box-shadow:0 1px 0 #8eb3ff;}
+#assignmentTable thead th .assignmentResizeGrip{z-index:7;}
+@media(max-width:800px){#assignmentTableWrap{max-height:64vh;}}
