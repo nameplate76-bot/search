@@ -1390,3 +1390,17 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #assignmentTable thead th{position:sticky;top:0;z-index:6;background:#e7effc;box-shadow:0 1px 0 #8eb3ff;}
 #assignmentTable thead th .assignmentResizeGrip{z-index:7;}
 @media(max-width:800px){#assignmentTableWrap{max-height:64vh;}}
+/* V236: compact expandable inspector filter */
+#page-schedule .scheduleInspectorActions [data-inspector-toggle]{font-weight:700;color:#173f7a;background:#f2f7ff;border-color:#b9cde7}
+#page-schedule .scheduleInspectorOptions[hidden],#page-schedule .scheduleInspectorActions [hidden]{display:none!important}
+/* V237: centered PDF loading feedback */
+.reportPdfLoading{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:20px;background:rgba(15,32,61,.48);backdrop-filter:blur(2px)}
+.reportPdfLoading.hidden{display:none!important}
+.reportPdfLoadingCard{position:relative;overflow:hidden;box-sizing:border-box;width:min(440px,100%);padding:34px 30px 28px;border:1px solid #d6e1f0;border-radius:16px;background:#fff;text-align:center;color:#172b45;box-shadow:0 20px 60px rgba(0,12,40,.28)}
+.reportPdfLoadingCard .searchLoadingTrack{height:5px}
+.reportPdfLoadingCard .searchLoadingSpinner{margin:4px auto 18px;width:52px;height:52px;flex-basis:52px}
+.reportPdfLoadingCard h3{margin:0 0 8px;color:#172e54;font-size:22px;line-height:1.4}
+.reportPdfLoadingCard p{margin:0;color:#526782;font-size:15px;line-height:1.6}
+.reportPdfLoadingCard small{display:block;margin-top:14px;color:#526782;font-size:13px}
+@media(max-width:600px){.reportPdfLoading{padding:16px}.reportPdfLoadingCard{padding:30px 20px 24px}.reportPdfLoadingCard h3{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.reportPdfLoadingCard .searchLoadingSpinner,.reportPdfLoadingCard .searchLoadingTrack i{animation:none!important}}
