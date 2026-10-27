@@ -1442,3 +1442,6 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .siteDateInputWrap .siteDatePickerOverlay{position:absolute;left:50%;top:50%;width:1px;height:1px;min-height:1px;padding:0;opacity:.01;pointer-events:none}
 .siteDateInputWrap .siteDatePickerOverlay:disabled{pointer-events:none}
 @media(prefers-reduced-motion:reduce){.siteDateCalendarButton{transition:none}}
+
+/* V247: account preference sync notice */
+#uiPreferencesStatus{margin:10px 14px 0}
