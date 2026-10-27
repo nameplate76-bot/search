@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261027-v243">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261027-v244">
 <script>
 (function(){
-  const BUILD='20261027-v243';
+  const BUILD='20261027-v244';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -67,7 +67,7 @@
 /* V185 selected-month matrix does not need a 12-month minimum width */
 #salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
 
-/* V243 explicit calendar picker button */
+/* V244 explicit calendar picker button */
 .scheduleDateInputWrap{position:relative;display:block;width:100%;min-width:0}
 .schedulePlanForm .scheduleDateInputWrap>input[name="start"],.schedulePlanForm .scheduleDateInputWrap>input[name="end"]{padding-right:48px}
 .scheduleDateCalendarButton{position:absolute;right:0;top:0;display:grid;place-items:center;width:46px;height:100%;min-height:46px;padding:0;border:0;border-radius:0 9px 9px 0;background:transparent;color:#334155;cursor:pointer;z-index:2}.scheduleDateCalendarButton:hover{background:#eef4ff;color:#1d4ed8}.scheduleDateCalendarButton:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}.scheduleDateCalendarButton svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -390,7 +390,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V243</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V244</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -427,7 +427,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 </section>
 <section id="page-unwritten" class="page unwrittenPage">
   <div class="pageTitle">
-    <div><h2>보고서 미작성 대시보드</h2><p>현장점검이 종료되었지만 보고서 작성 완료일이 없는 현장을 문서작성 담당자별로 집계합니다. 보고서 미작성 조회 권한이 있는 직원이 조회할 수 있습니다. 현장 수정은 별도 수정 권한이 필요합니다.</p></div>
+      <div><h2>보고서 미작성 대시보드</h2><p>현장점검이 종료되었지만 보고서 작성 완료일이 없는 현장을 문서작성 담당자별로 집계합니다. 보고서 작성이 불필요한 현장은 별도 분류해 미작성 건수에서 제외합니다.</p></div>
     <div class="actions"><button id="unwrittenFieldBtn" class="ghost">표시 항목 설정</button><button id="unwrittenRefresh" class="ghost">새로고침</button></div>
   </div>
   <div id="unwrittenSummary" class="unwrittenSummary"></div>
@@ -438,6 +438,10 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
   <div class="unwrittenListSection">
     <div class="sectionHead"><div><h3 id="unwrittenListTitle">미작성 현장 전체</h3><small id="unwrittenListMeta"></small></div><button type="button" id="unwrittenPrint" class="primary">🖨 목록 인쇄</button></div>
     <div id="unwrittenList" class="unwrittenList"></div>
+  </div>
+  <div class="unwrittenListSection unwrittenExemptSection">
+    <div class="sectionHead"><div><h3>보고서 작성 불필요 현장</h3><small>미작성 건수에서 제외된 현장입니다. 분류 사유와 처리자, 처리 시각을 확인할 수 있습니다.</small></div></div>
+    <div id="unwrittenExemptList" class="unwrittenExemptList"></div>
   </div>
 </section>
 <section id="page-sales" class="page salesPage"><section id="salesLoading" class="searchLoading salesLoading hidden" aria-label="매출 자료 조회 상태"><div class="searchLoadingTrack" aria-hidden="true"><i></i></div><div class="searchLoadingHead"><span class="searchLoadingSpinner" aria-hidden="true"></span><div role="status" aria-live="polite"><h3>매출 자료를 불러오고 있습니다</h3><p id="salesLoadingHint">조회가 완료되면 매출 차트와 표가 자동으로 표시됩니다.</p></div><small id="salesLoadingElapsed">경과 0초</small></div><div class="salesLoadingOverview" aria-hidden="true"><div class="salesLoadingChart"><i style="height:35%"></i><i style="height:60%"></i><i style="height:45%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:70%"></i><i style="height:90%"></i><i style="height:65%"></i></div><div class="salesLoadingSummary"><i></i><i></i><i></i><i></i><i></i></div></div><div class="searchSkeleton" aria-hidden="true"><div class="searchSkeletonHeader"><span>현장명</span><span>담당자</span><span>계약금액</span><span>문서작성 매출</span><span>작성 완료일</span></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div></div></section><div id="salesLoadingError" class="statusBanner warn hidden" role="alert"><span id="salesLoadingErrorText"></span><button type="button" id="salesLoadingRetry">다시 불러오기</button></div>
@@ -567,7 +571,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261027-v243"></script><script src="fields.js?v=20261027-v243"></script><script src="quantity-ocr.js?v=20261027-v243"></script><script id="bundled-report-files-js" data-build="V243">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261027-v244"></script><script src="fields.js?v=20261027-v244"></script><script src="quantity-ocr.js?v=20261027-v244"></script><script id="bundled-report-files-js" data-build="V244">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -710,7 +714,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261027-v243"></script><script id="bundled-inspection-schedule-js" data-build="V243">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261027-v244"></script><script id="bundled-inspection-schedule-js" data-build="V244">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -889,7 +893,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V243">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V244">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -912,7 +916,7 @@ let salesFreezeSelectMode=false,salesFreezeLayoutFrame=0,suppressSalesSortClick=
 let salesAssignedRows=[];
 let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
-let unwrittenRows=[],unwrittenOwnerFilter='all';
+let unwrittenRows=[],unwrittenSourceRows=[],unwrittenExemptions=[],unwrittenOwnerFilter='all';
 let unwrittenDisplayFields=[];
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
@@ -2462,10 +2466,11 @@ function renderUnwrittenDashboardSummary(){
  const ownerEntries=[...ownerMap.entries()].sort((a,b)=>(a[0]==='미배정'?-1:b[0]==='미배정'?1:b[1]-a[1]||a[0].localeCompare(b[0],'ko')));
  if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
- summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi"><span>담당자</span><b>${ownerEntries.filter(([n])=>n!=='미배정').length.toLocaleString()}명</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
+ summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi exemptKpi"><span>보고서 작성 불필요</span><b>${unwrittenExemptions.length.toLocaleString()}건</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
  owners.innerHTML=`<button class="ownerCard ${unwrittenOwnerFilter==='all'?'active':''}" data-owner="all"><span>전체</span><b>${unwrittenRows.length.toLocaleString()}건</b></button>`+ownerEntries.map(([name,count])=>`<button class="ownerCard ${unwrittenOwnerFilter===name?'active':''}" data-owner="${esc(name)}"><span>${esc(name)}</span><b>${count.toLocaleString()}건</b></button>`).join('');
  owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{unwrittenOwnerFilter=b.dataset.owner;renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
  renderUnwrittenList();
+ renderUnwrittenExemptions();
 }
 async function loadUnwrittenDashboard(force=false){
  if(!canViewUnwritten())return false;
@@ -2476,11 +2481,26 @@ async function loadUnwrittenDashboard(force=false){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
  unwrittenLoadPromise=(async()=>{try{
-  const rows=await fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}));
+  const [rows,exemptionResult]=await Promise.all([fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true})),sb.from('staff_report_exemptions').select('source_id,reason,created_by_name,created_at').order('created_at',{ascending:false})]);
+  if(exemptionResult.error)throw exemptionResult.error;
   if(!current())return;
-  unwrittenRows=rows.filter(isUnwrittenReport);unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
+  unwrittenExemptions=exemptionResult.data||[];const exemptIds=new Set(unwrittenExemptions.map(x=>Number(x.source_id)));
+  unwrittenSourceRows=rows.filter(isUnwrittenReport);unwrittenRows=unwrittenSourceRows.filter(r=>!exemptIds.has(Number(r.source_id)));unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
  }catch(e){if(!current())return;summary.innerHTML=`<div class="statusBanner warn">미작성 현황 갱신 실패: ${esc(e.message)} · 새로고침으로 다시 조회해 주세요.</div>`;return false}finally{if(request===unwrittenRequestSeq)unwrittenLoadPromise=null}})();
  return unwrittenLoadPromise;
+}
+function renderUnwrittenExemptions(){
+ const root=$('unwrittenExemptList');if(!root)return;
+ if(!unwrittenExemptions.length){root.innerHTML='<div class="emptyDashboard">보고서 작성 불필요로 분류된 현장이 없습니다.</div>';return}
+const rowsById=new Map(unwrittenSourceRows.map(r=>[Number(r.source_id),r]));
+ root.innerHTML=unwrittenExemptions.map(x=>{const site=rowsById.get(Number(x.source_id));return `<article class="unwrittenExemptCard"><div><strong>${esc(site?.site_name||`현장 번호 ${x.source_id}`)}</strong><p>${esc(x.reason)}</p><small>처리자 ${esc(x.created_by_name||'이름 미등록')} · ${esc(x.created_at?new Date(x.created_at).toLocaleString('ko-KR'):'시각 미등록')}</small></div>${canEditSite()?`<button type="button" class="ghost" data-exempt-restore="${Number(x.source_id)}">미작성으로 복원</button>`:''}</article>`}).join('');
+ root.querySelectorAll('[data-exempt-restore]').forEach(b=>b.onclick=async()=>{const id=Number(b.dataset.exemptRestore);if(!confirm('이 현장을 보고서 미작성 집계에 다시 포함할까요?'))return;b.disabled=true;try{const{error}=await sb.rpc('staff_report_exemption_clear',{p_source_id:id});if(error)throw error;unwrittenCacheReady=false;await loadUnwrittenDashboard(true)}catch(e){alert('미작성 집계 복원 실패: '+e.message);b.disabled=false}});
+}
+async function markReportUnneeded(sourceId){
+ if(!canEditSite())return;
+ const reason=prompt('보고서 작성이 불필요한 사유를 입력해 주세요. 예: 보고서 작성 계약 없음, 점검 완료 후 보고서 미작성 합의');
+ if(reason===null)return;const clean=reason.trim();if(!clean)return alert('분류 사유를 입력해 주세요.');if(clean.length>500)return alert('사유는 500자 이내로 입력해 주세요.');
+ try{const{error}=await sb.rpc('staff_report_exemption_set',{p_source_id:Number(sourceId),p_reason:clean});if(error)throw error;unwrittenCacheReady=false;await loadUnwrittenDashboard(true)}catch(e){alert('보고서 작성 불필요 분류 실패: '+e.message)}
 }
 
 const UNWRITTEN_LIST_COLUMNS={
@@ -2588,7 +2608,7 @@ function unwrittenCellHtml(r,key,index){
  if(key==='receipt')return `<td class="center uw-col-receipt">${esc(reportValue(r,27)||'-')}</td>`;
  if(key==='field_end')return `<td class="center uw-col-field_end">${esc(String(r.field_end||reportValue(r,30)||'-'))}</td>`;
  if(key==='field_inspector')return `<td class="center uw-col-field_inspector">${esc(r.field_inspector||reportValue(r,31)||'-')}</td>`;
- if(key==='actions')return `<td class="center reportActions uw-col-actions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button>`:''}</td>`;
+ if(key==='actions')return `<td class="center reportActions uw-col-actions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button><button class="ghost smallBtn" data-report-unneeded="${r.source_id}">작성 불필요</button>`:''}</td>`;
  return '<td></td>';
 }
 let unwrittenFreezeSelectMode=false;
@@ -2743,11 +2763,12 @@ function renderUnwrittenList(){
  }else{
    const selected=sanitizeUnwrittenDisplayFields(unwrittenDisplayFields);
    const mobileValue=(r,key)=>{const days=elapsedFromReceipt(r);if(key==='site_name')return r.site_name||'-';if(key==='important')return reportValue(r,16)||'-';if(key==='expiry')return reportValue(r,18)||'-';if(key==='elapsed')return days===null?'-':days+'일';if(key==='corporation')return reportValue(r,24)||'-';if(key==='inspection_type')return reportValue(r,25)||'-';if(key==='receipt')return reportValue(r,27)||'-';if(key==='field_end')return String(r.field_end||reportValue(r,30)||'-');if(key==='field_inspector')return r.field_inspector||reportValue(r,31)||'-';return'-'};
-   root.innerHTML=filtered.map(r=>{const days=elapsedFromReceipt(r),title=selected.includes('site_name')?esc(r.site_name||'-'):'미작성 현장';const badge=selected.includes('elapsed')?`<span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span>`:'';const details=selected.filter(k=>k!=='site_name'&&k!=='elapsed').map(k=>`<div><dt>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</dt><dd>${esc(mobileValue(r,k))}</dd></div>`).join('');return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${title}</h4>${badge}</div>${details?`<dl>${details}</dl>`:''}<div class="siteActions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button>`:''}</div></article>`}).join('');
+   root.innerHTML=filtered.map(r=>{const days=elapsedFromReceipt(r),title=selected.includes('site_name')?esc(r.site_name||'-'):'미작성 현장';const badge=selected.includes('elapsed')?`<span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span>`:'';const details=selected.filter(k=>k!=='site_name'&&k!=='elapsed').map(k=>`<div><dt>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</dt><dd>${esc(mobileValue(r,k))}</dd></div>`).join('');return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${title}</h4>${badge}</div>${details?`<dl>${details}</dl>`:''}<div class="siteActions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button><button class="ghost smallBtn" data-report-unneeded="${r.source_id}">작성 불필요</button>`:''}</div></article>`}).join('');
  }
  if(!can('can_view_staff_sites'))root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.remove());
  root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.reportDetailBtn))});
  root.querySelectorAll('[data-report-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.reportEdit))});
+ root.querySelectorAll('[data-report-unneeded]').forEach(b=>b.onclick=e=>{e.stopPropagation();markReportUnneeded(b.dataset.reportUnneeded)});
 }
 
 function updateUnwrittenFieldSelectionCount(){const root=$('unwrittenFieldList'),total=root.querySelectorAll('input[type=checkbox]').length,selected=root.querySelectorAll('input[type=checkbox]:checked').length;$('unwrittenFieldSelectionCount').textContent=`${selected} / ${total}개 선택`}
