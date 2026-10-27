@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261027-v244">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261027-v245">
 <script>
 (function(){
-  const BUILD='20261027-v244';
+  const BUILD='20261027-v245';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -67,7 +67,7 @@
 /* V185 selected-month matrix does not need a 12-month minimum width */
 #salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:360px!important;width:100%!important}.isMonthly .salesMonthlyMatrix .monthCol{min-width:130px!important;width:auto!important;max-width:none!important}#salesMonthlyOverview.isMonthly .salesMonthlyChart svg{min-width:600px}.isMonthly .salesMonthlyMatrix .metricCol{min-width:95px!important;width:95px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:110px}@media(max-width:800px){#salesMonthlyOverview.isMonthly .salesMonthlyMatrix{min-width:320px!important}.isMonthly .salesMonthlyMatrix .stickyMetric{left:68px!important}}
 
-/* V244 explicit calendar picker button */
+/* V245 explicit calendar picker button */
 .scheduleDateInputWrap{position:relative;display:block;width:100%;min-width:0}
 .schedulePlanForm .scheduleDateInputWrap>input[name="start"],.schedulePlanForm .scheduleDateInputWrap>input[name="end"]{padding-right:48px}
 .scheduleDateCalendarButton{position:absolute;right:0;top:0;display:grid;place-items:center;width:46px;height:100%;min-height:46px;padding:0;border:0;border-radius:0 9px 9px 0;background:transparent;color:#334155;cursor:pointer;z-index:2}.scheduleDateCalendarButton:hover{background:#eef4ff;color:#1d4ed8}.scheduleDateCalendarButton:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}.scheduleDateCalendarButton svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -390,7 +390,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V244</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V245</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -439,11 +439,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="sectionHead"><div><h3 id="unwrittenListTitle">미작성 현장 전체</h3><small id="unwrittenListMeta"></small></div><button type="button" id="unwrittenPrint" class="primary">🖨 목록 인쇄</button></div>
     <div id="unwrittenList" class="unwrittenList"></div>
   </div>
-  <div class="unwrittenListSection unwrittenExemptSection">
-    <div class="sectionHead"><div><h3>보고서 작성 불필요 현장</h3><small>미작성 건수에서 제외된 현장입니다. 분류 사유와 처리자, 처리 시각을 확인할 수 있습니다.</small></div></div>
-    <div id="unwrittenExemptList" class="unwrittenExemptList"></div>
-  </div>
-</section>
+  </section>
 <section id="page-sales" class="page salesPage"><section id="salesLoading" class="searchLoading salesLoading hidden" aria-label="매출 자료 조회 상태"><div class="searchLoadingTrack" aria-hidden="true"><i></i></div><div class="searchLoadingHead"><span class="searchLoadingSpinner" aria-hidden="true"></span><div role="status" aria-live="polite"><h3>매출 자료를 불러오고 있습니다</h3><p id="salesLoadingHint">조회가 완료되면 매출 차트와 표가 자동으로 표시됩니다.</p></div><small id="salesLoadingElapsed">경과 0초</small></div><div class="salesLoadingOverview" aria-hidden="true"><div class="salesLoadingChart"><i style="height:35%"></i><i style="height:60%"></i><i style="height:45%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:70%"></i><i style="height:90%"></i><i style="height:65%"></i></div><div class="salesLoadingSummary"><i></i><i></i><i></i><i></i><i></i></div></div><div class="searchSkeleton" aria-hidden="true"><div class="searchSkeletonHeader"><span>현장명</span><span>담당자</span><span>계약금액</span><span>문서작성 매출</span><span>작성 완료일</span></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div><div class="searchSkeletonRow"><i></i><i></i><i></i><i></i><i></i></div></div></section><div id="salesLoadingError" class="statusBanner warn hidden" role="alert"><span id="salesLoadingErrorText"></span><button type="button" id="salesLoadingRetry">다시 불러오기</button></div>
   <section class="salesDashboard" id="salesDashboard">
     <div class="salesDashboardHead">
@@ -571,7 +567,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261027-v244"></script><script src="fields.js?v=20261027-v244"></script><script src="quantity-ocr.js?v=20261027-v244"></script><script id="bundled-report-files-js" data-build="V244">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261027-v245"></script><script src="fields.js?v=20261027-v245"></script><script src="quantity-ocr.js?v=20261027-v245"></script><script id="bundled-report-files-js" data-build="V245">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -714,7 +710,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261027-v244"></script><script id="bundled-inspection-schedule-js" data-build="V244">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261027-v245"></script><script id="bundled-inspection-schedule-js" data-build="V245">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -893,7 +889,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V244">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V245">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -916,7 +912,7 @@ let salesFreezeSelectMode=false,salesFreezeLayoutFrame=0,suppressSalesSortClick=
 let salesAssignedRows=[];
 let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
-let unwrittenRows=[],unwrittenSourceRows=[],unwrittenExemptions=[],unwrittenOwnerFilter='all';
+let unwrittenRows=[],unwrittenSourceRows=[],unwrittenExemptions=[],unwrittenOwnerFilter='all',unwrittenListMode='all';
 let unwrittenDisplayFields=[];
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
@@ -2466,11 +2462,18 @@ function renderUnwrittenDashboardSummary(){
  const ownerEntries=[...ownerMap.entries()].sort((a,b)=>(a[0]==='미배정'?-1:b[0]==='미배정'?1:b[1]-a[1]||a[0].localeCompare(b[0],'ko')));
  if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
- summary.innerHTML=`<div class="unwrittenKpi"><span>전체 미작성</span><b>${unwrittenRows.length.toLocaleString()}건</b></div><div class="unwrittenKpi exemptKpi"><span>보고서 작성 불필요</span><b>${unwrittenExemptions.length.toLocaleString()}건</b></div><div class="unwrittenKpi warn"><span>파일접수 14일 이상</span><b>${over14.toLocaleString()}건</b></div><div class="unwrittenKpi danger"><span>파일접수 30일 이상</span><b>${over30.toLocaleString()}건</b></div>`;
+ const cards=[
+  ['all','전체 미작성',unwrittenRows.length,''],
+  ['exempt','보고서 작성 불필요',unwrittenExemptions.length,'exemptKpi'],
+  ['over14','파일접수 14일 이상',over14,'warn'],
+  ['over30','파일접수 30일 이상',over30,'danger']
+ ];
+ summary.innerHTML=cards.map(([mode,label,count,kind])=>`<button type="button" class="unwrittenKpi ${kind} ${unwrittenListMode===mode?'selected':''}" data-unwritten-mode="${mode}" aria-pressed="${unwrittenListMode===mode}" title="${label} 현장 목록 보기"><span>${label}</span><b>${count.toLocaleString()}건</b></button>`).join('');
+ summary.querySelectorAll('[data-unwritten-mode]').forEach(b=>b.onclick=()=>{unwrittenListMode=b.dataset.unwrittenMode;unwrittenOwnerFilter='all';renderUnwrittenDashboardSummary()});
+ owners.closest('.unwrittenOwnerSection').hidden=unwrittenListMode==='exempt';
  owners.innerHTML=`<button class="ownerCard ${unwrittenOwnerFilter==='all'?'active':''}" data-owner="all"><span>전체</span><b>${unwrittenRows.length.toLocaleString()}건</b></button>`+ownerEntries.map(([name,count])=>`<button class="ownerCard ${unwrittenOwnerFilter===name?'active':''}" data-owner="${esc(name)}"><span>${esc(name)}</span><b>${count.toLocaleString()}건</b></button>`).join('');
  owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{unwrittenOwnerFilter=b.dataset.owner;renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
  renderUnwrittenList();
- renderUnwrittenExemptions();
 }
 async function loadUnwrittenDashboard(force=false){
  if(!canViewUnwritten())return false;
@@ -2490,10 +2493,18 @@ async function loadUnwrittenDashboard(force=false){
  return unwrittenLoadPromise;
 }
 function renderUnwrittenExemptions(){
- const root=$('unwrittenExemptList');if(!root)return;
+ const root=$('unwrittenList');
  if(!unwrittenExemptions.length){root.innerHTML='<div class="emptyDashboard">보고서 작성 불필요로 분류된 현장이 없습니다.</div>';return}
-const rowsById=new Map(unwrittenSourceRows.map(r=>[Number(r.source_id),r]));
- root.innerHTML=unwrittenExemptions.map(x=>{const site=rowsById.get(Number(x.source_id));return `<article class="unwrittenExemptCard"><div><strong>${esc(site?.site_name||`현장 번호 ${x.source_id}`)}</strong><p>${esc(x.reason)}</p><small>처리자 ${esc(x.created_by_name||'이름 미등록')} · ${esc(x.created_at?new Date(x.created_at).toLocaleString('ko-KR'):'시각 미등록')}</small></div>${canEditSite()?`<button type="button" class="ghost" data-exempt-restore="${Number(x.source_id)}">미작성으로 복원</button>`:''}</article>`}).join('');
+ const rowsById=new Map(unwrittenSourceRows.map(r=>[Number(r.source_id),r]));
+ const items=unwrittenExemptions.map(x=>({exemption:x,site:rowsById.get(Number(x.source_id))}));
+ const desktop=window.matchMedia('(min-width:801px)').matches;
+ $('unwrittenListTitle').textContent='보고서 작성 불필요 현장 전체';
+ $('unwrittenListMeta').textContent=`${items.length.toLocaleString()}건 · 미작성 집계에서 제외된 현장 · 사유와 처리자·처리 시각 표시`;
+ if(!desktop){
+  root.innerHTML=items.map(({exemption:x,site})=>`<article class="unwrittenExemptCard"><div><strong>${esc(site?.site_name||`현장 번호 ${x.source_id}`)}</strong><p>${esc(x.reason)}</p><small>처리자 ${esc(x.created_by_name||'이름 미등록')} · ${esc(x.created_at?new Date(x.created_at).toLocaleString('ko-KR'):'시각 미등록')}</small></div>${canEditSite()?`<button type="button" class="ghost" data-exempt-restore="${Number(x.source_id)}">미작성으로 복원</button>`:''}</article>`).join('');
+ }else{
+  root.innerHTML=`<div class="unwrittenTableWrap"><table class="unwrittenExemptTable"><thead><tr><th>No.</th><th>현장명</th><th>문서작성 담당자</th><th>점검종료일자</th><th>분류 사유</th><th>처리자</th><th>처리 시각</th><th>기능</th></tr></thead><tbody>${items.map(({exemption:x,site},i)=>`<tr><td class="center">${i+1}</td><td>${esc(site?.site_name||`현장 번호 ${x.source_id}`)}</td><td>${esc(site?reportOwnerName(site):'-')}</td><td class="center">${esc(site?.field_end||reportValue(site,30)||'-')}</td><td>${esc(x.reason)}</td><td class="center">${esc(x.created_by_name||'이름 미등록')}</td><td class="center">${esc(x.created_at?new Date(x.created_at).toLocaleString('ko-KR'):'시각 미등록')}</td><td class="center">${canEditSite()?`<button type="button" class="ghost smallBtn" data-exempt-restore="${Number(x.source_id)}">미작성으로 복원</button>`:'-'}</td></tr>`).join('')}</tbody></table></div>`;
+ }
  root.querySelectorAll('[data-exempt-restore]').forEach(b=>b.onclick=async()=>{const id=Number(b.dataset.exemptRestore);if(!confirm('이 현장을 보고서 미작성 집계에 다시 포함할까요?'))return;b.disabled=true;try{const{error}=await sb.rpc('staff_report_exemption_clear',{p_source_id:id});if(error)throw error;unwrittenCacheReady=false;await loadUnwrittenDashboard(true)}catch(e){alert('미작성 집계 복원 실패: '+e.message);b.disabled=false}});
 }
 async function markReportUnneeded(sourceId){
@@ -2745,11 +2756,16 @@ function printUnwrittenList(){
 }
 function renderUnwrittenList(){
  if(!canViewUnwritten())return;
- const filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
- $('unwrittenListTitle').textContent=unwrittenOwnerFilter==='all'?'미작성 현장 전체':`${unwrittenOwnerFilter} · 미작성 현장`;
+ if(unwrittenListMode==='exempt'){renderUnwrittenExemptions();$('unwrittenPrint').disabled=true;return}
+ $('unwrittenPrint').disabled=false;
+ let filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
+ if(unwrittenListMode==='over14')filtered=filtered.filter(r=>(elapsedFromReceipt(r)??-1)>=14);
+ if(unwrittenListMode==='over30')filtered=filtered.filter(r=>(elapsedFromReceipt(r)??-1)>=30);
+ const modeTitle=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':'미작성 현장';
+ $('unwrittenListTitle').textContent=unwrittenOwnerFilter==='all'?`${modeTitle} 전체`:`${unwrittenOwnerFilter} · ${modeTitle}`;
  const desktop=window.matchMedia('(min-width:801px)').matches;
  $('unwrittenListMeta').textContent=desktop?`${filtered.length.toLocaleString()}건 · 제목 클릭: 정렬 · 제목 드래그: 열 이동 · 오른쪽 경계 드래그: 열 폭 조절 · 현장 행 클릭: 상세조회`:`${filtered.length.toLocaleString()}건 · 현장카드에서 상세·수정할 수 있습니다.`;
- const root=$('unwrittenList');if(!filtered.length){root.innerHTML='<div class="emptyDashboard">해당 담당자의 미작성 보고서가 없습니다.</div>';return}
+ const root=$('unwrittenList');if(!filtered.length){const empty=unwrittenListMode==='over14'?'파일접수 후 14일 이상 경과한 미작성 현장이 없습니다.':unwrittenListMode==='over30'?'파일접수 후 30일 이상 경과한 미작성 현장이 없습니다.':'해당 담당자의 미작성 보고서가 없습니다.';root.innerHTML=`<div class="emptyDashboard">${empty}</div>`;return}
  if(desktop){
    ensureUnwrittenColumnOrder();
    const sorted=sortedUnwrittenRows(filtered);
