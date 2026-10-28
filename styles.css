@@ -1455,3 +1455,6 @@ input[type="date"]::-webkit-datetime-edit-month-field,
 input[type="date"]::-webkit-datetime-edit-day-field,
 input[type="date"]::-webkit-datetime-edit-year-field{font:inherit;letter-spacing:inherit}
 input#siteAddressQuery,input#addressQuery{ime-mode:active}
+.assignmentTable th.assignmentSortableHeader{cursor:pointer;user-select:none}
+.assignmentTable th.assignmentSortableHeader:hover{background:#dce9fb}
+.assignmentSortIndicator{font-size:.82em;color:#52709b;white-space:nowrap}
