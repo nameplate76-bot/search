@@ -1476,14 +1476,14 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
   margin: 0;
   line-height: 1.35;
 }
-.siteAddressBox .addressSearchRow,
-.siteAddressBox .addressModeButtons {
+.addressEditor .addressSearchRow,
+.addressEditor .addressModeButtons {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 82px;
   gap: 8px;
 }
-.siteAddressBox .addressSearchRow > button,
-.siteAddressBox .addressModeButtons > button {
+.addressEditor .addressSearchRow > button,
+.addressEditor .addressModeButtons > button {
   grid-column: 2;
   width: 82px;
   min-width: 82px;
@@ -1494,12 +1494,12 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
   white-space: nowrap;
 }
 @media (max-width: 800px) {
-  .siteAddressBox .addressSearchRow,
-  .siteAddressBox .addressModeButtons {
+  .addressEditor .addressSearchRow,
+  .addressEditor .addressModeButtons {
     grid-template-columns: minmax(0, 1fr);
   }
-  .siteAddressBox .addressSearchRow > button,
-  .siteAddressBox .addressModeButtons > button {
+  .addressEditor .addressSearchRow > button,
+  .addressEditor .addressModeButtons > button {
     grid-column: 1;
     width: 100%;
     min-width: 0;
