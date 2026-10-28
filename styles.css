@@ -1493,6 +1493,19 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
   padding: 8px;
   white-space: nowrap;
 }
+.addressEditor .addressDetailRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 8px;
+  align-items: end;
+}
+.addressEditor .addressDetailRow > label {
+  min-width: 0;
+  margin: 0;
+}
+.addressEditor .addressDetailRow .addressModeButtons {
+  display: block;
+}
 @media (max-width: 800px) {
   .addressEditor .addressSearchRow,
   .addressEditor .addressModeButtons {
@@ -1503,5 +1516,12 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
     grid-column: 1;
     width: 100%;
     min-width: 0;
+  }
+  .addressEditor .addressDetailRow {
+    grid-template-columns: minmax(0, 1fr) 82px;
+  }
+  .addressEditor .addressDetailRow .addressModeButtons > button {
+    width: 82px;
+    min-width: 82px;
   }
 }
