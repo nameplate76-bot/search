@@ -1445,3 +1445,13 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 /* V247: account preference sync notice */
 #uiPreferencesStatus{margin:10px 14px 0}
+
+/* Keep native date controls visually consistent with neighboring text inputs. */
+input[type="date"]{font-family:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:normal;color:inherit}
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field{font:inherit;letter-spacing:inherit}
+input#siteAddressQuery,input#addressQuery{ime-mode:active}
