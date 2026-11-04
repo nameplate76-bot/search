@@ -1575,3 +1575,12 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
  #page-notice .boardList .boardTable th:nth-child(5),#page-notice .boardList .boardTable td:nth-child(5){width:150px;min-width:150px}
  #page-notice .boardFileList button{flex:0 0 auto;padding:7px 8px}
 }
+
+/* V284: 모든 상단 메뉴 버튼에 PC·모바일 공통 크기와 글꼴, 색상 적용 */
+.menuRow{flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;gap:5px}
+.menuRow::-webkit-scrollbar{display:none}
+#mainNav{display:flex;flex:0 0 auto;width:max-content;min-width:0;gap:5px;overflow:visible}
+#mainNav button[data-page],#myInfoBtn,#logoutBtn{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;flex:0 0 76px;width:76px;min-width:76px;height:40px;min-height:40px;margin:0;padding:4px 5px;border:1px solid rgba(205,222,246,.48);border-radius:8px;background:transparent;color:#fff;font-family:Arial,'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;line-height:1.15;text-align:center;text-decoration:none;white-space:normal;overflow-wrap:anywhere}
+#mainNav button[data-page]:hover,#myInfoBtn:hover,#logoutBtn:hover{background:#1b3763;color:#fff}
+#mainNav button[data-page].active{background:#2563eb;border-color:#7aa2ff;color:#fff;font-weight:700}
+@media(max-width:800px){.menuRow{width:100%;max-width:100%;padding:0 0 2px}#mainNav button[data-page],#myInfoBtn,#logoutBtn{flex-basis:76px;width:76px;min-width:76px;height:40px;min-height:40px;font-size:13px;padding:4px 5px}}
