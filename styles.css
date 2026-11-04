@@ -1550,3 +1550,11 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
   .siteDateInputWrap .siteDatePickerOverlay:disabled,
   .schedulePlanForm .scheduleDatePickerOverlay:disabled { pointer-events: none; }
 }
+
+/* V282: 공지사항의 게시일·등록날짜·등록자만 가운데 정렬 */
+#page-notice .boardTable th:nth-child(2),
+#page-notice .boardTable th:nth-child(3),
+#page-notice .boardTable th:nth-child(4),
+#page-notice .boardTable td:nth-child(2),
+#page-notice .boardTable td:nth-child(3),
+#page-notice .boardTable td:nth-child(4){text-align:center}
