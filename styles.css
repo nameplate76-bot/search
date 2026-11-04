@@ -1584,3 +1584,6 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 #mainNav button[data-page]:hover,#myInfoBtn:hover,#logoutBtn:hover{background:#1b3763;color:#fff}
 #mainNav button[data-page].active{background:#2563eb;border-color:#7aa2ff;color:#fff;font-weight:700}
 @media(max-width:800px){.menuRow{width:100%;max-width:100%;padding:0 0 2px}#mainNav button[data-page],#myInfoBtn,#logoutBtn{flex-basis:76px;width:76px;min-width:76px;height:40px;min-height:40px;font-size:13px;padding:4px 5px}}
+
+/* V285: 보고서 미작성 메뉴는 한 줄 표시를 위한 전용 폭 */
+#mainNav button[data-page="unwritten"]{flex:0 0 102px;width:102px;min-width:102px;white-space:nowrap;overflow-wrap:normal}
