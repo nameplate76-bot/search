@@ -1551,10 +1551,27 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
   .schedulePlanForm .scheduleDatePickerOverlay:disabled { pointer-events: none; }
 }
 
-/* V282: 공지사항의 게시일·등록날짜·등록자만 가운데 정렬 */
+/* V283: 공지사항 모바일 제목 폭·첨부파일 목록 표시 */
 #page-notice .boardTable th:nth-child(2),
 #page-notice .boardTable th:nth-child(3),
 #page-notice .boardTable th:nth-child(4),
 #page-notice .boardTable td:nth-child(2),
 #page-notice .boardTable td:nth-child(3),
 #page-notice .boardTable td:nth-child(4){text-align:center}
+
+
+/* V283: 모바일 공지사항은 제목을 우선 넓게 두고 나머지 열은 가로 스와이프로 확인 */
+#page-notice .boardList .tableWrap{width:100%;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#page-notice .boardList .boardTable{width:max-content;min-width:100%;table-layout:fixed}
+#page-notice .boardList .boardTable th,#page-notice .boardList .boardTable td{box-sizing:border-box}
+#page-notice .boardFileList{display:flex;align-items:center;gap:6px;white-space:nowrap}
+#page-notice .boardAttachmentName{color:#20334d;font-weight:700;overflow-wrap:anywhere}
+@media(max-width:600px) and (orientation:portrait){
+ #page-notice .boardList .boardTable{width:max-content;min-width:0}
+ #page-notice .boardList .boardTable th:first-child,#page-notice .boardList .boardTable td:first-child{width:calc(100vw - 112px);min-width:calc(100vw - 112px);max-width:calc(100vw - 112px)}
+ #page-notice .boardList .boardTable th:nth-child(2),#page-notice .boardList .boardTable td:nth-child(2){width:100px;min-width:100px}
+ #page-notice .boardList .boardTable th:nth-child(3),#page-notice .boardList .boardTable td:nth-child(3){width:110px;min-width:110px}
+ #page-notice .boardList .boardTable th:nth-child(4),#page-notice .boardList .boardTable td:nth-child(4){width:100px;min-width:100px}
+ #page-notice .boardList .boardTable th:nth-child(5),#page-notice .boardList .boardTable td:nth-child(5){width:150px;min-width:150px}
+ #page-notice .boardFileList button{flex:0 0 auto;padding:7px 8px}
+}

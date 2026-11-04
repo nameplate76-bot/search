@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261104-v282">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261104-v283">
 <script>
 (function(){
-  const BUILD='20261104-v282';
+  const BUILD='20261104-v283';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -390,7 +390,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V282</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V283</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -567,7 +567,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261104-v282"></script><script src="fields.js?v=20261104-v282"></script><script src="quantity-ocr.js?v=20261104-v282"></script><script id="bundled-report-files-js" data-build="V282">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261104-v283"></script><script src="fields.js?v=20261104-v283"></script><script src="quantity-ocr.js?v=20261104-v283"></script><script id="bundled-report-files-js" data-build="V283">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -710,7 +710,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261104-v282"></script><script id="bundled-inspection-schedule-js" data-build="V282">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261104-v283"></script><script id="bundled-inspection-schedule-js" data-build="V283">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -740,7 +740,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V282';
+root.STAFF_SCHEDULE_VERSION='V283';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -900,7 +900,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V282">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V283">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1023,7 +1023,7 @@ async function loadBoard(kind){
 }
 function renderBoardList(kind){
  const s=boardState[kind],page=$('page-'+kind),hasCategory=kind==='resource';
- page.querySelector('.boardList').innerHTML=s.rows.length?'<div class="tableWrap"><table class="boardTable"><thead><tr>'+(hasCategory?'<th>분류</th>':'')+'<th>제목</th><th>게시일</th><th>등록날짜</th><th>등록자</th><th>첨부파일</th></tr></thead><tbody>'+s.rows.map(r=>'<tr>'+(hasCategory?'<td>'+esc(r.category)+'</td>':'')+'<td><button type="button" class="boardTitle" data-board-open="'+esc(r.id)+'">'+esc(r.title)+'</button></td><td>'+esc(r.post_date)+'</td><td>'+boardDay(r.created_at)+'</td><td>'+esc(r.author_name)+'</td><td>'+(r.file_path?(kind==='notice'?'<div class="boardFileList"><button type="button" class="ghost" data-board-open-file="'+esc(r.id)+'">열기</button> <button type="button" class="ghost" data-board-download="'+esc(r.id)+'">다운로드</button><small>'+esc(r.file_name||'첨부 파일')+'</small></div>':'<button type="button" class="ghost" data-board-download="'+esc(r.id)+'">↓ '+esc(r.file_name)+'</button>'):'-')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="boardEmpty">등록된 내용 또는 검색 결과가 없습니다.</p>';
+ page.querySelector('.boardList').innerHTML=s.rows.length?'<div class="tableWrap"><table class="boardTable"><thead><tr>'+(hasCategory?'<th>분류</th>':'')+'<th>제목</th><th>게시일</th><th>등록날짜</th><th>등록자</th><th>첨부파일</th></tr></thead><tbody>'+s.rows.map(r=>'<tr>'+(hasCategory?'<td>'+esc(r.category)+'</td>':'')+'<td><button type="button" class="boardTitle" data-board-open="'+esc(r.id)+'">'+esc(r.title)+'</button></td><td>'+esc(r.post_date)+'</td><td>'+boardDay(r.created_at)+'</td><td>'+esc(r.author_name)+'</td><td>'+(r.file_path?(kind==='notice'?'<div class="boardFileList"><button type="button" class="ghost" data-board-open-file="'+esc(r.id)+'">열기</button> <button type="button" class="ghost" data-board-download="'+esc(r.id)+'">다운로드</button></div>':'<button type="button" class="ghost" data-board-download="'+esc(r.id)+'">↓ '+esc(r.file_name)+'</button>'):'-')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="boardEmpty">등록된 내용 또는 검색 결과가 없습니다.</p>';
  page.querySelectorAll('[data-board-open]').forEach(b=>b.onclick=()=>showBoardDetail(kind,s.rows.find(r=>r.id===b.dataset.boardOpen)));
  page.querySelectorAll('[data-board-open-file]').forEach(b=>b.onclick=()=>openBoardFile(kind,s.rows.find(r=>r.id===b.dataset.boardOpenFile),b));
  page.querySelectorAll('[data-board-download]').forEach(b=>b.onclick=()=>downloadBoardFile(kind,s.rows.find(r=>r.id===b.dataset.boardDownload),b));
@@ -1034,8 +1034,9 @@ function boardEditorHost(kind){const page=$('page-'+kind);page.querySelector('.b
 function showBoardDetail(kind,row){
  if(!row||!boardCan(kind,'view'))return;
  const root=boardEditorHost(kind),modified=kind==='notice'?(row.updated_by_name?'최종 수정: '+new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · 수정자: '+esc(row.updated_by_name):'수정 이력 없음'):'최근 수정: '+new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
- const fileActions=row.file_path?(kind==='notice'?'<button type="button" class="primary boardOpenFile">첨부파일 열기 · '+esc(row.file_name)+'</button><button type="button" class="ghost boardDownload">첨부파일 다운로드</button>':'<button type="button" class="primary boardDownload">↓ 파일 내려받기 · '+esc(row.file_name)+'</button>'):'';
- root.innerHTML='<article class="boardPanel"><h3>'+esc(row.title)+'</h3><div class="boardMeta">'+(kind==='resource'?'분류: '+esc(row.category)+' · ':'')+'게시일: '+esc(row.post_date)+' · 등록날짜: '+boardDay(row.created_at)+' · 등록자: '+esc(row.author_name)+'<br>'+modified+'</div><div class="boardBody">'+esc(row.body||'내용 없음')+'</div><div class="boardActions">'+fileActions+(boardCan(kind,'edit')?'<button type="button" class="primary boardEdit">수정</button>':'')+(boardCan(kind,'delete')?'<button type="button" class="danger boardDelete">삭제</button>':'')+'<button type="button" class="ghost boardBack">목록으로</button></div><p role="status" class="boardDetailMsg"></p></article>';
+ const attachmentName=kind==='notice'&&row.file_path?'<div class="boardAttachmentName">첨부파일: '+esc(row.file_name||'첨부 파일')+'</div>':'';
+ const fileActions=row.file_path?(kind==='notice'?'<button type="button" class="primary boardOpenFile">열기</button><button type="button" class="ghost boardDownload">다운로드</button>':'<button type="button" class="primary boardDownload">↓ 파일 내려받기 · '+esc(row.file_name)+'</button>'):'';
+ root.innerHTML='<article class="boardPanel"><h3>'+esc(row.title)+'</h3><div class="boardMeta">'+(kind==='resource'?'분류: '+esc(row.category)+' · ':'')+'게시일: '+esc(row.post_date)+' · 등록날짜: '+boardDay(row.created_at)+' · 등록자: '+esc(row.author_name)+'<br>'+modified+'</div><div class="boardBody">'+esc(row.body||'내용 없음')+'</div>'+attachmentName+'<div class="boardActions">'+fileActions+(boardCan(kind,'edit')?'<button type="button" class="primary boardEdit">수정</button>':'')+(boardCan(kind,'delete')?'<button type="button" class="danger boardDelete">삭제</button>':'')+'<button type="button" class="ghost boardBack">목록으로</button></div><p role="status" class="boardDetailMsg"></p></article>';
  root.querySelector('.boardBack').onclick=()=>loadBoard(kind);if(root.querySelector('.boardEdit'))root.querySelector('.boardEdit').onclick=()=>openBoardEditor(kind,row);if(root.querySelector('.boardDelete'))root.querySelector('.boardDelete').onclick=()=>deleteBoardPost(kind,row,root);if(root.querySelector('.boardOpenFile'))root.querySelector('.boardOpenFile').onclick=e=>openBoardFile(kind,row,e.currentTarget);if(root.querySelector('.boardDownload'))root.querySelector('.boardDownload').onclick=e=>downloadBoardFile(kind,row,e.currentTarget);
 }
 
