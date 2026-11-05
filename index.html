@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261105-v286">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261105-v287">
 <script>
 (function(){
-  const BUILD='20261105-v286';
+  const BUILD='20261105-v287';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -382,7 +382,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 /* V286: 보고서 미작성 메뉴는 한 줄 표시를 위한 전용 폭 */
 #mainNav button[data-page="unwritten"]{flex:0 0 102px;width:102px;min-width:102px;white-space:nowrap;overflow-wrap:normal}
 </style>
-<style id="holiday-leave-range-v286">
+<style id="holiday-leave-enter-v287">
 .holidayManagementDialog .holidayForm select{height:44px;min-height:44px;width:100%;border:1px solid #c6d4e6;border-radius:8px;padding:9px 12px;background:#fff;color:#233e60;font:inherit;font-size:14px;box-sizing:border-box;display:block;margin-top:7px}
 .holidayManagementDialog .holidayForm [data-end-date]{margin-top:-5px}
 .holidayManagementDialog .holidayKindField{margin-bottom:2px}
@@ -408,7 +408,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V286</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V287</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -585,7 +585,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261105-v286"></script><script src="fields.js?v=20261105-v286"></script><script src="quantity-ocr.js?v=20261105-v286"></script><script id="bundled-report-files-js" data-build="V286">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261105-v287"></script><script src="fields.js?v=20261105-v287"></script><script src="quantity-ocr.js?v=20261105-v287"></script><script id="bundled-report-files-js" data-build="V287">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -728,7 +728,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261105-v286"></script><script id="bundled-inspection-schedule-js" data-build="V286">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261105-v287"></script><script id="bundled-inspection-schedule-js" data-build="V287">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -758,7 +758,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V286';
+root.STAFF_SCHEDULE_VERSION='V287';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -907,7 +907,7 @@ root.createStaffSchedule=function(deps){
  function preview(){const start=form.elements.date.value,end=form.elements.end_date.value,box=d.querySelector('[data-holiday-preview]');if(!start){box.textContent='달력에서 날짜를 선택해 주세요.';return}const dayText=x=>{const dt=new Date(x+'T00:00:00Z');return `${Number(x.slice(0,4))}년 ${Number(x.slice(5,7))}월 ${Number(x.slice(8))}일 (${['일','월','화','수','목','금','토'][dt.getUTCDay()]}요일)`};box.textContent=hasRange()&&end?`${dayText(start)} ~ ${dayText(end)}`:dayText(start);const endPicker=form.elements.end_date;if(endPicker)endPicker.min=start||'2000-01-01'}
  function entries(){const all=new Map(Object.entries(root.STAFF_SCHEDULE_HOLIDAYS[String(year)]||{}).map(([day,name])=>[day,{day,name,holiday:true,custom:false}]));for(const r of custom)all.set(r.holiday_date,{day:r.holiday_date,name:r.name,holiday:r.is_holiday,custom:true});return [...all.values()].sort((a,b)=>a.day.localeCompare(b.day))}
  function paintList(){if(!d.isConnected)return;const all=entries(),q=filter.value.trim().toLocaleLowerCase(),visible=all.filter(r=>!q||`${r.day} ${r.name}`.toLocaleLowerCase().includes(q));d.querySelector('[data-holiday-count]').textContent=`공휴일 ${all.filter(r=>r.holiday).length}일 · 평일 지정 ${all.filter(r=>!r.holiday).length}일${q?` · 검색 ${visible.length}건`:''}`;let month='';d.querySelector('[data-holiday-list]').innerHTML=visible.map(r=>{const m=r.day.slice(5,7),heading=m!==month?`<h5 class="holidayMonthHeading">${Number(m)}월</h5>`:'';month=m;const weekday=['일','월','화','수','목','금','토'][new Date(r.day+'T00:00:00Z').getUTCDay()];return `${heading}<div class="holidayListRow"><button type="button" class="holidayListItem ${r.holiday?'':'isWorkday'}" data-holiday-day="${r.day}"><time datetime="${r.day}">${Number(m)}.${r.day.slice(8)}<small>${weekday}요일</small></time><span class="holidayItemName">${esc(r.name)}</span><span class="holidayBadge ${r.holiday?(r.custom?'custom':'base'):'workday'}">${r.holiday?(r.custom?'추가·변경':'기본'):'평일 지정'}</span></button>${r.custom&&deps.access().edit?`<button type="button" class="holidayDeleteButton" data-holiday-delete="${r.day}" aria-label="${r.day} 휴일 삭제">삭제</button>`:''}</div>`}).join('')||'<p class="holidayEmpty">검색 결과가 없습니다.</p>';d.querySelectorAll('[data-holiday-day]').forEach(b=>b.onclick=()=>{const row=all.find(r=>r.day===b.dataset.holidayDay);form.elements.absence_kind.value='holiday';form.elements.date.value=row.day;form.elements.end_date.value='';form.elements.name.value=row.name;form.elements.holiday.value=String(row.holiday);editingLeave=null;entryType();setMessage('선택한 날짜를 불러왔습니다. 변경 후 저장해 주세요.',true);d.querySelectorAll('[data-holiday-day]').forEach(el=>el.classList.toggle('selected',el===b));form.elements.name.focus()});d.querySelectorAll('[data-holiday-delete]').forEach(b=>b.onclick=async()=>{if(!deps.access().edit)return;if(!confirm(`${b.dataset.holidayDelete} 등록 휴일을 삭제하시겠습니까?`))return;b.disabled=true;try{await deps.rpc('staff_schedule_holiday_delete',{p_date:b.dataset.holidayDelete});await load();if(!d.isConnected)return;paintList();setMessage('선택한 등록 휴일을 삭제했습니다.',true)}catch(e){setMessage('삭제 실패: '+e.message)}finally{b.disabled=false}})}
- form.elements.date.oninput=preview;form.elements.end_date.oninput=preview;filter.oninput=paintList;d.querySelector('[data-holiday-reset]').onclick=()=>{form.reset();editingLeave=null;if(!deps.access().edit)form.elements.absence_kind.value='annual';form.elements.person.value=deps.access().name||'';entryType();setMessage('');d.querySelectorAll('.holidayListItem').forEach(b=>b.classList.remove('selected'));form.elements.date.focus()};d.querySelector('[data-holiday-close]').onclick=()=>d.close();
+ form.elements.date.oninput=preview;form.elements.date.onchange=preview;form.elements.end_date.oninput=preview;form.elements.end_date.onchange=preview;form.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing||!e.target.matches('input[type=\"date\"]'))return;e.preventDefault();e.stopPropagation();e.target.dispatchEvent(new Event('change',{bubbles:true}));if(e.target.name==='date'&&hasRange())form.elements.end_date.focus();else if(e.target.name==='end_date')form.elements.person.focus();else if(selectedKind()==='holiday')form.elements.name.focus();else if(selectedKind()==='half')form.elements.leave_type.focus()});filter.oninput=paintList;d.querySelector('[data-holiday-reset]').onclick=()=>{form.reset();editingLeave=null;if(!deps.access().edit)form.elements.absence_kind.value='annual';form.elements.person.value=deps.access().name||'';entryType();setMessage('');d.querySelectorAll('.holidayListItem').forEach(b=>b.classList.remove('selected'));form.elements.date.focus()};d.querySelector('[data-holiday-close]').onclick=()=>d.close();
  form.onsubmit=async e=>{e.preventDefault();if(!deps.access().view)return;const kind=selectedKind(),start=form.elements.date.value,end=hasRange()?form.elements.end_date.value:start,name=form.elements.name.value.trim(),person=form.elements.person.value.trim(),leaveType=kind==='half'?form.elements.leave_type.value:typeMeta[kind]?.type;if(kind==='holiday'&&!deps.access().edit){setMessage('공휴일 변경은 일정수정 권한이 필요합니다.');return}if(!start){setMessage('시작 날짜를 선택해 주세요.');return}if(hasRange()&&!end){setMessage('종료 날짜를 선택해 주세요.');return}if(end<start){setMessage('종료 날짜는 시작 날짜 이후로 선택해 주세요.');return}if(kind==='holiday'&&!name){setMessage('휴무명을 입력해 주세요.');return}if(isLeave()&&!person){setMessage('휴무 대상 점검원을 입력해 주세요.');return}const b=form.querySelector('[type=submit]');b.disabled=true;b.textContent='저장 중…';setMessage('');try{if(kind==='holiday')await deps.rpc('staff_schedule_holiday_save',{p_date:start,p_name:name,p_holiday:form.elements.holiday.value==='true'});else{if(hasRange())await deps.rpc('staff_schedule_leave_range_save',{p_start:start,p_end:end,p_inspector:person,p_leave_type:leaveType});else await deps.rpc('staff_schedule_leave_save',{p_date:start,p_inspector:person,p_leave_type:leaveType});if(editingLeave){const oldCovered=editingLeave.leave_date>=start&&editingLeave.leave_date<=end&&(editingLeave.leave_type||'full')===leaveType;if(!oldCovered)await deps.rpc('staff_schedule_leave_delete',{p_date:editingLeave.leave_date,p_inspector:editingLeave.inspector,p_leave_type:editingLeave.leave_type||'full'})}}await load();if(!d.isConnected)return;paintList();paintLeaves();const title=kind==='holiday'?name:typeMeta[kind].label;setMessage(`${start}${end!==start?` ~ ${end}`:''} · ${title}${isLeave()?` · ${person} 점검원`:''}으로 저장했습니다.`,true)}catch(err){setMessage('저장 실패: '+err.message)}finally{b.disabled=false;editingLeave=null;entryType()}};
  form.elements.absence_kind.value=deps.access().edit?'holiday':'annual';form.elements.person.value=deps.access().name||'';entryType();paintList();paintLeaves();preview();
  }
@@ -915,7 +915,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V286">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V287">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
