@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261105-v290">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261105-v291">
 <script>
 (function(){
-  const BUILD='20261105-v290';
+  const BUILD='20261105-v291';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -408,7 +408,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V290</small></div>
+      <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V291</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -585,7 +585,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261105-v290"></script><script src="fields.js?v=20261105-v290"></script><script src="quantity-ocr.js?v=20261105-v290"></script><script id="bundled-report-files-js" data-build="V290">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261105-v291"></script><script src="fields.js?v=20261105-v291"></script><script src="quantity-ocr.js?v=20261105-v291"></script><script id="bundled-report-files-js" data-build="V291">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -728,7 +728,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261105-v290"></script><script id="bundled-inspection-schedule-js" data-build="V290">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261105-v291"></script><script id="bundled-inspection-schedule-js" data-build="V291">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -758,7 +758,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V290';
+root.STAFF_SCHEDULE_VERSION='V291';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -915,7 +915,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V290">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V291">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -951,15 +951,29 @@ let salesCacheReady=false,salesLoadedAt=0,salesLoadPromise=null,salesLoadRequest
 let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
- if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;for(const row of lastSites)delete row._secureDetailLoaded;stopSalesLoading();salesLoadRequest++;salesLoadPromise=null;salesCacheReady=false;salesLoadedAt=0}
+ if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';invalidateNonSearchSiteCaches();for(const row of lastSites)delete row._secureDetailLoaded}
  if(scope==='all')salesAssignedRows=[];
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
+function invalidateNonSearchSiteCaches(){unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;stopSalesLoading();salesLoadRequest++;salesLoadPromise=null;salesCacheReady=false;salesLoadedAt=0;for(const row of lastSites)delete row._secureDetailLoaded}
 function activePageName(){return document.querySelector('.page.active')?.id?.replace(/^page-/,'')||savedPage()}
 async function refreshActiveData(force=false){const name=activePageName();if(name==='schedule')return loadSchedule();if(name==='search')return searchSites(force);if(name==='unwritten')return loadUnwrittenDashboard(force);if(name==='sales')return loadSales(force);if(name==='users')return loadUsers(force);if(BOARD_KINDS[name])return loadBoard(name)}
 // Re-read committed rows, even when their list is behind a detail page.
-async function refreshAfterSiteSave(id){
+async function refreshSavedSiteSearchRow(id){
+ if(!searchCacheReady||searchCacheQuery!==searchActiveQuery)return false;
+ const [{data,error},plans]=await Promise.all([sb.from('staff_site_search_list').select('*').eq('source_id',Number(id)).maybeSingle(),fetchSitePlanDates(Number(id))]);
+ if(error)throw error;
+ const idx=searchSourceRows.findIndex(r=>Number(r.source_id)===Number(id));
+ if(!data){if(idx>=0)searchSourceRows.splice(idx,1);siteFilterCountsCache.clear();searchLoadedAt=Date.now();applySearchCache();return true}
+ const plan=plans.find(r=>Number(r.source_id)===Number(id));const row={...data,schedule_plan_start:plan?.plan_start||'',schedule_plan_end:plan?.plan_end||''};
+ const term=String(searchCacheQuery||'').toLocaleLowerCase('ko-KR');const matches=!term||['site_name','previous_name','region','sn','document_owner','field_inspector','sales_manager'].some(k=>String(row[k]??'').toLocaleLowerCase('ko-KR').includes(term));
+ if(idx>=0){if(matches)searchSourceRows[idx]=row;else searchSourceRows.splice(idx,1)}else if(matches)searchSourceRows.push(row);
+ searchSourceRows.sort((a,b)=>(Number(a.excel_row)||0)-(Number(b.excel_row)||0)||(Number(a.source_id)||0)-(Number(b.source_id)||0));siteFilterCountsCache.clear();searchLoadedAt=Date.now();applySearchCache();return true;
+}
+async function refreshAfterSiteSave(id,options={}){
  const page=activePageName(),group=$('detailTabs').querySelector('[data-g].active')?.dataset.g||'0';
+ if(page==='search'&&options.fastSearch){try{if(await refreshSavedSiteSearchRow(id))return}catch(e){console.warn('수정 현장 단건 갱신 실패, 검색 결과를 다시 조회합니다.',e)}return searchSites(true)}
+ if(page==='search'&&options.peersChanged){return searchSites(true)}
  const jobs=[];if(canViewUnwritten())jobs.push(loadUnwrittenDashboard(true));if(canViewSchedule()&&page!=='schedule')jobs.push(loadSchedule());if(canViewAssignment()&&page==='assignment')jobs.push(loadAssignmentDashboard());
  if(page==='site-detail'){if(detailReturnState?.page==='search')jobs.push(searchSites(true));jobs.push(openDetail(id,{preserveReturn:true,group:Number(group)}));}
  else if(page!=='unwritten')jobs.push(refreshActiveData(true));
@@ -1384,7 +1398,7 @@ function searchAddress(){
  });
  pc.open({q, popupTitle:'현장 주소 검색', popupKey:'staff-address-search'});
 }
-async function syncAddressToSameSiteName(sourceId,siteName,address,msgEl=null){
+async function syncAddressToSameSiteName(sourceId,siteName,address,msgEl=null,invalidate=true){
  const name=String(siteName||'').trim(),addr=String(address||'').trim();
  if(!name||!addr||!canEditSite())return{synced:false,updated:0,matched:0};
  try{
@@ -1392,7 +1406,7 @@ async function syncAddressToSameSiteName(sourceId,siteName,address,msgEl=null){
   const others=Number(info?.others||0),baseName=String(info?.base_name||name).trim();
   if(msgEl&&others>0)notify(msgEl,`같은 현장 “${baseName}” 주소와 지역을 자동 반영하는 중...`,true);
   const{data,error}=await sb.rpc('staff_apply_address_to_same_name',{p_source_id:Number(sourceId)||null,p_site_name:name,p_address:addr});if(error)throw error;
-  const updated=Number(data?.updated||0);invalidateDataCaches('sites');
+  const updated=Number(data?.updated||0);if(invalidate&&updated)invalidateDataCaches('sites');
   return{synced:others>0,updated,matched:others,baseName:String(data?.base_name||baseName).trim(),region:String(data?.region||'')};
  }catch(err){alert('동일 현장 주소·지역 자동반영 오류: '+(err?.message||err));return{synced:false,updated:0,matched:0,error:err}}
 }
@@ -2666,10 +2680,10 @@ async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 
 function sitePayload(){siteEditValues=siteEditValues.map((v,i)=>normalizeCell(v,i+1));syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,site_name:String(siteEditValues[3]??'').trim(),client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();$('siteEditFields')?.querySelectorAll('[data-site-col]').forEach(input=>{const col=Number(input.dataset.siteCol),raw=String(input.value??'').trim();if(dateCols.has(col)){if(siteEditDirtyCols.has(col)){const iso=parseSiteKeyboardDate(raw),sentinel=[28,29,30].includes(col)&&raw==='미점검';siteEditValues[col-1]=iso||(sentinel?'미점검':raw)}}else siteEditValues[col-1]=normalizeCell(input.value,col)});for(const input of $('siteEditFields')?.querySelectorAll('[data-site-col]')||[]){const col=Number(input.dataset.siteCol);if(!dateCols.has(col)||!siteEditDirtyCols.has(col))continue;const raw=String(input.value??'').trim(),sentinel=[28,29,30].includes(col)&&raw==='미점검';if(raw&&!parseSiteKeyboardDate(raw)&&!sentinel){input.setCustomValidity('날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.');input.reportValidity();return}}for(const [key,label] of [['start','점검시작 계획일자'],['end','점검종료 계획일자']]){const input=$(`siteSchedule${key==='start'?'Start':'End'}`),raw=String(input?.value??'').trim();if(raw&&!parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31')&&raw!=='미점검'){input?.setCustomValidity(`${label}는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.`);input?.reportValidity();return}}if(!commitDocumentRevenueFormula($('siteEditFields')?.querySelector('[data-site-col="50"]')))return;siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!siteScheduleDraft.uninspected&&!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(!siteScheduleDraft.uninspected&&siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;if(siteScheduleDraft.uninspected&&siteScheduleDraft.changed){const marked=await sb.rpc('staff_schedule_mark_uninspected',{p_source_id:savedId,p_inspectors:String(siteEditValues[30]??'').trim()});if(marked.error)throw marked.error}notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_source_id:savedId,p_data:payload});if(error)throw error;if(siteScheduleDraft.uninspected&&siteScheduleDraft.changed){const marked=await sb.rpc('staff_schedule_mark_uninspected',{p_source_id:savedId,p_inspectors:String(siteEditValues[30]??'').trim()});if(marked.error)throw marked.error}notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(siteEditMode==='edit'){const check=await sb.rpc('staff_site_secure_detail',{p_source_id:savedId});if(check.error)throw new Error('저장 후 DB 확인 실패: '+check.error.message);const savedName=String(check.data?.site_name??'').trim();if(savedName!==String(payload.site_name??'').trim())throw new Error(`DB 저장값 확인 실패: 입력한 현장명과 저장된 현장명이 다릅니다. 저장값: ${savedName||'(비어 있음)'}`)}
- if(payload.site_address&&canEditSite()){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'));if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
- const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true);
- const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote)notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true);
- invalidateDataCaches('sites');if(siteEditMode==='create')closeSiteEditor();else $('siteEditDlg').close();await Promise.allSettled([refreshDbStatus(),refreshAfterSiteSave(savedId)]);}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
+ let sitePeersChanged=false;const oldAddress=String(siteEditRow?.site_address||'').trim();if(payload.site_address&&canEditSite()&&(siteEditMode==='create'||payload.site_address!==oldAddress)){const syncResult=await syncAddressToSameSiteName(savedId,siteEditValues[3],payload.site_address,$('siteEditMsg'),false);sitePeersChanged=Number(syncResult.updated||0)>0;if(syncResult.synced)notify($('siteEditMsg'),`${siteEditMode==='create'?'현장 등록':'현장 수정'}이 완료되었습니다. 괄호 뒤 내용을 제외한 같은 현장 ${syncResult.matched.toLocaleString()}건의 주소를 자동 동기화했습니다.`,true)}
+ const schoolPhoneNote=schoolPhoneSaveNote(siteEditValues[3],payload.client_phone,siteEditRow?.client_phone||'',siteEditMode==='create');if(schoolPhoneNote){sitePeersChanged=true;notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolPhoneNote,true)}
+ const schoolEmailNote=schoolEmailSaveNote(siteEditValues[3],payload.client_email,siteEditRow?.client_email||'',siteEditMode==='create');if(schoolEmailNote){sitePeersChanged=true;notify($('siteEditMsg'),$('siteEditMsg').textContent+schoolEmailNote,true)}
+ const returnToSearch=siteEditMode==='edit'&&activePageName()==='search';if(siteEditMode==='create')closeSiteEditor();else $('siteEditDlg').close();if(returnToSearch&&!sitePeersChanged){invalidateNonSearchSiteCaches();await refreshAfterSiteSave(savedId,{fastSearch:true})}else if(returnToSearch){invalidateDataCaches('sites');await refreshAfterSiteSave(savedId,{peersChanged:true})}else{invalidateDataCaches('sites');await Promise.allSettled([...(siteEditMode==='create'?[refreshDbStatus()]:[]),refreshAfterSiteSave(savedId)])}}catch(err){notify($('siteEditMsg'),'저장 실패: '+(err?.message||err))}}
 
 
 function reportValue(r,col){
