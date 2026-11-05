@@ -1632,3 +1632,26 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 @media(max-width:1000px){.homeMenuGrid{grid-template-columns:repeat(2,minmax(0,1fr));padding-left:28px;padding-right:28px}.homeMenuHeading{padding-left:28px;padding-right:28px}.homeFooter{padding-left:28px;padding-right:28px}.homeHero{margin-left:20px;margin-right:20px;padding-left:34px}}
 @media(max-width:800px){#appView.homeMode .topbar{min-height:0;padding:8px 10px 7px;gap:7px}#appView.homeMode .topbar .brand{min-width:0}.homeHero{height:auto;min-height:260px;margin:0 10px 17px;border-radius:0 0 20px 20px;padding:30px 23px;align-items:flex-start}.homeHeroCopy{max-width:100%}.homeEyebrow{font-size:9px;letter-spacing:1.2px}.homeHero h1{font-size:25px;line-height:1.35;letter-spacing:-.7px;max-width:95%}.homeHero p{font-size:12px;max-width:78%;line-height:1.55}.homeHeroArt{width:75%;opacity:.42}.homeHeroBadges{gap:5px;margin-top:13px}.homeHeroBadges span{font-size:9px;padding:5px 8px}.homeMenuHeading{padding:0 16px 10px;align-items:flex-start}.homeMenuHeading h2{font-size:18px}.homeMenuHeading p{font-size:11px}.homeGreeting{font-size:10px;text-align:right}.homeMenuGrid{padding:0 14px;gap:9px}.homeMenuCard{min-height:145px;padding:14px 12px;gap:9px;border-radius:14px}.homeMenuIcon{flex-basis:38px;width:38px;height:38px;font-size:20px;border-radius:12px}.homeMenuText strong{font-size:14px}.homeMenuText small{font-size:10px}.homeMenuArrow{right:9px;top:9px;font-size:16px}.homeFooter{margin-top:18px;padding:12px 15px 0;font-size:9px;flex-wrap:wrap}}
 @media(max-width:380px){.homeMenuGrid{grid-template-columns:1fr}.homeMenuCard{min-height:95px;align-items:center}.homeMenuText{gap:4px}}
+
+/* V295 · 모바일 메인 헤더 액션 정렬, 카드 높이 축소, 본인 권한요약 숨김 */
+@media(max-width:800px){
+  #appView.homeMode .topbar{gap:6px;padding-top:8px;padding-bottom:7px}
+  #appView.homeMode .topbar .brand{position:relative;justify-content:center;min-height:48px;padding:0 54px}
+  #appView.homeMode .topbar .miniLogo{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:13px}
+  #appView.homeMode .brandText{width:100%;min-width:0}
+  #appView.homeMode .brandText>strong{font-size:16px;line-height:1.25}
+  #appView.homeMode .menuRow{order:2;width:100%;display:flex;justify-content:flex-end;align-items:center;gap:6px;min-width:0;overflow:visible;padding:2px 2px 3px}
+  #appView.homeMode #mainNav{display:flex;flex:0 0 auto!important;width:auto!important;min-width:0!important;gap:6px}
+  #appView.homeMode #mainNav button[data-page="home"],#appView.homeMode #myInfoBtn,#appView.homeMode #logoutBtn{flex:0 0 auto!important;width:auto!important;min-width:64px;height:36px;min-height:36px;padding:6px 10px;font-size:12px;line-height:1.2;border-radius:9px;white-space:nowrap}
+  #appView.homeMode .logoutBtn{margin-left:0!important}
+  #appView.homeMode .homeMenuCard{min-height:102px;padding:10px 11px;gap:8px;border-radius:13px}
+  #appView.homeMode .homeMenuIcon{flex-basis:34px;width:34px;height:34px;font-size:18px;border-radius:10px}
+  #appView.homeMode .homeMenuText{gap:4px;padding-top:0}
+  #appView.homeMode .homeMenuText strong{font-size:13px}
+  #appView.homeMode .homeMenuText small{font-size:9px;line-height:1.4}
+  #appView.homeMode .homeMenuArrow{right:8px;top:7px;font-size:14px}
+}
+#appView.homeMode .homeMenuCard{min-height:111px;padding:13px 15px;align-items:center}
+#appView.homeMode .homeMenuText{gap:5px}
+@media(max-width:800px){#appView.homeMode .homeMenuCard{min-height:102px;padding:10px 11px}}
+@media(max-width:380px){#appView.homeMode .homeMenuCard{min-height:76px;padding:8px 10px}}
