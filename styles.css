@@ -1593,3 +1593,6 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 .holidayManagementDialog .holidayForm select{height:44px;min-height:44px;width:100%;border:1px solid #c6d4e6;border-radius:8px;padding:9px 12px;background:#fff;color:#233e60;font:inherit;font-size:14px;box-sizing:border-box;display:block;margin-top:7px}
 .holidayManagementDialog .holidayForm [data-end-date]{margin-top:-5px}
 .holidayManagementDialog .holidayKindField{margin-bottom:2px}
+
+/* V290: 날짜별 휴무 인원 집계 문자열 줄바꿈 */
+#page-schedule .scheduleMonthFooter>.scheduleLeaveSummary{white-space:normal;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
