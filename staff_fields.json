@@ -501,7 +501,7 @@
     {
       "col": 82,
       "letter": "CD",
-      "label": "열 CD",
+      "label": "차량번호",
       "financial": false
     },
     {
