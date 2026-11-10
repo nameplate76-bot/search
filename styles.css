@@ -1670,3 +1670,9 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 
 /* V320 inspection list column drag and resize */
 .inspectionListTable th.dragging{opacity:.45}.inspectionListTable th.dragBefore{box-shadow:inset 3px 0 #2563eb}.inspectionListTable th.dragAfter{box-shadow:inset -3px 0 #2563eb}.inspectionListTable th .columnResizer{touch-action:none}
+
+/* V321: shared menu data loading screen, matching site search */
+.portalDataLoadingOverlay{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;padding:24px;background:rgba(12,29,58,.42);backdrop-filter:blur(2px)}
+.portalDataLoadingOverlay.hidden{display:none!important}
+.portalDataLoadingCard{width:min(900px,100%);max-height:min(82vh,760px);overflow:hidden;box-shadow:0 18px 56px rgba(8,28,62,.24)}
+@media(max-width:750px){.portalDataLoadingOverlay{padding:12px}.portalDataLoadingCard{max-height:86vh}}
