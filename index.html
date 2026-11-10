@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261110-v319">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261110-v320">
 <script>
 (function(){
-  const BUILD='20261110-v319';
+  const BUILD='20261110-v320';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -382,7 +382,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 /* V286: 보고서 미작성 메뉴는 한 줄 표시를 위한 전용 폭 */
 #mainNav button[data-page="unwritten"]{flex:0 0 102px;width:102px;min-width:102px;white-space:nowrap;overflow-wrap:normal}
 </style>
-<style id="inspection-dashboard-v319">
+<style id="inspection-dashboard-v320">
 .inspectionDashboard{max-width:1500px;margin:0 auto 24px;padding:0 54px;color:#173154}.inspectionDashHead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 0 14px}.inspectionDashHead h2{margin:2px 0 4px;font-size:24px;color:#173154}.inspectionDashHead p{margin:0;color:#667995;font-size:13px}.inspectionDashEyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:#3873c9}.inspectionDashStatus{margin:8px 0;color:#526782;font-size:13px}.inspectionDashMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}.inspectionDashMetric{display:grid;gap:7px;min-width:0;text-align:left;padding:16px 18px;border:1px solid #d6e3f5;border-radius:13px;background:linear-gradient(135deg,#fff,#f4f8ff);color:#264569;cursor:pointer;box-shadow:0 4px 14px #15345b0b}.inspectionDashMetric:hover{border-color:#7aa5ea;transform:translateY(-1px)}.inspectionDashMetric>span{font-size:13px;font-weight:700;color:#5a6f8d}.inspectionDashMetric>strong{font-size:30px;line-height:1.1;color:#174fa7;font-variant-numeric:tabular-nums}.inspectionDashMetric>strong small{font-size:14px;margin-left:5px}.inspectionDashMetric>small{color:#71819a;font-size:11px}.inspectionDashMetricAlert{background:linear-gradient(135deg,#fff,#fff7ee);border-color:#f1d7b1}.inspectionDashMetricAlert>strong{color:#bc5a17}.inspectionDashCharts{display:grid;grid-template-columns:1fr 1.25fr;gap:14px}.inspectionDashPanel{min-width:0;padding:16px 18px;border:1px solid #dce6f4;border-radius:13px;background:#fff}.inspectionDashPanelHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.inspectionDashPanelHead h3{margin:0;font-size:16px;color:#203e64}.inspectionDashPanelHead span{color:#7586a0;font-size:11px}.inspectionDashBars{display:grid;gap:7px}.inspectionDashBarRow{display:grid;grid-template-columns:55px minmax(25px,1fr) 55px;align-items:center;gap:9px;width:100%;padding:3px 0;border:0;background:transparent;color:#45617f;text-align:left;cursor:pointer}.inspectionDashBarYear{font-size:12px;font-weight:700;white-space:nowrap}.inspectionDashBarTrack{height:13px;border-radius:99px;background:#edf3fb;overflow:hidden}.inspectionDashBarTrack i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#70a9ff,#2563eb);min-width:0}.inspectionDashBarCount{font-size:12px;font-weight:800;color:#214d8b;text-align:right;white-space:nowrap}.inspectionDashBarRow:hover .inspectionDashBarYear,.inspectionDashBarRow:hover .inspectionDashBarCount{color:#155eef}.inspectionDashMonthly{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.inspectionDashMonth{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;gap:5px;min-width:0;min-height:110px;padding:8px 6px;border:1px solid #e3eaf4;border-radius:9px;background:#fbfcff;color:#4b6280;cursor:pointer}.inspectionDashMonth:hover{border-color:#8aafe7;background:#f2f7ff}.inspectionDashMonthValue{font-size:12px;font-weight:800;color:#254f88;text-align:center}.inspectionDashMonthTrack{display:flex;align-items:flex-end;justify-content:center;height:53px;background:linear-gradient(to top,#f1f5fb 1px,transparent 1px);border-radius:5px}.inspectionDashMonthTrack i{display:block;width:min(60%,28px);height:var(--bar-height,0%);min-height:2px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#76b7ff,#2865d9)}.inspectionDashMonthLabel{font-size:11px;text-align:center;color:#6a7d98}.inspectionDashScope{margin:10px 2px 0;color:#7889a2;font-size:11px;line-height:1.5}.inspectionListPage{padding:24px;min-width:0}.inspectionListHint{color:#667995;font-size:13px}.inspectionListTable{width:100%;min-width:680px;border-collapse:collapse;background:white}.inspectionListTable th,.inspectionListTable td{padding:11px 10px;border-bottom:1px solid #e2e9f2;text-align:left;vertical-align:middle}.inspectionListTable th{position:sticky;top:0;background:#edf3fc;color:#27486f;text-align:center;z-index:1}.inspectionListTable td:nth-child(n+2){text-align:center;white-space:nowrap}.inspectionListTable tbody tr{cursor:pointer}.inspectionListTable tbody tr:hover{background:#f1f6ff}.inspectionListEmpty{text-align:center!important;padding:26px!important;color:#64748b}
 @media(max-width:1000px){.inspectionDashboard{padding:0 28px}.inspectionDashCharts{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.inspectionDashboard{padding:0 14px;margin-bottom:18px}.inspectionDashHead{align-items:flex-start}.inspectionDashHead h2{font-size:20px}.inspectionDashHead p{font-size:11px}.inspectionDashMetrics{gap:7px}.inspectionDashMetric{padding:12px 10px;gap:5px}.inspectionDashMetric>span{font-size:11px;line-height:1.4}.inspectionDashMetric>strong{font-size:23px}.inspectionDashMetric>small{font-size:10px;line-height:1.4}.inspectionDashCharts{grid-template-columns:1fr}.inspectionDashPanel{padding:13px}.inspectionDashMonthly{gap:5px}.inspectionDashMonth{min-height:90px;padding:6px 3px}.inspectionDashMonthTrack{height:40px}.inspectionListPage{padding:14px}.inspectionListPage .pageTitle{align-items:flex-start;gap:10px}.inspectionListPage .pageTitle h2{font-size:20px}}
@@ -406,10 +406,8 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
 .inspectionListTableWrap .inspectionListTable{width:100%!important;min-width:0!important;table-layout:fixed}
 .inspectionListTableWrap .inspectionListTable th,.inspectionListTableWrap .inspectionListTable td{padding:9px 5px;text-align:center;white-space:normal;overflow-wrap:anywhere;word-break:keep-all;font-size:12px;line-height:1.35}
-.inspectionListTableWrap .inspectionListTable th:nth-child(1),.inspectionListTableWrap .inspectionListTable td:nth-child(1){width:22%;text-align:left}
-.inspectionListTableWrap .inspectionListTable th:nth-child(2),.inspectionListTableWrap .inspectionListTable td:nth-child(2){width:6%}
-.inspectionListTableWrap .inspectionListTable th:nth-child(3),.inspectionListTableWrap .inspectionListTable td:nth-child(3){width:14%}
-.inspectionListTableWrap .inspectionListTable th:nth-child(n+4),.inspectionListTableWrap .inspectionListTable td:nth-child(n+4){width:14.5%}
+.inspectionListTableWrap .inspectionListTable th[data-col-key='site_name'],.inspectionListTableWrap .inspectionListTable td[data-col-key='site_name']{text-align:left}
+.inspectionListTableWrap .inspectionListTable th[data-col-key^='field_'],.inspectionListTableWrap .inspectionListTable td[data-col-key^='field_']{min-width:130px}
 .inspectionListSortButton{width:100%;padding:2px 1px;border:0;background:transparent;color:inherit;font:inherit;font-weight:800;line-height:1.3;white-space:normal}
 .inspectionListSortButton:hover{background:#dce9fc;color:#174fa7}
 @media(max-width:800px){.inspectionListTableWrap .inspectionListTable th,.inspectionListTableWrap .inspectionListTable td{padding:7px 2px;font-size:10px}.inspectionListSortButton{font-size:10px}}
@@ -440,7 +438,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V319</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V320</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -491,8 +489,8 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
   <footer class="homeFooter"><span>기계설비 유지관리 및 성능점검 업무포털</span><span>현장 전문성 · AI 혁신 · 안전과 신뢰</span></footer>
 </section>
 <section id="page-inspection-list" class="page inspectionListPage">
-  <div class="pageTitle"><div><h2 id="inspectionListTitle">점검 현장 목록</h2><p id="inspectionListMeta"></p></div><div class="actions"><button type="button" id="inspectionListBack" class="ghost">메인으로</button></div></div>
-  <p class="inspectionListHint">현장 행을 선택하면 점검일정 상세·수정 화면을 엽니다. 수정 가능 여부는 기존 권한 설정을 따릅니다.</p>
+  <div class="pageTitle"><div><h2 id="inspectionListTitle">점검 현장 목록</h2><p id="inspectionListMeta"></p></div><div class="actions"><button type="button" id="inspectionListBack" class="ghost">메인으로</button><button type="button" id="inspectionListFieldsBtn" class="ghost">표시 항목 설정</button></div></div>
+  <p class="inspectionListHint">현장 행을 선택하면 점검일정 상세·수정 화면을 엽니다. 수정 가능 여부는 기존 권한 설정을 따릅니다. 표시 항목은 현장 검색 설정과 함께 저장됩니다.</p>
   <div class="tableWrap inspectionListTableWrap"><table id="inspectionListTable" class="inspectionListTable"><thead><tr><th data-inspection-sort="site_name">현장명</th><th data-inspection-sort="sn">S/N</th><th data-inspection-sort="inspectors">현장점검원</th><th data-inspection-sort="plan_start">점검시작 계획일자</th><th data-inspection-sort="plan_end">점검종료 계획일자</th><th data-inspection-sort="inspection_start">점검 시작일자</th><th data-inspection-sort="inspection_end">점검 종료일자</th></tr></thead><tbody id="inspectionListRows"></tbody></table></div>
 </section>
 <section id="page-assignment" class="page assignmentPage">
@@ -656,7 +654,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261110-v319"></script><script src="fields.js?v=20261110-v319"></script><script src="quantity-ocr.js?v=20261110-v319"></script><script id="bundled-report-files-js" data-build="V319">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261110-v320"></script><script src="fields.js?v=20261110-v320"></script><script src="quantity-ocr.js?v=20261110-v320"></script><script id="bundled-report-files-js" data-build="V320">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -799,7 +797,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261110-v319"></script><script id="bundled-inspection-schedule-js" data-build="V319">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261110-v320"></script><script id="bundled-inspection-schedule-js" data-build="V320">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -829,7 +827,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V319';
+root.STAFF_SCHEDULE_VERSION='V320';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1010,7 +1008,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V319">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V320">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1097,7 +1095,7 @@ function applyDisplayFieldPreference(profile){
  try{storeUserUiPreference(displayFieldStorageKey(),JSON.stringify(displayFields))}catch(e){}
  siteListColumnOrder=[];
 }
-let inspectionDashRequest=0,inspectionDashRows=[],inspectionDashMissing=[],inspectionListSelection={kind:'annual',year:0,month:0},inspectionDashScope='',inspectionDashSelectedYear=0,inspectionListSort={key:'plan_start',dir:'asc'};
+let inspectionDashRequest=0,inspectionDashRows=[],inspectionDashMissing=[],inspectionListSelection={kind:'annual',year:0,month:0},inspectionDashScope='',inspectionDashSelectedYear=0,inspectionListSort={key:'plan_start',dir:'asc'},inspectionListColumnOrder=[];
 function isInspectionCategory(){return !!me&&userCategoryValue(me)==='inspection'}
 function inspectionNames(row){return Array.from(new Set(String(row?.inspectors||row?.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).map(n=>n.trim()).filter(Boolean)))}
 function inspectionHasPlanCount(value){return value!==null&&value!==undefined&&String(value).trim()!==''}
@@ -1105,15 +1103,46 @@ function inspectionOverlaps(row,start,end){return !!row?.plan_start&&!!row?.plan
 function inspectionCount(rows,start,end){return new Set(rows.filter(r=>inspectionOverlaps(r,start,end)).map(r=>String(r.source_id))).size}
 function inspectionPeriodRows(kind,year,month){if(kind==='missing')return [...inspectionDashMissing];const start=kind==='annual'?`${year}-01-01`:`${year}-${String(month).padStart(2,'0')}-01`,end=kind==='annual'?`${year}-12-31`:`${year}-${String(month).padStart(2,'0')}-${String(new Date(year,month,0).getDate()).padStart(2,'0')}`;return inspectionDashRows.filter(r=>inspectionOverlaps(r,start,end))}
 function openInspectionList(kind,year,month=0){if(!isInspectionCategory())return alert('점검 구분 사용자만 열 수 있습니다.');if(kind==='missing'&&!canViewAssignment())return alert('점검계획 미등록 목록을 보려면 사용자 관리에서 점검배정 조회 권한을 부여받아야 합니다.');if(!inspectionDashRows.length&&!inspectionDashMissing.length&&$('inspectionDashStatus')?.dataset.ready!=='1')return alert('점검 현황을 불러오는 중입니다. 잠시 후 다시 선택해 주세요.');inspectionListSelection={kind,year:Number(year||new Date().getFullYear()),month:Number(month||0)};showPage('inspection-list',false)}
+const INSPECTION_LIST_CORE_COLUMNS=[
+ {key:'site_name',label:'현장명',sortable:true},{key:'sn',label:'S/N',sortable:true},{key:'inspectors',label:'현장점검원',sortable:true},
+ {key:'plan_start',label:'점검시작 계획일자',sortable:true},{key:'plan_end',label:'점검종료 계획일자',sortable:true},
+ {key:'inspection_start',label:'점검 시작일자',sortable:true},{key:'inspection_end',label:'점검 종료일자',sortable:true}
+];
+function inspectionListColumnOrderStorageKey(){return`staff_inspection_list_column_order:${me?.id||'guest'}`}
+function inspectionListColumns(){
+ const core=[],keys=new Set();
+ const selected=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.prop||canViewSchedule())));
+ for(const field of selected){let key=field.listKey||`field_${field.col}`;if(field.listKey==='schedule_start')key='plan_start';else if(field.listKey==='schedule_end')key='plan_end';if(Number(field.col)===4)key='site_name';else if(Number(field.col)===1)key='sn';else if(Number(field.col)===31)key='inspectors';else if(Number(field.col)===28)key='inspection_start';else if(Number(field.col)===29)key='inspection_end';
+  if(keys.has(key))continue;keys.add(key);const known=INSPECTION_LIST_CORE_COLUMNS.find(c=>c.key===key);core.push({...known,key,label:field.listKey?field.label:(known?.label||siteCompactFieldLabel(field,'search')),sortable:true,field});
+ }
+ if(!core.length)core.push({...INSPECTION_LIST_CORE_COLUMNS[0]});
+ return core;
+}
+function ensureInspectionListColumnOrder(){
+ const valid=inspectionListColumns().map(c=>c.key);if(!inspectionListColumnOrder.length){try{const saved=JSON.parse(localStorage.getItem(inspectionListColumnOrderStorageKey())||'[]');if(Array.isArray(saved))inspectionListColumnOrder=saved.filter(k=>valid.includes(k))}catch(e){}}
+ inspectionListColumnOrder=inspectionListColumnOrder.filter(k=>valid.includes(k));for(const key of valid)if(!inspectionListColumnOrder.includes(key))inspectionListColumnOrder.push(key);return inspectionListColumnOrder;
+}
+function saveInspectionListColumnOrder(){try{storeUserUiPreference(inspectionListColumnOrderStorageKey(),JSON.stringify(inspectionListColumnOrder))}catch(e){}}
+function moveInspectionListColumn(from,to,after){ensureInspectionListColumnOrder();if(!from||!to||from===to)return;const next=inspectionListColumnOrder.filter(k=>k!==from),idx=next.indexOf(to);if(idx<0)return;next.splice(idx+(after?1:0),0,from);inspectionListColumnOrder=next;saveInspectionListColumnOrder();renderInspectionList()}
+function moveInspectionListColumnByOffset(key,offset){const order=ensureInspectionListColumnOrder(),from=order.indexOf(key),to=from+offset;if(from<0||to<0||to>=order.length)return;const next=[...order];next.splice(from,1);next.splice(to,0,key);inspectionListColumnOrder=next;saveInspectionListColumnOrder();renderInspectionList()}
+function inspectionListValue(row,key,column){if(key==='site_name')return row?.site_name||'';if(key==='sn')return row?.sn||'';if(key==='inspectors')return inspectionNames(row).join(', ');if(key==='plan_start')return row?.plan_start||'';if(key==='plan_end')return row?.plan_end||'';if(key==='inspection_start')return row?.inspection_start||'';if(key==='inspection_end')return row?.inspection_end||'';return column?.field?siteFieldDisplayValue(row,column.field):''}
 function renderInspectionList(){
- const {kind,year,month}=inspectionListSelection,rows=inspectionPeriodRows(kind,year,month);
- const sortValue=(r,k)=>k==='inspectors'?inspectionNames(r).join(', '):String(r?.[k]??'');
+ const {kind,year,month}=inspectionListSelection,rows=inspectionPeriodRows(kind,year,month),cols=inspectionListColumns(),order=ensureInspectionListColumnOrder(),byKey=new Map(cols.map(c=>[c.key,c]));
+ if(!byKey.has(inspectionListSort.key))inspectionListSort={key:cols[0].key,dir:'asc'};
+ const sortValue=(r,k)=>String(inspectionListValue(r,k,byKey.get(k))??'');
  rows.sort((a,b)=>{const av=sortValue(a,inspectionListSort.key).trim(),bv=sortValue(b,inspectionListSort.key).trim();if(!av&&!bv)return 0;if(!av)return 1;if(!bv)return -1;const cmp=av.localeCompare(bv,'ko',{numeric:true,sensitivity:'base'});return(inspectionListSort.dir==='desc'?-cmp:cmp)||String(a.site_name||'').localeCompare(String(b.site_name||''),'ko')});
  const title=kind==='missing'?'점검계획 미등록 현장':kind==='annual'?`${year}년 점검 현장`:`${year}년 ${month}월 점검 현장`;
- $('inspectionListTitle').textContent=title;$('inspectionListMeta').textContent=`${rows.length.toLocaleString()}건 · 제목을 누르면 오름차순·내림차순으로 정렬 · ${inspectionDashScope||'권한에 따른 조회 범위'}`;
- $('inspectionListTable').querySelectorAll('th[data-inspection-sort]').forEach(th=>{const active=th.dataset.inspectionSort===inspectionListSort.key;th.setAttribute('aria-sort',active?(inspectionListSort.dir==='asc'?'ascending':'descending'):'none');const label=th.dataset.inspectionSort==='site_name'?'현장명':th.dataset.inspectionSort==='sn'?'S/N':th.dataset.inspectionSort==='inspectors'?'현장점검원':th.dataset.inspectionSort==='plan_start'?'점검시작 계획일자':th.dataset.inspectionSort==='plan_end'?'점검종료 계획일자':th.dataset.inspectionSort==='inspection_start'?'점검 시작일자':'점검 종료일자';th.innerHTML=`<button type="button" class="inspectionListSortButton" data-inspection-sort-click="${th.dataset.inspectionSort}">${label}<span aria-hidden="true">${active?(inspectionListSort.dir==='asc'?' ▲':' ▼'):' ↕'}</span></button>`});
- $('inspectionListRows').innerHTML=rows.length?rows.map((r,i)=>`<tr data-inspection-list-row="${i}" tabindex="0" role="button" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기"><td>${esc(r.site_name||'-')}</td><td>${esc(r.sn||'-')}</td><td>${esc(inspectionNames(r).join(', ')||'점검원 미입력')}</td><td>${esc(r.plan_start||'미등록')}</td><td>${esc(r.plan_end||'미등록')}</td><td>${esc(r.inspection_start||'-')}</td><td>${esc(r.inspection_end||'-')}</td></tr>`).join(''):`<tr><td colspan="7" class="inspectionListEmpty">${kind==='missing'?'점검계획 미등록 현장이 없습니다.':'선택한 기간에 등록된 점검 현장이 없습니다.'}</td></tr>`;
+ $('inspectionListTitle').textContent=title;$('inspectionListMeta').textContent=`${rows.length.toLocaleString()}건 · 제목 클릭 정렬 · 열 제목 드래그 이동 · 경계 드래그 폭 조정 · ${inspectionDashScope||'권한 범위'}`;
+ $('inspectionListTable').querySelector('thead').innerHTML=`<tr>${order.map(key=>{const c=byKey.get(key),active=inspectionListSort.key===key;return`<th data-col-key="${esc(key)}" draggable="true" style="${key==='site_name'?'width:22%':key==='sn'?'width:6%':key==='inspectors'?'width:14%':['plan_start','plan_end','inspection_start','inspection_end'].includes(key)?'width:14.5%':''}" aria-sort="${active?(inspectionListSort.dir==='asc'?'ascending':'descending'):'none'}"><div class="inspectionListHeaderTools"><button type="button" class="inspectionListSortButton" data-inspection-sort-click="${esc(key)}">${esc(c.label)}<span aria-hidden="true">${active?(inspectionListSort.dir==='asc'?' ▲':' ▼'):' ↕'}</span></button><span class="inspectionListMoveTools" aria-label="${esc(c.label)} 열 이동"><button type="button" data-inspection-move="${esc(key)}" data-offset="-1" aria-label="${esc(c.label)} 열 왼쪽 이동">‹</button><button type="button" data-inspection-move="${esc(key)}" data-offset="1" aria-label="${esc(c.label)} 열 오른쪽 이동">›</button></span></div></th>`}).join('')}</tr>`;
+ $('inspectionListRows').innerHTML=rows.length?rows.map((r,i)=>`<tr data-inspection-list-row="${i}" tabindex="0" role="button" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기">${order.map(key=>`<td data-col-key="${esc(key)}">${esc(inspectionListValue(r,key,byKey.get(key))||'-')}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${order.length}" class="inspectionListEmpty">${kind==='missing'?'점검계획 미등록 현장이 없습니다.':'선택한 기간에 등록된 점검 현장이 없습니다.'}</td></tr>`;
  $('inspectionListRows').querySelectorAll('[data-inspection-list-row]').forEach((tr,i)=>{const open=()=>window.STAFF_SCHEDULE_UI?.openRecord({...rows[i],assignmentUnscheduled:kind==='missing'});tr.onclick=open;tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}});
+ const table=$('inspectionListTable');requestAnimationFrame(()=>scheduleTableColumnResize(table,'inspection-list'));
+}
+function bindInspectionListColumnMove(table){let dragKey=null;const clear=()=>table.querySelectorAll('th').forEach(th=>th.classList.remove('dragging','dragBefore','dragAfter'));
+ table.ondragstart=e=>{const th=e.target.closest('th[data-col-key]');if(!th||e.target.closest('.columnResizer')){e.preventDefault();return}dragKey=th.dataset.colKey;th.classList.add('dragging');if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragKey)}};
+ table.ondragover=e=>{const th=e.target.closest('th[data-col-key]');if(!dragKey||!th||dragKey===th.dataset.colKey)return;e.preventDefault();clear();const r=th.getBoundingClientRect();th.classList.add(e.clientX>r.left+r.width/2?'dragAfter':'dragBefore');if(e.dataTransfer)e.dataTransfer.dropEffect='move'};
+ table.ondrop=e=>{const th=e.target.closest('th[data-col-key]');if(!dragKey||!th)return;e.preventDefault();const r=th.getBoundingClientRect(),after=e.clientX>r.left+r.width/2,from=dragKey;clear();dragKey=null;moveInspectionListColumn(from,th.dataset.colKey,after)};
+ table.ondragend=()=>{clear();dragKey=null};
 }
 function renderInspectionDashboard(rows,missing,scope){
  const now=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'})),year=now.getFullYear(),month=now.getMonth()+1,years=Array.from({length:5},(_,i)=>year-4+i),displayYear=inspectionDashSelectedYear||year;
@@ -1391,7 +1420,7 @@ function cleanResizableTableClone(table){
 }
 const tableResizeTimers=new WeakMap();
 function scheduleTableColumnResize(table,tableName,attempt=0){
- if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ if(!table||(!window.matchMedia('(min-width:801px)').matches&&table.id!=='inspectionListTable'))return;
  const old=tableResizeTimers.get(table);if(old)cancelAnimationFrame(old);
  const id=requestAnimationFrame(()=>{
   tableResizeTimers.delete(table);
@@ -1404,7 +1433,7 @@ function scheduleTableColumnResize(table,tableName,attempt=0){
 function installTableColumnResize(table,tableName){
  const userTable=table?.id==='userTable',compact=userTable&&$('page-users').classList.contains('userCompactTable');
  if(userTable)tableName='users-v235';
- if(!table||!window.matchMedia('(min-width:801px)').matches)return;
+ if(!table||(!window.matchMedia('(min-width:801px)').matches&&table.id!=='inspectionListTable'))return;
  const accountRevision=`${String(me?.id||'guest')}:${uiPreferencesRevision}`;
  if(table.dataset.preferenceRevision!==accountRevision){
   table.querySelectorAll('.columnResizer').forEach(x=>x.remove());table.classList.remove('columnResizeEnabled');delete table.dataset.resizeMode;
@@ -3227,7 +3256,7 @@ async function saveFields(){
   const{error}=await sb.rpc('staff_save_display_fields',{p_fields:chosen});if(error)throw error;
   displayFields=chosen;me.staff_display_fields=[...chosen];siteListColumnOrder=[];
   storeUserUiPreference(displayFieldStorageKey(),JSON.stringify(displayFields));localStorage.setItem('staff_display_fields',JSON.stringify(displayFields));
-  $('fieldsDlg').close();renderSites();
+  $('fieldsDlg').close();renderSites();if(activePageName()==='inspection-list')renderInspectionList();
  }catch(e){alert('표시 항목 저장 오류: '+e.message)}finally{btn.disabled=false;btn.textContent=old}
 }
 function salesRaw(r,col){
@@ -4022,7 +4051,7 @@ async function loadUsers(force=false){
  if(!canManageUsers())return;
  if(!force&&usersCacheReady&&cacheFresh(usersLoadedAt)){renderUsers(usersRows);return}
  const{data,error}=await sb.rpc('staff_user_admin_list_v315');
- if(error)return alert('사용자 목록 조회 오류: '+error.message+' · V319 사용자 구분 SQL 적용 여부를 확인하세요.');
+ if(error)return alert('사용자 목록 조회 오류: '+error.message+' · V320 사용자 구분 SQL 적용 여부를 확인하세요.');
  usersRows=Array.isArray(data)?data:[];userEmploymentReady=false;
  try{const details=await fetchEmployeeDetails(),byId=new Map(details.map(r=>[String(r.user_id),r]));usersRows=usersRows.map(r=>({...r,...Object.fromEntries(EMPLOYMENT_FIELDS.map(([key])=>[key,byId.get(String(r.id))?.[key]||null]))}));$('userEmploymentStatus').textContent=''}catch(e){$('userEmploymentStatus').textContent=employmentError(e)}
  await loadUserBoardPermissions();usersCacheReady=true;usersLoadedAt=Date.now();renderUsers(usersRows);
@@ -4118,7 +4147,7 @@ initBoards();
 $('userPermissionRecoveryDownload').onclick=downloadUserPermissionRecovery;$('userPermissionRetry').onclick=retryUserPermissions;
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{await flushUiPreferencesSave().catch(()=>{});invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));document.querySelectorAll('.homeMenuCard[data-home-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.homePage,true));$('assignmentRefresh').onclick=()=>loadAssignmentDashboard();$('searchBtn').onclick=()=>searchSites(true,true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();searchSites(true,true)}};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');document.querySelectorAll('#fieldsDlg [data-display-tab]').forEach(b=>b.onclick=()=>activateDisplayFieldTab(b.dataset.displayTab));document.querySelectorAll('#fieldsDlg [data-equipment-select]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentSelect}\"]`).forEach(x=>x.checked=true);updateFieldSelectionCount()});document.querySelectorAll('#fieldsDlg [data-equipment-clear]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentClear}\"]`).forEach(x=>x.checked=false);updateFieldSelectionCount()});$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
-$('inspectionDashboardRefresh').onclick=()=>loadInspectionDashboard(true);$('inspectionListTable').onclick=e=>{const b=e.target.closest('[data-inspection-sort-click]');if(!b)return;const key=b.dataset.inspectionSortClick;inspectionListSort=inspectionListSort.key===key?{key,dir:inspectionListSort.dir==='asc'?'desc':'asc'}:{key,dir:'asc'};renderInspectionList()};$('inspectionMonthYear').onchange=e=>{inspectionDashSelectedYear=Number(e.target.value)||new Date().getFullYear();loadInspectionDashboard(true)};$('inspectionListBack').onclick=()=>showPage('home',false);$('inspectionDashboard').onclick=e=>{const b=e.target.closest('[data-inspection-open]');if(!b)return;openInspectionList(b.dataset.inspectionOpen,Number(b.dataset.inspectionYear)||new Date().getFullYear(),Number(b.dataset.inspectionMonth)||0)};
+ $('inspectionDashboardRefresh').onclick=()=>loadInspectionDashboard(true);$('inspectionListTable').onclick=e=>{const move=e.target.closest('[data-inspection-move]');if(move){e.preventDefault();e.stopPropagation();moveInspectionListColumnByOffset(move.dataset.inspectionMove,Number(move.dataset.offset));return}const b=e.target.closest('[data-inspection-sort-click]');if(!b||document.body.classList.contains('columnResizing'))return;const key=b.dataset.inspectionSortClick;inspectionListSort=inspectionListSort.key===key?{key,dir:inspectionListSort.dir==='asc'?'desc':'asc'}:{key,dir:'asc'};renderInspectionList()};bindInspectionListColumnMove($('inspectionListTable'));$('inspectionListFieldsBtn').onclick=setupFields;$('inspectionMonthYear').onchange=e=>{inspectionDashSelectedYear=Number(e.target.value)||new Date().getFullYear();loadInspectionDashboard(true)};$('inspectionListBack').onclick=()=>showPage('home',false);$('inspectionDashboard').onclick=e=>{const b=e.target.closest('[data-inspection-open]');if(!b)return;openInspectionList(b.dataset.inspectionOpen,Number(b.dataset.inspectionYear)||new Date().getFullYear(),Number(b.dataset.inspectionMonth)||0)};
 async function refreshSearchScheduleDates(){
  if(!me||activePageName()!=='search'||!can('can_view_staff_sites')||!searchCacheReady)return;
  const request=searchRequestSeq;

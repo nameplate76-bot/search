@@ -1667,3 +1667,6 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 
 /* V313: exclude weekends and holidays from plan period total */
 .scheduleDailyLogDlg .dailyLogInputs input[data-daily-field="vehicle_total"]{width:100%;box-sizing:border-box;min-height:40px;padding:9px;border:1px solid #c8d7ea;border-radius:8px;font:inherit;background:#fff;color:#17304f}
+
+/* V320 inspection list column controls */
+.inspectionListHeaderTools{display:flex;align-items:center;gap:2px;min-width:0}.inspectionListHeaderTools .inspectionListSortButton{flex:1;min-width:0}.inspectionListMoveTools{display:flex;flex:0 0 auto;gap:1px}.inspectionListMoveTools button{width:18px;height:22px;padding:0;border:1px solid #c9d8ed;border-radius:4px;background:#fff;color:#315987;font-size:15px;line-height:1;cursor:pointer}.inspectionListMoveTools button:hover{background:#e5efff}.inspectionListTable th.dragging{opacity:.45}.inspectionListTable th.dragBefore{box-shadow:inset 3px 0 #2563eb}.inspectionListTable th.dragAfter{box-shadow:inset -3px 0 #2563eb}.inspectionListTable th .columnResizer{touch-action:none}
