@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261111-v341">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261111-v342">
 <script>
 (function(){
-  const BUILD='20261111-v341';
+  const BUILD='20261111-v342';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -454,7 +454,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V341</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V342</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -671,7 +671,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261111-v341"></script><script src="fields.js?v=20261111-v341"></script><script src="quantity-ocr.js?v=20261111-v341"></script><script id="bundled-report-files-js" data-build="V341">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261111-v342"></script><script src="fields.js?v=20261111-v342"></script><script src="quantity-ocr.js?v=20261111-v342"></script><script id="bundled-report-files-js" data-build="V342">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -814,7 +814,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261111-v341"></script><script id="bundled-inspection-schedule-js" data-build="V341">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261111-v342"></script><script id="bundled-inspection-schedule-js" data-build="V342">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -844,7 +844,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V341';
+root.STAFF_SCHEDULE_VERSION='V342';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1032,7 +1032,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V341">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V342">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2276,7 +2276,8 @@ const assignmentColumns=[...assignmentCoreColumns,...assignmentDataColumns];
 let assignmentActiveTab='basic';
 function assignmentColumnTab(key){if(key.startsWith('field_')){const c=Number(key.slice(6));if(c>=55&&c<=81)return'maintenance';if(c>=83&&c<=109)return'performance'}return'basic'}
 function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));return row.safe_values?.[col-1]??''}
-let assignmentVisibleColumns=['site_name','sn','inspectors','plan_start','plan_end','field_2','field_6','field_7','field_8','field_10','field_11','field_12','field_13','field_14','field_15','field_17','field_19','field_21','field_22','field_23','field_24','field_28','field_29','field_32','field_40','field_44','field_45'];
+const assignmentDefaultVisibleColumns=['site_name','sn','inspectors','plan_start','plan_end'];
+let assignmentVisibleColumns=[...assignmentDefaultVisibleColumns];
 const assignmentDrafts=new Map();
 function assignmentDraftFor(id){return assignmentDrafts.get(String(id))||{}}
 function assignmentNormalizeDate(value){const raw=String(value||'').trim();if(!raw||raw==='미점검')return raw;let m=raw.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);if(!m){const d=raw.replace(/\D/g,'');if(d.length!==8)return null;m=[null,d.slice(0,4),d.slice(4,6),d.slice(6,8)]}const iso=`${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`,dt=new Date(iso+'T00:00:00Z');return !Number.isNaN(dt.getTime())&&dt.toISOString().slice(0,10)===iso&&iso>='2000-01-01'&&iso<='2050-12-31'?iso:null}
@@ -2289,7 +2290,7 @@ function updateAssignmentFieldsCount(){const dlg=$('assignmentFieldsDlg'),count=
 function setAssignmentDisplayTab(tab){assignmentActiveTab=['basic','maintenance','performance'].includes(tab)?tab:'basic';document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.assignmentTab===assignmentActiveTab)));document.querySelectorAll('#assignmentFieldsDlg [data-assignment-panel]').forEach(p=>p.hidden=p.dataset.assignmentPanel!==assignmentActiveTab);updateAssignmentFieldsCount()}
 function renderAssignmentFieldOptions(){for(const tab of ['basic','maintenance','performance']){const root=assignmentOptionsRoot(tab);if(!root)continue;const cols=assignmentColumns.filter(([key])=>assignmentColumnTab(key)===tab);root.innerHTML=cols.map(([key,label])=>{const f=key.startsWith('field_')?assignmentDataFields.find(x=>`field_${x.col}`===key):null;const text=f?(tab==='basic'?(window.STAFF_ASSIGNMENT_FIELD_LABELS?.basic?.(f)||f.label):(window.STAFF_ASSIGNMENT_FIELD_LABELS?.equipment?.(f)||f.label)):label;return `<label><input type="checkbox" data-assignment-field="${key}" value="${key}" ${assignmentVisibleColumns.includes(key)?'checked':''}>${esc(text)}</label>`}).join('');root.querySelectorAll('input').forEach(x=>x.onchange=updateAssignmentFieldsCount)}setAssignmentDisplayTab(assignmentActiveTab)}
 function openAssignmentFields(){if(!canViewAllAssignment())return;renderAssignmentFieldOptions();$('assignmentFieldsDlg')?.showModal()}
-function setAssignmentFieldChecks(mode){const root=assignmentOptionsRoot();if(!root)return;const defaults=new Set(['site_name','sn','inspectors','plan_start','plan_end','field_2','field_6','field_7','field_8','field_10','field_11','field_12','field_13','field_14','field_15','field_17','field_19','field_21','field_22','field_23','field_24','field_28','field_29','field_32','field_40','field_44','field_45']);root.querySelectorAll('input').forEach(x=>x.checked=mode==='all'||(mode==='default'&&defaults.has(x.value)));updateAssignmentFieldsCount()}
+function setAssignmentFieldChecks(mode){const root=assignmentOptionsRoot();if(!root)return;const defaults=new Set(assignmentDefaultVisibleColumns);root.querySelectorAll('input').forEach(x=>x.checked=mode==='all'||(mode==='default'&&defaults.has(x.value)));updateAssignmentFieldsCount()}
 function saveAssignmentFieldSelection(){if(!canViewAllAssignment())return;const selected=[...$('assignmentFieldsDlg').querySelectorAll('[data-assignment-field]:checked')].map(x=>x.value);if(!selected.length)return alert('점검배정 리스트에 표시할 항목을 하나 이상 선택해 주세요.');assignmentVisibleColumns=selected;saveAssignmentColumns();$('assignmentFieldsDlg').close();loadAssignmentDashboard()}
 function sortAssignmentRenderedRows(){
  const body=$('assignmentRows');if(!body)return;
@@ -2308,12 +2309,14 @@ function setupAssignmentColumns(){
  const key='staffAssignmentColumns:'+String(me?.id||'guest');let prefs={};
  try{prefs=JSON.parse(localStorage.getItem(key)||'{}');if(!Object.keys(prefs).length&&me?.id){const legacy=JSON.parse(localStorage.getItem('staffAssignmentColumnsV233')||'{}');if(Object.keys(legacy).length){prefs=legacy;storeUserUiPreference(key,JSON.stringify(prefs))}}}catch{}
  const heads=[...table.tHead.rows[0].cells],byKey=new Map(heads.map(h=>[h.dataset.assignmentCol,h]));
- const assignmentVisibilityAliases={field_1:'sn',field_4:'site_name',field_31:'inspectors'},validVisible=Array.isArray(prefs.visible)?[...new Set(prefs.visible.map(k=>assignmentVisibilityAliases[k]||k).filter(k=>byKey.has(k)))]:['site_name','sn','inspectors','plan_start','plan_end','field_2','field_6','field_7','field_8','field_10','field_11','field_12','field_13','field_14','field_15','field_17','field_19','field_21','field_22','field_23','field_24','field_28','field_29','field_32','field_40','field_44','field_45'];assignmentVisibleColumns=validVisible.length?validVisible:['site_name','sn','inspectors','plan_start','plan_end','field_2','field_6','field_7','field_8','field_10','field_11','field_12','field_13','field_14','field_15','field_17','field_19','field_21','field_22','field_23','field_24','field_28','field_29','field_32','field_40','field_44','field_45'];
+ const assignmentVisibilityAliases={field_1:'sn',field_4:'site_name',field_31:'inspectors'},validVisible=Array.isArray(prefs.visible)?[...new Set(prefs.visible.map(k=>assignmentVisibilityAliases[k]||k).filter(k=>byKey.has(k)))]:[...assignmentDefaultVisibleColumns];
+ // 이전 표시항목 기본값(27열) 또는 전체 선택 상태는 좁은 표에서 머리글을 세로로 압축하므로 한 번만 핵심 열로 정리합니다.
+ assignmentVisibleColumns=validVisible.length>12? [...assignmentDefaultVisibleColumns] : (validVisible.length?validVisible:[...assignmentDefaultVisibleColumns]);
  const savedOrder=Array.isArray(prefs.order)?prefs.order.filter(k=>byKey.has(k)):[];
  if(prefs.sort&&byKey.has(prefs.sort.key))assignmentSort={key:prefs.sort.key,direction:prefs.sort.direction==='asc'?'asc':'desc'};
  const order=[...new Set([...savedOrder,...assignmentColumns.map(([k])=>k)])];
  order.forEach(k=>{const h=byKey.get(k);if(h)table.tHead.rows[0].append(h)});
- for(const [col,h] of byKey){const width=Number(prefs.widths?.[col]);if(Number.isFinite(width)&&width>=70)h.style.width=`${Math.round(width)}px`;else h.style.removeProperty('width')}
+ for(const [col,h] of byKey){const width=Number(prefs.widths?.[col]);if(assignmentVisibleColumns.length<=12&&Number.isFinite(width)&&width>=70)h.style.width=`${Math.round(width)}px`;else h.style.removeProperty('width')}
  for(const [col,h] of byKey){h.hidden=!assignmentVisibleColumns.includes(col);h.style.display=h.hidden?'none':''}
  if(table.dataset.ready==='1')return;
  table.dataset.ready='1';
