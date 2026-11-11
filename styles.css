@@ -1458,6 +1458,11 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 .assignmentTable th.assignmentSortableHeader{cursor:pointer;user-select:none}
 .assignmentTable th.assignmentSortableHeader:hover{background:#dce9fb}
 .assignmentSortIndicator{font-size:.82em;color:#52709b;white-space:nowrap}
+#assignmentTable th.assignmentSortActive .assignmentSortIndicator{color:#1d4ed8;font-weight:800}
+#assignmentTable th.assignmentSortableHeader:focus-visible{outline:2px solid #2563eb;outline-offset:-3px}
+#assignmentTable th.assignmentColumnDragging{opacity:.55;cursor:grabbing}
+#assignmentTable th.assignmentDropBefore{box-shadow:inset 3px 0 0 #2563eb,0 1px 0 #8eb3ff}
+#assignmentTable th.assignmentDropAfter{box-shadow:inset -3px 0 0 #2563eb,0 1px 0 #8eb3ff}
 .siteEditFields[data-group-name="진행·담당·계약"] > .financialField {
   align-self: stretch;
   box-sizing: border-box;
