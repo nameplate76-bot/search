@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261111-v334">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261111-v335">
 <script>
 (function(){
-  const BUILD='20261111-v334';
+  const BUILD='20261111-v335';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -412,11 +412,11 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .inspectionListSortButton:hover{background:#dce9fc;color:#174fa7}
 @media(max-width:800px){.inspectionListTableWrap .inspectionListTable th,.inspectionListTableWrap .inspectionListTable td{padding:7px 2px;font-size:10px}.inspectionListSortButton{font-size:10px}}
 </style>
-<style id="site-name-completion-color-v334">
+<style id="site-name-completion-color-v335">
 #page-search .desktopSiteTable td.siteNameCell.siteNameEnded strong{color:#172b45!important}
 #page-search .selectedFieldsGrid .siteNameEnded b{color:#172b45}
 </style>
-<style id="daily-log-picker-today-v334">.dailyLogPickerDay.isToday:not(.isSelected){border:2px solid #285ff4;background:#eaf2ff;color:#17304f}</style>
+<style id="daily-log-picker-today-v335">.dailyLogPickerDay.isToday:not(.isSelected){border:2px solid #285ff4;background:#eaf2ff;color:#17304f}</style>
 <style id="holiday-leave-enter-v287">
 .holidayManagementDialog .holidayForm select{height:44px;min-height:44px;width:100%;border:1px solid #c6d4e6;border-radius:8px;padding:9px 12px;background:#fff;color:#233e60;font:inherit;font-size:14px;box-sizing:border-box;display:block;margin-top:7px}
 .holidayManagementDialog .holidayForm [data-end-date]{margin-top:-5px}
@@ -454,7 +454,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V334</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V335</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -671,7 +671,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261111-v334"></script><script src="fields.js?v=20261111-v334"></script><script src="quantity-ocr.js?v=20261111-v334"></script><script id="bundled-report-files-js" data-build="V334">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261111-v335"></script><script src="fields.js?v=20261111-v335"></script><script src="quantity-ocr.js?v=20261111-v335"></script><script id="bundled-report-files-js" data-build="V335">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -814,7 +814,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261111-v334"></script><script id="bundled-inspection-schedule-js" data-build="V334">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261111-v335"></script><script id="bundled-inspection-schedule-js" data-build="V335">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -844,7 +844,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V334';
+root.STAFF_SCHEDULE_VERSION='V335';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1032,7 +1032,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V334">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V335">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2319,7 +2319,7 @@ async function loadAssignmentDashboard(){
  if(!canViewAssignment()||activePageName()!=='assignment')return;
  const fieldsButton=$('assignmentFieldsBtn');if(fieldsButton)fieldsButton.classList.toggle('hidden',!canViewAllAssignment());
  await loadEmployeeDirectory().catch(()=>[]);
- const request=++assignmentRequest;assignmentSelectedInspector='';$('assignmentMessage').textContent='현장 및 점검계획 자료를 불러오는 중…';$('assignmentSummary').replaceChildren();$('assignmentInspectors').replaceChildren();$('assignmentRows').replaceChildren();
+ const request=++assignmentRequest;$('assignmentMessage').textContent='현장 및 점검계획 자료를 불러오는 중…';$('assignmentSummary').replaceChildren();$('assignmentInspectors').replaceChildren();$('assignmentRows').replaceChildren();
  try{
   setupAssignmentColumns();const access={all:canViewAllAssignment(),name:me?.name||''},{data,error}=await sb.rpc('staff_schedule_assignment_rows');
   if(error)throw error;if(request!==assignmentRequest||activePageName()!=='assignment')return;
@@ -2333,8 +2333,9 @@ async function loadAssignmentDashboard(){
   $('assignmentSummary').innerHTML=`<article class="assignmentMetric"><span>점검계획 미등록 · 점검원 미입력</span><strong>${missing.length.toLocaleString()}<small>건</small></strong><small>조회 범위 전체 현장 ${Number(payload.scope_total??sourceRows.length).toLocaleString()}건 중</small></article><article class="assignmentMetric"><span>시작일 미등록</span><strong>${missing.filter(r=>!r.plan_start&&!isHistoryComplete(r)).length.toLocaleString()}<small>건</small></strong><small>미등록 현장 중</small></article><article class="assignmentMetric"><span>종료일 미등록</span><strong>${missing.filter(r=>!r.plan_end&&!isHistoryComplete(r)).length.toLocaleString()}<small>건</small></strong><small>미등록 현장 중</small></article>`;
   const counts=new Map();for(const r of missing){const names=namesOf(r);for(const n of (names.length?names:['점검원 미입력']))counts.set(n,(counts.get(n)||0)+1)}
   const ordered=[...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'));
-  const assignmentGroups=groupedEmployeeNames(ordered.map(([n])=>n).filter(n=>n!=='점검원 미입력'));
-  const inspectorCards=`<button type="button" class="assignmentInspectorCard assignmentInspectorAll selected" data-assignment-person=""><span>전체</span><strong>${missing.length.toLocaleString()}건</strong></button>`+assignmentGroups.flatMap(([,names])=>names.map(n=>{const c=counts.get(n)||0;return `<button type="button" class="assignmentInspectorCard" data-assignment-person="${esc(n)}"><span>${esc(n)}</span><strong>${c.toLocaleString()}건</strong></button>`})).join('')+(counts.has('점검원 미입력')?`<button type="button" class="assignmentInspectorCard assignmentInspectorMissing" data-assignment-person="점검원 미입력"><span>점검원 미입력</span><strong>${counts.get('점검원 미입력').toLocaleString()}건</strong></button>`:'');
+  const inspectorNames=ordered.map(([n])=>n).filter(n=>n!=='점검원 미입력');if(assignmentSelectedInspector&&assignmentSelectedInspector!=='점검원 미입력'&&!inspectorNames.includes(assignmentSelectedInspector))inspectorNames.push(assignmentSelectedInspector);
+  const assignmentGroups=groupedEmployeeNames(inspectorNames);
+  const inspectorCards=`<button type="button" class="assignmentInspectorCard assignmentInspectorAll selected" data-assignment-person=""><span>전체</span><strong>${missing.length.toLocaleString()}건</strong></button>`+assignmentGroups.flatMap(([,names])=>names.map(n=>{const c=counts.get(n)||0;return `<button type="button" class="assignmentInspectorCard" data-assignment-person="${esc(n)}"><span>${esc(n)}</span><strong>${c.toLocaleString()}건</strong></button>`})).join('')+((counts.has('점검원 미입력')||assignmentSelectedInspector==='점검원 미입력')?`<button type="button" class="assignmentInspectorCard assignmentInspectorMissing" data-assignment-person="점검원 미입력"><span>점검원 미입력</span><strong>${(counts.get('점검원 미입력')||0).toLocaleString()}건</strong></button>`:'');
   $('assignmentInspectors').innerHTML=inspectorCards||'<p class="hint">점검계획 미등록 현장이 없습니다.</p>';
   const draw=()=>{const filtered=assignmentSelectedInspector?missing.filter(r=>namesOf(r).includes(assignmentSelectedInspector)||(!namesOf(r).length&&assignmentSelectedInspector==='점검원 미입력')):missing;const shown=[...filtered].sort((a,b)=>{const av=String(a?.[assignmentSort.key]??'').trim(),bv=String(b?.[assignmentSort.key]??'').trim();if(!av&&!bv)return Number(a?.source_id||0)-Number(b?.source_id||0);if(!av)return 1;if(!bv)return -1;const cmp=assignmentSortCollator.compare(av,bv);return (assignmentSort.direction==='asc'?cmp:-cmp)||Number(a?.source_id||0)-Number(b?.source_id||0)});$('assignmentListTitle').textContent=assignmentSelectedInspector?`${assignmentSelectedInspector} · 점검계획 미등록 현장`:'점검계획 미등록 및 점검원 미입력 현장 전체';$('assignmentListMeta').textContent=`${shown.length.toLocaleString()}건`;const liveOrder=[...$('assignmentTable').tHead.rows[0].cells].filter(th=>!th.hidden).map(th=>th.dataset.assignmentCol);$('assignmentRows').innerHTML=shown.map((r,i)=>`<tr class="assignmentClickableRow" data-assignment-row="${i}" tabindex="0" role="button" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기">${liveOrder.map(k=>`<td data-assignment-col="${k}">${esc(k==='inspectors'?(namesOf(r).join(', ')||'점검원 미입력'):(r[k]??'')||((k==='plan_start'||k==='plan_end')?'미등록':'-'))}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${Math.max(liveOrder.length,1)}" class="assignmentEmpty">점검계획 미등록 현장이 없습니다.</td></tr>`;
    $('assignmentRows').querySelectorAll('[data-assignment-row]').forEach((tr,i)=>{const open=()=>window.STAFF_SCHEDULE_UI?.openRecord({...shown[i],assignmentUnscheduled:true});tr.onclick=open;tr.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}});
