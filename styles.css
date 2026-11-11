@@ -1682,3 +1682,12 @@ input#siteAddressQuery,input#addressQuery{ime-mode:active}
 .assignmentInspectorCard{box-sizing:border-box;width:100%;min-height:88px;}
 .assignmentInspectorAll,.assignmentInspectorMissing{min-height:88px;height:100%;}
 @media(max-width:800px){.assignmentInspectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.assignmentInspectorCard{min-height:76px;flex:initial}}
+
+/* V338 점검배정 목록 빠른 입력 */
+.assignmentListActions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.assignmentListActions small{color:var(--muted)}
+.assignmentInlineInput{box-sizing:border-box;width:100%;min-width:120px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#172b45;font:inherit;font-size:13px}
+.assignmentInlineInput:focus{outline:2px solid #8eb3ff;border-color:#4b80f5}
+.assignmentSiteOpen{padding:0;border:0;background:transparent;color:#174fa7;font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.assignmentSiteOpen:hover{text-decoration:underline}
+@media(max-width:800px){.assignmentListActions{justify-content:flex-start}.assignmentInlineInput{min-width:130px;min-height:42px}}
