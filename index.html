@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v349">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v350">
 <script>
 (function(){
-  const BUILD='20261112-v349';
+  const BUILD='20261112-v350';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,6 +34,11 @@
 #page-schedule .scheduleInspectorFieldset legend{background:#fff;color:#173f7a!important;font-size:16px;font-weight:800;line-height:1.5;padding:3px 10px;border-radius:6px}
 #page-unwritten .unwrittenTable td:is(.uw-col-receipt,.uw-col-field_end,.uw-col-field_inspector,.uw-col-elapsed,.uw-col-corporation,.uw-col-inspection_type){text-align:center!important}
 #unwrittenPrint{white-space:nowrap;flex-shrink:0;min-height:40px}
+#unwrittenSelectionControls:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+#unwrittenSelectionControls button{min-height:36px;padding:7px 11px;font-size:12px}
+#unwrittenSelectedCount{color:#475569;font-size:13px;white-space:nowrap}
+#page-unwritten .unwrittenTable .uw-col-select{padding-inline:5px!important;text-align:center}
+#page-unwritten .unwrittenCardSelect{min-height:36px;cursor:pointer}
 
 /* V178: user header alignment, frozen employee names and compact resizing */
 #page-users #userTable thead th{text-align:center!important}
@@ -454,7 +459,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V349</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V350</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -540,7 +545,12 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div id="unwrittenOwners" class="ownerDashboard"></div>
   </div>
   <div class="unwrittenListSection">
-    <div class="sectionHead"><div><h3 id="unwrittenListTitle">미작성 현장 전체</h3><small id="unwrittenListMeta"></small></div><button type="button" id="unwrittenPrint" class="primary">🖨 목록 인쇄</button></div>
+    <div class="sectionHead"><div><h3 id="unwrittenListTitle">미작성 현장 전체</h3><small id="unwrittenListMeta"></small></div><button type="button" id="unwrittenPrint" class="primary" disabled>🖨 목록 인쇄</button></div>
+    <div id="unwrittenSelectionControls">
+      <button type="button" id="unwrittenSelectAll" class="ghost" aria-controls="unwrittenList" disabled>전체선택</button>
+      <button type="button" id="unwrittenClearSelection" class="ghost" aria-controls="unwrittenList" disabled>선택해제</button>
+      <span id="unwrittenSelectedCount" role="status">선택 0건</span>
+    </div>
     <div id="unwrittenList" class="unwrittenList"></div>
   </div>
   </section>
@@ -671,7 +681,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v349"></script><script src="fields.js?v=20261112-v349"></script><script src="quantity-ocr.js?v=20261112-v349"></script><script id="bundled-report-files-js" data-build="V349">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v350"></script><script src="fields.js?v=20261112-v350"></script><script src="quantity-ocr.js?v=20261112-v350"></script><script id="bundled-report-files-js" data-build="V350">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -814,7 +824,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261112-v349"></script><script id="bundled-inspection-schedule-js" data-build="V349">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261112-v350"></script><script id="bundled-inspection-schedule-js" data-build="V350">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -844,7 +854,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V349';
+root.STAFF_SCHEDULE_VERSION='V350';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1032,7 +1042,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V349">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V350">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1068,6 +1078,7 @@ let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
 let unwrittenRows=[],unwrittenSourceRows=[],unwrittenExemptions=[],unwrittenOwnerFilter='all',unwrittenListMode='all';
 let unwrittenDisplayFields=[];
+const unwrittenSelectedIds=new Set();
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
 let searchSubmitted=false,searchActiveQuery='';
@@ -1078,7 +1089,7 @@ let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
  if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';invalidateNonSearchSiteCaches();for(const row of lastSites)delete row._secureDetailLoaded}
- if(scope==='all')salesAssignedRows=[];
+ if(scope==='all'){salesAssignedRows=[];unwrittenSelectedIds.clear()}
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function invalidateNonSearchSiteCaches(){unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;stopSalesLoading();salesLoadRequest++;salesLoadPromise=null;salesCacheReady=false;salesLoadedAt=0;for(const row of lastSites)delete row._secureDetailLoaded}
@@ -1747,6 +1758,7 @@ async function loadUserUiPreferences(profile){
 }
 function resetTablePreferenceState(){
  siteListColumnOrder=[];siteListSort={key:'field_1',dir:'desc'};unwrittenColumnOrder=[];unwrittenSort={key:null,dir:'asc'};unwrittenOwnerFilter='all';unwrittenListMode='all';salesListColumnOrder=[];salesListSort={key:null,dir:'asc'};salesDashboardInitialized=false;
+ unwrittenSelectedIds.clear();
  document.querySelectorAll('table.columnResizeEnabled').forEach(t=>{t.dataset.preferenceRevision='';});
 }
 async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').select('*').eq('id',user.id).maybeSingle();if(error)throw error;return data?await fetchBoardPermissions(data):data}
@@ -3125,11 +3137,15 @@ function reportOwnerName(r){return normalizeReportOwnerName(r?.document_owner||r
 function parseLocalDate(v,col){v=normalizeCell(v,col);if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);if(m){const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return Number.isNaN(d.getTime())?null:d}if(/^\d+(\.\d+)?$/.test(s)){const x=excelDate(Number(s));if(x!==s)return parseLocalDate(x,col)}return null}
 function elapsedFromReceipt(r){const d=parseLocalDate(reportValue(r,27),27);if(!d)return null;const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(0,Math.floor((today-d)/86400000))}
 function elapsedClass(days){if(days===null)return'';if(days>=30)return'elapsedDanger';if(days>=14)return'elapsedWarn';if(days>=7)return'elapsedWatch';return'elapsedNormal'}
+function setUnwrittenListFilter(mode,owner){
+ if(mode!==unwrittenListMode||owner!==unwrittenOwnerFilter)unwrittenSelectedIds.clear();
+ unwrittenListMode=mode;unwrittenOwnerFilter=owner;
+}
 function renderUnwrittenDashboardSummary(){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners');
  const ownerMap=new Map();for(const r of unwrittenRows){const n=reportOwnerName(r);ownerMap.set(n,(ownerMap.get(n)||0)+1)}
  const ownerEntries=[...ownerMap.entries()].sort((a,b)=>(a[0]==='미배정'?-1:b[0]==='미배정'?1:b[1]-a[1]||a[0].localeCompare(b[0],'ko')));
- if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))unwrittenOwnerFilter='all';
+ if(unwrittenOwnerFilter!=='all'&&!ownerMap.has(unwrittenOwnerFilter))setUnwrittenListFilter(unwrittenListMode,'all');
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
  const cards=[
   ['all','전체 미작성',unwrittenRows.length,''],
@@ -3138,10 +3154,10 @@ function renderUnwrittenDashboardSummary(){
   ['over30','파일접수 30일 이상',over30,'danger']
  ];
  summary.innerHTML=cards.map(([mode,label,count,kind])=>`<button type="button" class="unwrittenKpi ${kind} ${unwrittenListMode===mode?'selected':''}" data-unwritten-mode="${mode}" aria-pressed="${unwrittenListMode===mode}" title="${label} 현장 목록 보기"><span>${label}</span><b>${count.toLocaleString()}건</b></button>`).join('');
- summary.querySelectorAll('[data-unwritten-mode]').forEach(b=>b.onclick=()=>{unwrittenListMode=b.dataset.unwrittenMode;unwrittenOwnerFilter='all';renderUnwrittenDashboardSummary()});
+ summary.querySelectorAll('[data-unwritten-mode]').forEach(b=>b.onclick=()=>{setUnwrittenListFilter(b.dataset.unwrittenMode,'all');renderUnwrittenDashboardSummary()});
  owners.closest('.unwrittenOwnerSection').hidden=unwrittenListMode==='exempt';
  owners.innerHTML=`<button class="ownerCard ${unwrittenOwnerFilter==='all'?'active':''}" data-owner="all"><span>전체</span><b>${unwrittenRows.length.toLocaleString()}건</b></button>`+groupedEmployeeNames(ownerEntries.map(([name])=>name).filter(n=>n!=='미배정')).map(([group,names])=>`<section class="ownerGroup"><h4>${group}</h4>${names.map(name=>{const count=ownerMap.get(name)||0;return `<button class="ownerCard ${unwrittenOwnerFilter===name?'active':''}" data-owner="${esc(name)}"><span>${esc(name)}</span><b>${count.toLocaleString()}건</b></button>`}).join('')}</section>`).join('')+(ownerMap.has('미배정')?`<section class="ownerGroup"><h4>미배정</h4><button class="ownerCard ${unwrittenOwnerFilter==='미배정'?'active':''}" data-owner="미배정"><span>미배정</span><b>${ownerMap.get('미배정').toLocaleString()}건</b></button></section>`:'');
- owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{unwrittenOwnerFilter=b.dataset.owner;renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
+ owners.querySelectorAll('[data-owner]').forEach(b=>b.onclick=()=>{setUnwrittenListFilter(unwrittenListMode,b.dataset.owner);renderUnwrittenList();owners.querySelectorAll('[data-owner]').forEach(x=>x.classList.toggle('active',x===b))});
  renderUnwrittenList();
 }
 async function loadUnwrittenDashboard(force=false){
@@ -3153,6 +3169,7 @@ async function loadUnwrittenDashboard(force=false){
  const current=()=>request===unwrittenRequestSeq&&account===me?.id&&canViewUnwritten();
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
+ syncUnwrittenSelectionUi();
  unwrittenLoadPromise=(async()=>{try{
   const [rows,exemptions]=await Promise.all([
    fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}).order('source_id',{ascending:true})),
@@ -3314,7 +3331,7 @@ function unwrittenFreezeStatusText(){
  if(unwrittenFreezeSelectMode)return '표에서 기준 셀을 클릭하세요. 클릭한 셀의 위쪽 행과 왼쪽 열이 고정됩니다.';
  if(!f.rows&&!f.cols)return '고정 안 됨';
  const rowText=f.rows?`위쪽 ${Math.max(0,f.rows-1)}개 현장행 + 제목행`:'';
- const colText=f.cols?`왼쪽 ${f.cols}개 열`:'';
+ const colText=f.cols?`선택란과 왼쪽 ${f.cols}개 열`:'';
  return [rowText,colText].filter(Boolean).join(' · ')+' 고정 중';
 }
 function updateUnwrittenFreezeControls(){
@@ -3342,7 +3359,8 @@ function applyUnwrittenFreezePanes(table){
  if(!table||!window.matchMedia('(min-width:801px)').matches)return;
  resetUnwrittenFreezeStyles(table);
  const f=readUnwrittenFreezePanes(),allRows=[...table.rows];if(!allRows.length)return;
- const rowCount=Math.min(f.rows,allRows.length),colCount=Math.min(f.cols,allRows[0]?.cells?.length||0);
+ // 저장된 고정 열 수는 데이터 열 기준으로 유지하고 선택 열을 앞에 포함합니다.
+ const rowCount=Math.min(f.rows,allRows.length),colCount=f.cols?Math.min(f.cols+1,allRows[0].cells.length):0;
  if(!rowCount&&!colCount){updateUnwrittenFreezeControls();return}
  table.classList.add('unwrittenFreezeActive');
  const colLeft=[];let left=0;
@@ -3372,10 +3390,11 @@ function selectUnwrittenFreezeCell(cell){
  const table=cell?.closest?.('.unwrittenTable');if(!table)return;
  const row=cell.parentElement,rowIndex=[...table.rows].indexOf(row),colIndex=[...row.cells].indexOf(cell);
  if(rowIndex<0||colIndex<0)return;
- saveUnwrittenFreezePanes(rowIndex,colIndex);unwrittenFreezeSelectMode=false;applyUnwrittenFreezePanes(table);updateUnwrittenFreezeControls();
+ const dataCols=Math.max(0,colIndex-1);
+ saveUnwrittenFreezePanes(rowIndex,dataCols);unwrittenFreezeSelectMode=false;applyUnwrittenFreezePanes(table);updateUnwrittenFreezeControls();
  const parts=[];
  if(rowIndex)parts.push(rowIndex>1?`제목행과 위쪽 현장 ${rowIndex-1}개`:'제목행');
- if(colIndex)parts.push(`왼쪽 ${colIndex}개 열`);
+ if(dataCols)parts.push(`선택란과 왼쪽 ${dataCols}개 열`);
  if(!parts.length)parts.push('고정 영역 없음');
  const status=$('unwrittenList')?.querySelector('[data-unwritten-freeze-status]');if(status)status.textContent=parts.join(' · ')+'을 고정했습니다.';
 }
@@ -3385,7 +3404,7 @@ function bindUnwrittenFreezeControls(root,table){
  if(selectBtn)selectBtn.onclick=()=>{unwrittenFreezeSelectMode=!unwrittenFreezeSelectMode;updateUnwrittenFreezeControls();table.classList.toggle('unwrittenFreezePicking',unwrittenFreezeSelectMode)};
  if(clearBtn)clearBtn.onclick=()=>{table.classList.remove('unwrittenFreezePicking');clearUnwrittenFreezePanes()};
  table.addEventListener('click',e=>{
-  if(!unwrittenFreezeSelectMode)return;
+  if(!unwrittenFreezeSelectMode||e.target.closest('.uw-col-select'))return;
   const cell=e.target.closest('th,td');if(!cell||!table.contains(cell))return;
   e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();
   table.classList.remove('unwrittenFreezePicking');selectUnwrittenFreezeCell(cell);
@@ -3483,13 +3502,56 @@ function openListPrintFrame(html,title){
 }
 // Print widths follow field identity, independently of screen column resizing/reordering.
 const UNWRITTEN_PRINT_WEIGHTS={no:3,site_name:25,receipt:9,field_end:9,field_inspector:10,elapsed:7,corporation:8,important:21,inspection_type:8};
-function buildUnwrittenPrintHtml(){
+function filteredUnwrittenRows(){
+ if(unwrittenListMode==='exempt')return [];
+ const minDays=unwrittenListMode==='over14'?14:unwrittenListMode==='over30'?30:0;
+ return unwrittenRows.filter(row=>
+  (unwrittenOwnerFilter==='all'||reportOwnerName(row)===unwrittenOwnerFilter)&&
+  (!minDays||(elapsedFromReceipt(row)??-1)>=minDays)
+ );
+}
+function unwrittenResultTitle(){
+ const title=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':'미작성 현장';
+ return unwrittenOwnerFilter==='all'?`${title} 전체`:`${unwrittenOwnerFilter} · ${title}`;
+}
+function unwrittenRowCheckHtml(row){
+ return `<input type="checkbox" class="siteRowCheck" data-unwritten-select="${esc(row.source_id)}" aria-label="${esc(row.site_name||'현장')} 선택">`;
+}
+function syncUnwrittenSelectionUi(){
+ const root=$('unwrittenList'),checks=root.querySelectorAll('[data-unwritten-select]');
+ let count=0;
+ for(const check of checks){
+  check.checked=unwrittenSelectedIds.has(check.dataset.unwrittenSelect);
+  if(check.checked)count++;
+ }
+ const master=root.querySelector('[data-unwritten-select-master]'),allSelected=checks.length>0&&count===checks.length;
+ if(master){master.checked=allSelected;master.indeterminate=count>0&&!allSelected}
+ $('unwrittenSelectedCount').textContent=`선택 ${count.toLocaleString()}건`;
+ $('unwrittenSelectAll').disabled=!checks.length||allSelected;
+ $('unwrittenClearSelection').disabled=!count;
+ $('unwrittenPrint').disabled=!count;
+}
+function setAllUnwrittenRowsChecked(checked){
+ unwrittenSelectedIds.clear();
+ if(checked){
+  for(const check of $('unwrittenList').querySelectorAll('[data-unwritten-select]'))unwrittenSelectedIds.add(check.dataset.unwrittenSelect);
+ }
+ syncUnwrittenSelectionUi();
+}
+function handleUnwrittenSelectionChange(event){
+ const check=event.target;
+ if(check.matches('[data-unwritten-select-master]')){setAllUnwrittenRowsChecked(check.checked);return}
+ const id=check.dataset.unwrittenSelect;
+ if(!id)return;
+ if(check.checked)unwrittenSelectedIds.add(id);else unwrittenSelectedIds.delete(id);
+ syncUnwrittenSelectionUi();
+}
+function buildUnwrittenPrintHtml(selectedRows){
  ensureUnwrittenColumnOrder();
- const filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
- const rows=sortedUnwrittenRows(filtered),cols=unwrittenColumnOrder.filter(k=>k!=='actions');
+ const rows=sortedUnwrittenRows(selectedRows),cols=unwrittenColumnOrder.filter(k=>k!=='actions');
  const total=cols.reduce((sum,k)=>sum+(UNWRITTEN_PRINT_WEIGHTS[k]||8),0);
  const colgroup=cols.map(k=>`<col data-print-col="${k}" style="width:${((UNWRITTEN_PRINT_WEIGHTS[k]||8)*100/total).toFixed(6)}%">`).join('');
- const title=unwrittenOwnerFilter==='all'?'미작성 현장 전체':`${unwrittenOwnerFilter} · 미작성 현장`;
+ const title=unwrittenResultTitle();
  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><style>
  @page{size:A4 landscape;margin:10mm}
  *{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif;color:#17243a;background:#fff;font-size:10pt;line-height:1.45}
@@ -3501,36 +3563,47 @@ function buildUnwrittenPrintHtml(){
  </style></head><body><h1>${esc(title)}</h1><p class="printMeta">총 ${rows.length.toLocaleString()}건 · 출력일시 ${esc(new Date().toLocaleString('ko-KR'))}</p><table><colgroup>${colgroup}</colgroup><thead><tr>${cols.map(k=>`<th scope="col">${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr>${cols.map(k=>unwrittenCellHtml(r,k,i)).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}">해당하는 미작성 현장이 없습니다.</td></tr>`}</tbody></table></body></html>`;
 }
 function printUnwrittenList(){
- if(!canViewUnwritten())return;
- openListPrintFrame(buildUnwrittenPrintHtml(),'미작성 현장 리스트 인쇄');
+ if(!canViewUnwritten()||$('unwrittenPrint').disabled)return;
+ const selectedRows=filteredUnwrittenRows().filter(row=>unwrittenSelectedIds.has(String(row.source_id)));
+ if(selectedRows.length)openListPrintFrame(buildUnwrittenPrintHtml(selectedRows),'미작성 현장 리스트 인쇄');
 }
 function renderUnwrittenList(){
  if(!canViewUnwritten())return;
- if(unwrittenListMode==='exempt'){renderUnwrittenExemptions();$('unwrittenPrint').disabled=true;return}
- $('unwrittenPrint').disabled=false;
- let filtered=unwrittenOwnerFilter==='all'?unwrittenRows:unwrittenRows.filter(r=>reportOwnerName(r)===unwrittenOwnerFilter);
- if(unwrittenListMode==='over14')filtered=filtered.filter(r=>(elapsedFromReceipt(r)??-1)>=14);
- if(unwrittenListMode==='over30')filtered=filtered.filter(r=>(elapsedFromReceipt(r)??-1)>=30);
- const modeTitle=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':'미작성 현장';
- $('unwrittenListTitle').textContent=unwrittenOwnerFilter==='all'?`${modeTitle} 전체`:`${unwrittenOwnerFilter} · ${modeTitle}`;
+ const exempt=unwrittenListMode==='exempt';
+ $('unwrittenSelectionControls').hidden=exempt;
+ if(exempt){renderUnwrittenExemptions();syncUnwrittenSelectionUi();return}
+ const filtered=filteredUnwrittenRows();
+ if(unwrittenSelectedIds.size){
+  const visibleIds=new Set(filtered.map(row=>String(row.source_id)));
+  for(const id of unwrittenSelectedIds)if(!visibleIds.has(id))unwrittenSelectedIds.delete(id);
+ }
+ $('unwrittenListTitle').textContent=unwrittenResultTitle();
  const desktop=window.matchMedia('(min-width:801px)').matches;
  $('unwrittenListMeta').textContent=desktop?`${filtered.length.toLocaleString()}건 · 제목 클릭: 정렬 · 제목 드래그: 열 이동 · 오른쪽 경계 드래그: 열 폭 조절 · 현장 행 클릭: 상세조회`:`${filtered.length.toLocaleString()}건 · 현장카드에서 상세·수정할 수 있습니다.`;
- const root=$('unwrittenList');if(!filtered.length){const empty=unwrittenListMode==='over14'?'파일접수 후 14일 이상 경과한 미작성 현장이 없습니다.':unwrittenListMode==='over30'?'파일접수 후 30일 이상 경과한 미작성 현장이 없습니다.':'해당 담당자의 미작성 보고서가 없습니다.';root.innerHTML=`<div class="emptyDashboard">${empty}</div>`;return}
+ const root=$('unwrittenList');if(!filtered.length){const empty=unwrittenListMode==='over14'?'파일접수 후 14일 이상 경과한 미작성 현장이 없습니다.':unwrittenListMode==='over30'?'파일접수 후 30일 이상 경과한 미작성 현장이 없습니다.':'해당 담당자의 미작성 보고서가 없습니다.';root.innerHTML=`<div class="emptyDashboard">${empty}</div>`;syncUnwrittenSelectionUi();return}
  if(desktop){
    ensureUnwrittenColumnOrder();
    const sorted=sortedUnwrittenRows(filtered);
-   const headers=unwrittenColumnOrder.map(unwrittenHeaderHtml).join('');
-   const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}">${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
+   const selectHead='<th scope="col" class="center siteSelectCol uw-col-select" data-resize-key="unwritten-select"><input type="checkbox" data-unwritten-select-master aria-label="현재 표시된 현장 전체선택"></th>';
+   const headers=selectHead+unwrittenColumnOrder.map(unwrittenHeaderHtml).join('');
+   const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}"><td class="center siteSelectCol uw-col-select">${unwrittenRowCheckHtml(r)}</td>${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
    root.innerHTML=`<div class="unwrittenFreezeToolbar"><div class="unwrittenFreezeButtons"><button type="button" class="ghost unwrittenFreezeSelectBtn" data-unwritten-freeze-select>📌 틀 고정 위치 선택</button><button type="button" class="ghost" data-unwritten-freeze-clear>🔓 틀 고정 해제</button></div><span class="unwrittenFreezeStatus" data-unwritten-freeze-status></span></div><div class="unwrittenListHint"><strong>틀 고정:</strong> 위치 선택 버튼 → 원하는 셀 클릭 (선택 셀의 위쪽·왼쪽 고정) · <strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계 드래그</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
    const unwrittenTable=root.querySelector('.unwrittenTable');
    bindUnwrittenHeaderInteractions(root);bindUnwrittenFreezeControls(root,unwrittenTable);
    scheduleTableColumnResize(unwrittenTable,'unwritten');setTimeout(()=>scheduleUnwrittenFreezeLayout(unwrittenTable),80);
-   root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input,select,th'))return;can('can_view_staff_sites')&&openDetail(Number(tr.dataset.reportDetail))});
+   root.querySelectorAll('.unwrittenRow').forEach(tr=>tr.onclick=e=>{if(e.target.closest('button,a,input,select,th,.uw-col-select'))return;can('can_view_staff_sites')&&openDetail(Number(tr.dataset.reportDetail))});
  }else{
    const selected=sanitizeUnwrittenDisplayFields(unwrittenDisplayFields);
    const mobileValue=(r,key)=>{const days=elapsedFromReceipt(r);if(key==='site_name')return r.site_name||'-';if(key==='important')return reportValue(r,16)||'-';if(key==='expiry')return reportValue(r,18)||'-';if(key==='elapsed')return days===null?'-':days+'일';if(key==='corporation')return reportValue(r,24)||'-';if(key==='inspection_type')return reportValue(r,25)||'-';if(key==='receipt')return reportValue(r,27)||'-';if(key==='field_end')return String(r.field_end||reportValue(r,30)||'-');if(key==='field_inspector')return r.field_inspector||reportValue(r,31)||'-';return'-'};
-   root.innerHTML=filtered.map(r=>{const days=elapsedFromReceipt(r),title=selected.includes('site_name')?esc(r.site_name||'-'):'미작성 현장';const badge=selected.includes('elapsed')?`<span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span>`:'';const details=selected.filter(k=>k!=='site_name'&&k!=='elapsed').map(k=>`<div><dt>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</dt><dd>${esc(mobileValue(r,k))}</dd></div>`).join('');return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${title}</h4>${badge}</div>${details?`<dl>${details}</dl>`:''}<div class="siteActions"><button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button><button class="ghost smallBtn" data-report-unneeded="${r.source_id}">작성 불필요</button>`:''}</div></article>`}).join('');
+   root.innerHTML=filtered.map(r=>{
+    const days=elapsedFromReceipt(r),title=selected.includes('site_name')?esc(r.site_name||'-'):'미작성 현장';
+    const badge=selected.includes('elapsed')?`<span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span>`:'';
+    const details=selected.filter(k=>k!=='site_name'&&k!=='elapsed').map(k=>`<div><dt>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</dt><dd>${esc(mobileValue(r,k))}</dd></div>`).join('');
+    const check=`<label class="mobileSiteSelect unwrittenCardSelect">${unwrittenRowCheckHtml(r)} 인쇄 선택</label>`;
+    return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${title}</h4>${badge}</div>${details?`<dl>${details}</dl>`:''}<div class="siteActions">${check}<button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button><button class="ghost smallBtn" data-report-unneeded="${r.source_id}">작성 불필요</button>`:''}</div></article>`;
+   }).join('');
  }
+ syncUnwrittenSelectionUi();
  if(!can('can_view_staff_sites'))root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.remove());
  root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.reportDetailBtn))});
  root.querySelectorAll('[data-report-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.reportEdit))});
@@ -4401,6 +4474,9 @@ enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('cont
 $('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=closeSiteEditor;$('siteEditCancel').onclick=closeSiteEditor;$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteFormAddress').oninput=()=>{if(siteAddressMode==='manual')syncRegionFromSiteAddress()};$('siteFormAddress').onblur=()=>syncRegionFromSiteAddress();$('siteFormAddressDetail').oninput=()=>syncRegionFromSiteAddress();$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('siteSearchPrint').onclick=printSiteSearchResults;
 $('assignmentPrint').onclick=printAssignmentResults;
+$('unwrittenSelectAll').onclick=()=>setAllUnwrittenRowsChecked(true);
+$('unwrittenClearSelection').onclick=()=>setAllUnwrittenRowsChecked(false);
+$('unwrittenList').addEventListener('change',handleUnwrittenSelectionChange);
 $('unwrittenPrint').onclick=printUnwrittenList;$('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=()=>{if(canViewUnwritten())setupUnwrittenFields()};$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
 
 // V168: presentation only. Existing data, permissions, export and save handlers are reused.
