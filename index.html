@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261111-v347">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v348">
 <script>
 (function(){
-  const BUILD='20261111-v347';
+  const BUILD='20261112-v348';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -454,7 +454,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V347</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V348</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -671,7 +671,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261111-v347"></script><script src="fields.js?v=20261111-v347"></script><script src="quantity-ocr.js?v=20261111-v347"></script><script id="bundled-report-files-js" data-build="V347">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v348"></script><script src="fields.js?v=20261112-v348"></script><script src="quantity-ocr.js?v=20261112-v348"></script><script id="bundled-report-files-js" data-build="V348">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -814,7 +814,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261111-v347"></script><script id="bundled-inspection-schedule-js" data-build="V347">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261112-v348"></script><script id="bundled-inspection-schedule-js" data-build="V348">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -844,7 +844,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V347';
+root.STAFF_SCHEDULE_VERSION='V348';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1032,7 +1032,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V347">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V348">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3074,7 +3074,6 @@ function reportOwnerName(r){return normalizeReportOwnerName(r?.document_owner||r
 function parseLocalDate(v,col){v=normalizeCell(v,col);if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);if(m){const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));return Number.isNaN(d.getTime())?null:d}if(/^\d+(\.\d+)?$/.test(s)){const x=excelDate(Number(s));if(x!==s)return parseLocalDate(x,col)}return null}
 function elapsedFromReceipt(r){const d=parseLocalDate(reportValue(r,27),27);if(!d)return null;const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(0,Math.floor((today-d)/86400000))}
 function elapsedClass(days){if(days===null)return'';if(days>=30)return'elapsedDanger';if(days>=14)return'elapsedWarn';if(days>=7)return'elapsedWatch';return'elapsedNormal'}
-function isUnwrittenReport(r){return !!String(r?.field_end||reportValue(r,30)||'').trim()&&!String(r?.report_complete_date||reportValue(r,32)||'').trim()}
 function renderUnwrittenDashboardSummary(){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners');
  const ownerMap=new Map();for(const r of unwrittenRows){const n=reportOwnerName(r);ownerMap.set(n,(ownerMap.get(n)||0)+1)}
@@ -3104,11 +3103,17 @@ async function loadUnwrittenDashboard(force=false){
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
  unwrittenLoadPromise=(async()=>{try{
-  const [rows,exemptionResult]=await Promise.all([fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true})),sb.from('staff_report_exemptions').select('source_id,reason,created_by_name,created_at').order('created_at',{ascending:false})]);
-  if(exemptionResult.error)throw exemptionResult.error;
+  const [rows,exemptions]=await Promise.all([
+   fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}).order('source_id',{ascending:true})),
+   fetchPaged('staff_report_exemptions','source_id,reason,created_by_name,created_at',q=>q.order('created_at',{ascending:false}).order('source_id',{ascending:true}))
+  ]);
   if(!current())return;
-  unwrittenExemptions=exemptionResult.data||[];const exemptIds=new Set(unwrittenExemptions.map(x=>Number(x.source_id)));
-  unwrittenSourceRows=rows.filter(isUnwrittenReport);unwrittenRows=unwrittenSourceRows.filter(r=>!exemptIds.has(Number(r.source_id)));unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
+  unwrittenExemptions=exemptions;
+  const exemptIds=new Set(unwrittenExemptions.map(x=>Number(x.source_id)));
+  // DB에서 실제 종료일과 보고서 완료일로 선별한 목록을 사용합니다.
+  unwrittenSourceRows=rows;
+  unwrittenRows=rows.filter(r=>!exemptIds.has(Number(r.source_id)));
+  unwrittenCacheReady=true;unwrittenLoadedAt=Date.now();renderUnwrittenDashboardSummary();return true;
  }catch(e){if(!current())return;summary.innerHTML=`<div class="statusBanner warn">미작성 현황 갱신 실패: ${esc(e.message)} · 새로고침으로 다시 조회해 주세요.</div>`;return false}finally{if(request===unwrittenRequestSeq)unwrittenLoadPromise=null}})();
  return unwrittenLoadPromise;
 }
