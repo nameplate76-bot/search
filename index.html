@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v351">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v352">
 <script>
 (function(){
-  const BUILD='20261112-v351';
+  const BUILD='20261112-v352';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -429,16 +429,37 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .holidayManagementDialog .holidayKindField{margin-bottom:2px}
 </style>
 <style id="schedule-leave-summary-v290">#page-schedule .scheduleMonthFooter>.scheduleLeaveSummary{white-space:normal;flex:1 1 auto;min-width:0;overflow-wrap:anywhere}</style><style id="employee-departure-groups-v324">
-.scheduleInspectorGroup,.assignmentInspectorGroup,.ownerGroup,.salesDashOwnerGroup{display:flex;flex-wrap:wrap;gap:7px;margin:7px 0 10px;min-width:0}
-.scheduleInspectorGroup>h4,.assignmentInspectorGroup>h4,.ownerGroup>h4,.salesDashOwnerGroup>h4{flex:0 0 100%;margin:3px 0;color:#536a88;font-size:12px;font-weight:800}
+.scheduleInspectorGroup,.assignmentInspectorGroup,.ownerGroup{display:flex;flex-wrap:wrap;gap:7px;margin:7px 0 10px;min-width:0}
+.scheduleInspectorGroup>h4,.assignmentInspectorGroup>h4,.ownerGroup>h4{flex:0 0 100%;margin:3px 0;color:#536a88;font-size:12px;font-weight:800}
 .scheduleInspectorGroup>label{margin:0}
 .assignmentInspectorGroup .assignmentInspectorCard{margin:0}
 .ownerGroup .ownerCard{margin:0}
-.salesDashOwnerGroup>label{margin:0}
 .scheduleEmployeePicker{display:flex;align-items:center;gap:8px;margin:7px 0 10px}
 .scheduleEmployeePicker select{flex:1;min-width:0;min-height:42px;padding:8px 10px;border:1px solid #cbd8ea;border-radius:8px;background:#fff;color:#172b45;font:inherit}
 .scheduleEmployeePicker button{flex:0 0 auto;min-height:42px}
 @media(max-width:600px){.scheduleEmployeePicker{align-items:stretch;flex-direction:column}.scheduleEmployeePicker button{width:100%}}
+</style>
+<style id="sales-owner-picker-v352">
+#page-sales .salesDashOwnerPanel{width:min(590px,calc(100vw - 56px));padding:12px}
+#page-sales .salesDashOwnerSearch{display:block;width:100%;min-height:40px;margin:0 0 10px;padding:8px 11px;border:1px solid #cbd8ea;border-radius:8px;background:#fff;color:#172b45;font:inherit;font-size:14px}
+#page-sales .salesDashOwnerSearch:focus-visible{outline:2px solid #8eb3ff;outline-offset:1px}
+#page-sales .salesDashOwnerList{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:10px;max-height:min(50vh,360px);overflow:auto;overscroll-behavior:contain;padding:0 4px 1px 0}
+#page-sales .salesDashOwnerGroup{min-width:0;padding:10px;border:1px solid #d6e1f0;border-radius:9px;background:#f7faff}
+#page-sales .salesDashOwnerGroup>h4{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 8px;color:#24436c;font-size:13px;font-weight:800}
+#page-sales .salesDashOwnerGroup>h4 small{color:#536a88;font-size:12px;font-weight:600;white-space:nowrap}
+#page-sales .salesDashOwnerOptions{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,145px),1fr));gap:6px}
+#page-sales .salesDashOwnerOptions label{min-height:40px;margin:0}
+#page-sales .salesDashOwnerOptions label:focus-within{outline:2px solid #8eb3ff;outline-offset:-2px}
+#page-sales .salesDashOwnerOptions label span{white-space:normal;overflow-wrap:anywhere;word-break:keep-all;line-height:1.35}
+@media(max-width:1000px){#page-sales .salesDashOwnerPanel{width:min(590px,100%)}}
+@media(max-width:800px){
+ #page-sales .salesDashOwnerPanel{width:100%;padding:9px}
+ #page-sales .salesDashOwnerSearch{font-size:16px}
+ #page-sales .salesDashOwnerList{max-height:min(50vh,300px)}
+ #page-sales .salesDashOwnerGroup{padding:8px}
+ #page-sales .salesDashOwnerOptions{grid-template-columns:repeat(auto-fill,minmax(min(100%,125px),1fr))}
+ #page-sales .salesDashOwnerOptions label{min-height:44px}
+}
 </style></head>
 <body>
 <div id="standaloneNotice" class="standaloneNotice hidden"><strong>Chrome 웹앱 모드로 실행 중입니다.</strong><span>일반 Chrome 탭으로 사용하려면 설치된 ‘현장 검색’ 웹앱을 제거하세요.</span><button id="standaloneHelp">제거 방법</button></div>
@@ -460,7 +481,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V351</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V352</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -580,6 +601,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
         <summary id="salesDashOwnerSummary">담당자 선택</summary>
         <div class="salesDashOwnerPanel">
           <div class="salesDashOwnerActions"><button type="button" id="salesDashSelectAll">전체 선택</button><button type="button" id="salesDashClearAll">선택 해제</button><button type="button" id="salesDashOwnerClose" class="salesDashOwnerClose">닫기</button></div>
+          <input type="search" id="salesDashOwnerSearch" class="salesDashOwnerSearch" placeholder="담당자 이름 검색" aria-label="담당자 이름 검색" autocomplete="off">
           <div id="salesDashOwnerList" class="salesDashOwnerList"></div>
         </div>
       </details>
@@ -691,7 +713,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v351"></script><script src="fields.js?v=20261112-v351"></script><script src="quantity-ocr.js?v=20261112-v351"></script><script id="bundled-report-files-js" data-build="V351">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v352"></script><script src="fields.js?v=20261112-v352"></script><script src="quantity-ocr.js?v=20261112-v352"></script><script id="bundled-report-files-js" data-build="V352">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -834,7 +856,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261112-v351"></script><script id="bundled-inspection-schedule-js" data-build="V351">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261112-v352"></script><script id="bundled-inspection-schedule-js" data-build="V352">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -864,7 +886,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V351';
+root.STAFF_SCHEDULE_VERSION='V352';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1052,7 +1074,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V351">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V352">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3767,7 +3789,13 @@ function updateSalesDashboardOwnerSummary(){const n=salesDashboardOwners.size,to
 function renderSalesDashboardOwnerList(){
  const root=$('salesDashOwnerList');if(!root)return;
  const owners=salesDashboardOwnerNames();
- root.innerHTML=groupedEmployeeNames(owners).map(([group,names])=>`<section class="salesDashOwnerGroup"><h4>${group}</h4>${names.map(o=>`<label><input type="checkbox" value="${esc(o)}" ${salesDashboardOwners.has(o)?'checked':''}><span>${esc(o)}</span></label>`).join('')}</section>`).join('')||'<div class="salesDashEmpty">조회 가능한 담당자가 없습니다.</div>';
+ const search=$('salesDashOwnerSearch').value.trim().toLocaleLowerCase('ko');
+ const visibleOwners=search?owners.filter(name=>name.toLocaleLowerCase('ko').includes(search)):owners;
+ root.innerHTML=groupedEmployeeNames(visibleOwners).map(([group,names])=>{
+  const options=names.map(name=>`<label><input type="checkbox" value="${esc(name)}" ${salesDashboardOwners.has(name)?'checked':''}><span>${esc(name)}</span></label>`).join('');
+  return `<section class="salesDashOwnerGroup"><h4>${esc(group)}<small>${names.length.toLocaleString()}명</small></h4><div class="salesDashOwnerOptions">${options}</div></section>`;
+ }).join('')||`<div class="salesDashEmpty" role="status">${search?'검색 결과가 없습니다.':'조회 가능한 담당자가 없습니다.'}</div>`;
+ root.scrollTop=0;
  root.querySelectorAll('input[type=checkbox]').forEach(ch=>ch.onchange=()=>{if(ch.checked)salesDashboardOwners.add(ch.value);else salesDashboardOwners.delete(ch.value);updateSalesDashboardOwnerSummary();renderSalesDashboard()});
  updateSalesDashboardOwnerSummary();
 }
@@ -4586,6 +4614,13 @@ function setupPortalDesign(){
 }
 
 initBoards();
+$('salesDashOwnerSearch').oninput=renderSalesDashboardOwnerList;
+$('salesDashOwnerDetails').addEventListener('toggle',event=>{
+ const input=$('salesDashOwnerSearch');
+ if(event.currentTarget.open||!input.value)return;
+ input.value='';
+ renderSalesDashboardOwnerList();
+});
 $('userPermissionRecoveryDownload').onclick=downloadUserPermissionRecovery;$('userPermissionRetry').onclick=retryUserPermissions;
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{await flushUiPreferencesSave().catch(()=>{});invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));document.querySelectorAll('.homeMenuCard[data-home-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.homePage,true));$('assignmentRefresh').onclick=()=>loadAssignmentDashboard();$('assignmentSaveChangesBtn').onclick=saveAssignmentDrafts;$('assignmentFieldsBtn').onclick=openAssignmentFields;document.querySelectorAll('#assignmentFieldsDlg [data-assignment-fields-close]').forEach(b=>b.onclick=()=>$('assignmentFieldsDlg').close());document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.onclick=()=>setAssignmentDisplayTab(b.dataset.assignmentTab));$('assignmentFieldsDlg').querySelector('[data-assignment-fields-all]').onclick=()=>setAssignmentFieldChecks('all');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-default]').onclick=()=>setAssignmentFieldChecks('default');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-none]').onclick=()=>setAssignmentFieldChecks('none');$('assignmentFieldsSave').onclick=saveAssignmentFieldSelection;$('searchBtn').onclick=()=>searchSites(true,true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();searchSites(true,true)}};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');document.querySelectorAll('#fieldsDlg [data-display-tab]').forEach(b=>b.onclick=()=>activateDisplayFieldTab(b.dataset.displayTab));document.querySelectorAll('#fieldsDlg [data-equipment-select]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentSelect}\"]`).forEach(x=>x.checked=true);updateFieldSelectionCount()});document.querySelectorAll('#fieldsDlg [data-equipment-clear]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentClear}\"]`).forEach(x=>x.checked=false);updateFieldSelectionCount()});$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersCurrentGroup').onclick=()=>setUserManagementGroup('current');$('usersRetiredGroup').onclick=()=>setUserManagementGroup('retired');$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
