@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v350">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261112-v351">
 <script>
 (function(){
-  const BUILD='20261112-v350';
+  const BUILD='20261112-v351';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -34,10 +34,11 @@
 #page-schedule .scheduleInspectorFieldset legend{background:#fff;color:#173f7a!important;font-size:16px;font-weight:800;line-height:1.5;padding:3px 10px;border-radius:6px}
 #page-unwritten .unwrittenTable td:is(.uw-col-receipt,.uw-col-field_end,.uw-col-field_inspector,.uw-col-elapsed,.uw-col-corporation,.uw-col-inspection_type){text-align:center!important}
 #unwrittenPrint{white-space:nowrap;flex-shrink:0;min-height:40px}
-#unwrittenSelectionControls:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
-#unwrittenSelectionControls button{min-height:36px;padding:7px 11px;font-size:12px}
-#unwrittenSelectedCount{color:#475569;font-size:13px;white-space:nowrap}
-#page-unwritten .unwrittenTable .uw-col-select{padding-inline:5px!important;text-align:center}
+.listPrintSelectionControls:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.listPrintSelectionControls button{min-height:36px;padding:7px 11px;font-size:12px}
+.listPrintSelectionControls [role=status]{color:#475569;font-size:13px;white-space:nowrap}
+#page-unwritten .unwrittenTable .uw-col-select,#assignmentTable .assignmentSelectCol{padding-inline:5px!important;text-align:center}
+#assignmentTable th.assignmentSelectCol{cursor:default}
 #page-unwritten .unwrittenCardSelect{min-height:36px;cursor:pointer}
 
 /* V178: user header alignment, frozen employee names and compact resizing */
@@ -459,7 +460,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V350</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V351</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -519,7 +520,16 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
   <div id="assignmentMessage" class="meta" role="status" aria-live="polite"></div>
   <div id="assignmentSummary" class="assignmentSummary"></div>
   <section class="assignmentPanel"><div class="sectionHead"><h3>점검원별 점검계획 미등록 현장</h3><small>전체 권한은 점검계획 미등록 또는 점검원 미입력 현장을 관리합니다. 점검원별 권한은 본인에게 배정된 미등록 계획만 관리합니다.</small></div><div id="assignmentInspectors" class="assignmentInspectors"></div></section>
-  <section class="assignmentPanel"><div class="sectionHead"><h3 id="assignmentListTitle">점검계획 미등록 및 점검원 미입력 현장 전체</h3><div class="assignmentListActions"><small id="assignmentListMeta"></small><button type="button" id="assignmentPrint" class="ghost" disabled>인쇄하기</button><button type="button" id="assignmentSaveChangesBtn" class="primary" hidden>변경사항 저장</button></div></div><p class="hint assignmentHelp">점검원·계획일자는 목록에서 바로 입력하고 변경사항 저장을 누르면 한꺼번에 저장됩니다. 현장명을 누르면 기존 상세·수정 창이 열립니다. 열 제목을 클릭하면 오름차순·내림차순으로 전환됩니다. 제목을 끌어 열 순서를 바꾸고, 제목 오른쪽 경계를 끌어 너비를 조정하세요.</p><div class="tableWrap" id="assignmentTableWrap"><table class="assignmentTable" id="assignmentTable"><thead><tr><th data-assignment-col="site_name">현장명</th><th data-assignment-col="sn">S/N</th><th data-assignment-col="inspectors">점검원</th><th data-assignment-col="performance_contract">성능점검 계약(회)</th><th data-assignment-col="maintenance_contract">유지관리 계약(회)</th><th data-assignment-col="manager_contract">유지관리자 선임 계약 여부</th><th data-assignment-col="region">지역</th><th data-assignment-col="monthly_contract">월점검 계약(회)</th><th data-assignment-col="corporation">법인 구분</th><th data-assignment-col="plan_start">점검시작 계획일자</th><th data-assignment-col="plan_end">점검종료 계획일자</th></tr></thead><tbody id="assignmentRows"></tbody></table></div></section>
+  <section class="assignmentPanel">
+    <div class="sectionHead"><h3 id="assignmentListTitle">점검계획 미등록 및 점검원 미입력 현장 전체</h3><div class="assignmentListActions"><small id="assignmentListMeta"></small><button type="button" id="assignmentPrint" class="ghost" disabled>목록 인쇄</button><button type="button" id="assignmentSaveChangesBtn" class="primary" hidden>변경사항 저장</button></div></div>
+    <p class="hint assignmentHelp">점검원·계획일자는 목록에서 바로 입력하고 변경사항 저장을 누르면 한꺼번에 저장됩니다. 현장명을 누르면 기존 상세·수정 창이 열립니다. 열 제목을 클릭하면 오름차순·내림차순으로 전환됩니다. 제목을 끌어 열 순서를 바꾸고, 제목 오른쪽 경계를 끌어 너비를 조정하세요.</p>
+    <div class="listPrintSelectionControls">
+      <button type="button" id="assignmentSelectAll" class="ghost" aria-controls="assignmentTable" disabled>전체선택</button>
+      <button type="button" id="assignmentClearSelection" class="ghost" aria-controls="assignmentTable" disabled>선택해제</button>
+      <span id="assignmentSelectedCount" role="status">선택 0건</span>
+    </div>
+    <div class="tableWrap" id="assignmentTableWrap"><table class="assignmentTable" id="assignmentTable"><thead><tr><th scope="col" class="siteSelectCol assignmentSelectCol" aria-label="인쇄 선택"></th><th data-assignment-col="site_name">현장명</th><th data-assignment-col="sn">S/N</th><th data-assignment-col="inspectors">점검원</th><th data-assignment-col="performance_contract">성능점검 계약(회)</th><th data-assignment-col="maintenance_contract">유지관리 계약(회)</th><th data-assignment-col="manager_contract">유지관리자 선임 계약 여부</th><th data-assignment-col="region">지역</th><th data-assignment-col="monthly_contract">월점검 계약(회)</th><th data-assignment-col="corporation">법인 구분</th><th data-assignment-col="plan_start">점검시작 계획일자</th><th data-assignment-col="plan_end">점검종료 계획일자</th></tr></thead><tbody id="assignmentRows"></tbody></table></div>
+  </section>
 </section>
 <dialog id="assignmentFieldsDlg" class="fieldsDlg"><div class="dlgHead"><div><h3>점검배정 표시 항목</h3><small>현장 검색 표시 항목과 동일한 분류이며, 설정은 로그인 계정별로 저장됩니다.</small></div><button type="button" class="iconBtn" data-assignment-fields-close>×</button></div><div class="displayFieldTabs" role="tablist" aria-label="점검배정 표시 항목 분류"><button type="button" role="tab" aria-selected="true" data-assignment-tab="basic">기본정보</button><button type="button" role="tab" aria-selected="false" data-assignment-tab="maintenance">유지관리 대상 설비</button><button type="button" role="tab" aria-selected="false" data-assignment-tab="performance">성능점검 대상 설비</button></div><div class="fieldQuickBar"><div class="fieldQuickButtons"><button type="button" data-assignment-fields-all>전체 선택</button><button type="button" data-assignment-fields-default>기본 선택</button><button type="button" data-assignment-fields-none>선택 해제</button></div><strong data-assignment-fields-count></strong></div><section class="displayFieldPanel" data-assignment-panel="basic"><div id="assignmentFieldOptionsBasic" class="checkGrid assignmentFieldOptions"></div></section><section class="displayFieldPanel" data-assignment-panel="maintenance" hidden><div id="assignmentFieldOptionsMaintenance" class="checkGrid assignmentFieldOptions"></div></section><section class="displayFieldPanel" data-assignment-panel="performance" hidden><div id="assignmentFieldOptionsPerformance" class="checkGrid assignmentFieldOptions"></div></section><div class="dlgFoot fieldDlgFoot"><span>항목을 하나 이상 선택한 후 저장해 주세요.</span><button type="button" id="assignmentFieldsSave" class="primary">저장</button></div></dialog>
 <section id="page-schedule" class="page">
@@ -546,7 +556,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
   </div>
   <div class="unwrittenListSection">
     <div class="sectionHead"><div><h3 id="unwrittenListTitle">미작성 현장 전체</h3><small id="unwrittenListMeta"></small></div><button type="button" id="unwrittenPrint" class="primary" disabled>🖨 목록 인쇄</button></div>
-    <div id="unwrittenSelectionControls">
+    <div id="unwrittenSelectionControls" class="listPrintSelectionControls">
       <button type="button" id="unwrittenSelectAll" class="ghost" aria-controls="unwrittenList" disabled>전체선택</button>
       <button type="button" id="unwrittenClearSelection" class="ghost" aria-controls="unwrittenList" disabled>선택해제</button>
       <span id="unwrittenSelectedCount" role="status">선택 0건</span>
@@ -681,7 +691,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">저장</button><div id="contactEditMsg" class="msg"></div></form></dialog>
 <dialog id="routeDlg" class="routeDlg"><div class="dlgHead"><h3>길찾기 앱 선택</h3><button class="iconBtn" id="routeClose">×</button></div><div class="routeBody"><p id="routeAddress" class="routeAddress"></p><div class="routeGrid"><button data-route-app="naver">네이버지도</button><button data-route-app="kakao">카카오맵</button><button data-route-app="tmap">TMAP</button><button data-route-app="kakaonavi">카카오내비</button></div><p class="hint">선택한 지도앱에서 등록 주소 검색 화면을 엽니다. 네이버지도·카카오맵·TMAP은 앱이 설치되어 있으면 앱 실행을 우선 시도합니다.</p></div></dialog>
 <div id="importOverlay" class="overlay hidden"><div class="progressCard"><h3>엑셀 DB 등록 중</h3><p id="importText">준비 중...</p><div class="bar"><i id="importBar"></i></div><small>브라우저를 닫지 마세요.</small></div></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v350"></script><script src="fields.js?v=20261112-v350"></script><script src="quantity-ocr.js?v=20261112-v350"></script><script id="bundled-report-files-js" data-build="V350">(function(root){'use strict';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="config.js?v=20261112-v351"></script><script src="fields.js?v=20261112-v351"></script><script src="quantity-ocr.js?v=20261112-v351"></script><script id="bundled-report-files-js" data-build="V351">(function(root){'use strict';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function endpoint(value){if(!String(value||'').trim())return '';const u=new URL(value);if(u.protocol!=='https:'||u.username||u.password||u.search||u.hash)throw Error('보고서 연결 주소는 로그인 정보가 없는 HTTPS 주소로 설정하세요.');return u.href.replace(/\/$/,'')}
 function nasWebUrl(value){if(!String(value||'').trim())return '';const u=new URL(value);if(!['http:','https:'].includes(u.protocol)||u.username||u.password)throw Error('ipDISK 주소 형식을 확인하세요.');return u.href}
@@ -824,7 +834,7 @@ function open(ctx){
 
 })(window);
 
-</script><script src="schedule-holidays.js?v=20261112-v350"></script><script id="bundled-inspection-schedule-js" data-build="V350">(function(root){'use strict';
+</script><script src="schedule-holidays.js?v=20261112-v351"></script><script id="bundled-inspection-schedule-js" data-build="V351">(function(root){'use strict';
 const pad=n=>String(n).padStart(2,'0'),key=(y,m,d)=>`${y}-${pad(m)}-${pad(d)}`,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function monthDays(y,m){return new Date(Date.UTC(y,m,0)).getUTCDate()}
 function grid(y,m){const offset=new Date(Date.UTC(y,m-1,1)).getUTCDay();return Array.from({length:42},(_,i)=>{const d=i-offset+1;return d>0&&d<=monthDays(y,m)?key(y,m,d):null})}
@@ -854,7 +864,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V350';
+root.STAFF_SCHEDULE_VERSION='V351';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=id=>document.getElementById(id);const now=()=>new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
@@ -1042,7 +1052,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script id="bundled-app-js" data-build="V350">(()=>{'use strict';
+</script><script id="bundled-app-js" data-build="V351">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1078,7 +1088,8 @@ let selectedUserIds=new Set();
 let salesDashboardPeriod='annual',salesDashboardOwners=new Set(),salesDashboardInitialized=false;
 let unwrittenRows=[],unwrittenSourceRows=[],unwrittenExemptions=[],unwrittenOwnerFilter='all',unwrittenListMode='all';
 let unwrittenDisplayFields=[];
-const unwrittenSelectedIds=new Set();
+const assignmentPrintSelection=setupListPrintSelection('assignment','assignmentRows');
+const unwrittenPrintSelection=setupListPrintSelection('unwritten','unwrittenList');
 let selectedSiteIds=new Set();
 const DATA_CACHE_TTL=120000;
 let searchSubmitted=false,searchActiveQuery='';
@@ -1089,7 +1100,7 @@ let usersCacheReady=false,usersLoadedAt=0,usersRows=[];
 function cacheFresh(ts){return !!ts&&(Date.now()-ts)<DATA_CACHE_TTL}
 function invalidateDataCaches(scope='all'){
  if(scope==='all'||scope==='sites'){stopSearchLoading();searchRequestSeq++;searchCacheReady=false;searchLoadedAt=0;searchSourceRows=[];searchCacheQuery='';invalidateNonSearchSiteCaches();for(const row of lastSites)delete row._secureDetailLoaded}
- if(scope==='all'){salesAssignedRows=[];unwrittenSelectedIds.clear()}
+ if(scope==='all'){salesAssignedRows=[];assignmentPrintSelection.selectedIds.clear();unwrittenPrintSelection.selectedIds.clear()}
  if(scope==='all'||scope==='users'){usersCacheReady=false;usersLoadedAt=0;usersRows=[]}
 }
 function invalidateNonSearchSiteCaches(){unwrittenCacheReady=false;unwrittenLoadedAt=0;unwrittenRequestSeq++;unwrittenLoadPromise=null;stopSalesLoading();salesLoadRequest++;salesLoadPromise=null;salesCacheReady=false;salesLoadedAt=0;for(const row of lastSites)delete row._secureDetailLoaded}
@@ -1758,7 +1769,7 @@ async function loadUserUiPreferences(profile){
 }
 function resetTablePreferenceState(){
  siteListColumnOrder=[];siteListSort={key:'field_1',dir:'desc'};unwrittenColumnOrder=[];unwrittenSort={key:null,dir:'asc'};unwrittenOwnerFilter='all';unwrittenListMode='all';salesListColumnOrder=[];salesListSort={key:null,dir:'asc'};salesDashboardInitialized=false;
- unwrittenSelectedIds.clear();
+ assignmentPrintSelection.selectedIds.clear();unwrittenPrintSelection.selectedIds.clear();
  document.querySelectorAll('table.columnResizeEnabled').forEach(t=>{t.dataset.preferenceRevision='';});
 }
 async function profileFor(user){const{data,error}=await sb.from('pjt_profiles').select('*').eq('id',user.id).maybeSingle();if(error)throw error;return data?await fetchBoardPermissions(data):data}
@@ -2405,12 +2416,14 @@ function updateAssignmentSortHeaders(){
   h.setAttribute('aria-sort',active?(assignmentSort.direction==='asc'?'ascending':'descending'):'none');
  });
 }
+function assignmentColumnHeaders(table){return [...table.tHead.querySelectorAll('th[data-assignment-col]')]}
 function setupAssignmentColumns(){
  const table=$('assignmentTable');if(!table)return;
- table.tHead.innerHTML='<tr>'+assignmentColumns.map(([k,label])=>`<th scope="col" tabindex="0" data-assignment-col="${k}">${esc(label)}</th>`).join('')+'</tr>';
+ const selectHead='<th scope="col" class="siteSelectCol assignmentSelectCol" aria-label="인쇄 선택"></th>';
+ table.tHead.innerHTML='<tr>'+selectHead+assignmentColumns.map(([k,label])=>`<th scope="col" tabindex="0" data-assignment-col="${k}">${esc(label)}</th>`).join('')+'</tr>';
  const key='staffAssignmentColumns:'+String(me?.id||'guest');let prefs={};
  try{prefs=JSON.parse(localStorage.getItem(key)||'{}')||{};if(!Object.keys(prefs).length&&me?.id){const legacy=JSON.parse(localStorage.getItem('staffAssignmentColumnsV233')||'{}');if(Object.keys(legacy).length){prefs=legacy;storeUserUiPreference(key,JSON.stringify(prefs))}}}catch{}
- const heads=[...table.tHead.rows[0].cells],byKey=new Map(heads.map(h=>[h.dataset.assignmentCol,h]));
+ const heads=assignmentColumnHeaders(table),byKey=new Map(heads.map(h=>[h.dataset.assignmentCol,h]));
  const assignmentVisibilityAliases={field_1:'sn',field_4:'site_name',field_31:'inspectors'},validVisible=Array.isArray(prefs.visible)?[...new Set(prefs.visible.map(k=>assignmentVisibilityAliases[k]||k).filter(k=>byKey.has(k)))]:[...assignmentDefaultVisibleColumns];
  assignmentVisibleColumns=validVisible.length?validVisible:[...assignmentDefaultVisibleColumns];
  const savedOrder=Array.isArray(prefs.order)?prefs.order.filter(k=>byKey.has(k)):[];
@@ -2442,7 +2455,7 @@ function setupAssignmentColumns(){
   h.addEventListener('drop',e=>{
    if(!draggedKey)return;e.preventDefault();e.stopPropagation();const src=byKey.get(draggedKey);if(!src||src===h){finishDrag();return}
    const row=table.tHead.rows[0],box=h.getBoundingClientRect(),after=e.clientX>=box.left+box.width/2;row.insertBefore(src,after?h.nextSibling:h);
-   const visibleOrder=[...row.cells].filter(th=>!th.hidden).map(th=>th.dataset.assignmentCol);
+   const visibleOrder=assignmentColumnHeaders(table).filter(th=>!th.hidden).map(th=>th.dataset.assignmentCol);
    table.querySelectorAll('tbody tr[data-assignment-row]').forEach(tr=>{const cellMap=new Map([...tr.cells].map(td=>[td.dataset.assignmentCol,td]));visibleOrder.forEach(k=>{const cell=cellMap.get(k);if(cell)tr.append(cell)})});
    finishDrag();saveAssignmentColumns();
   });
@@ -2460,23 +2473,25 @@ function setupAssignmentColumns(){
 function saveAssignmentColumns(){
  const table=$('assignmentTable');if(!table)return;const key='staffAssignmentColumns:'+String(me?.id||'guest');let previous={};
  try{previous=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{}
- const heads=[...table.tHead.rows[0].cells],widths={...previous.widths};
+ const heads=assignmentColumnHeaders(table),widths={...previous.widths};
  heads.filter(h=>!h.hidden).forEach(h=>{const width=Math.round(h.getBoundingClientRect().width);if(width>=70)widths[h.dataset.assignmentCol]=width});
  storeUserUiPreference(key,JSON.stringify({order:heads.map(h=>h.dataset.assignmentCol),visible:[...assignmentVisibleColumns],widths,sort:{...assignmentSort}}));
 }
 function printAssignmentResults(){
  if(activePageName()!=='assignment'||!canViewAssignment()||$('assignmentPrint')?.disabled)return;
  const table=$('assignmentTable');
- const columns=[...table.tHead.rows[0].cells].filter(header=>!header.hidden).map(header=>({
+ const columns=assignmentColumnHeaders(table).filter(header=>!header.hidden).map(header=>({
   key:header.dataset.assignmentCol,label:header.textContent.trim()
  }));
  let includesDrafts=false;
- const rows=[...$('assignmentRows').querySelectorAll('tr[data-assignment-row-id]')].map(row=>[...row.cells].map(cell=>{
-  const input=cell.querySelector('[data-assignment-edit]');
-  if(!input)return cell.textContent;
-  if(input.value.trim()!==(input.dataset.assignmentOriginal??'').trim())includesDrafts=true;
-  return input.value;
- }));
+ const rows=[...$('assignmentRows').querySelectorAll('tr[data-assignment-row-id]')]
+  .filter(row=>assignmentPrintSelection.selectedIds.has(row.dataset.assignmentRowId))
+  .map(row=>[...row.querySelectorAll('td[data-assignment-col]')].map(cell=>{
+   const input=cell.querySelector('[data-assignment-edit]');
+   if(!input)return cell.textContent;
+   if(input.value.trim()!==(input.dataset.assignmentOriginal??'').trim())includesDrafts=true;
+   return input.value;
+  }));
  if(!rows.length||!columns.length)return;
  const title=`점검배정 · ${assignmentSelectedInspector||'전체'}`;
  const details=[$('assignmentListTitle').textContent];
@@ -2486,10 +2501,9 @@ function printAssignmentResults(){
 async function loadAssignmentDashboard(){
  if(!canViewAssignment()||activePageName()!=='assignment')return;
  const request=++assignmentRequest,requestAccount=me?.id;
- const printButton=$('assignmentPrint');
- printButton?.setAttribute('disabled','');
  const fieldsButton=$('assignmentFieldsBtn');if(fieldsButton)fieldsButton.classList.toggle('hidden',!canViewAllAssignment());updateAssignmentSaveButton();
  $('assignmentMessage').textContent='현장 및 점검계획 자료를 불러오는 중…';$('assignmentSummary').replaceChildren();$('assignmentInspectors').replaceChildren();$('assignmentRows').replaceChildren();
+ assignmentPrintSelection.sync();
  try{
   await loadEmployeeDirectory().catch(()=>[]);
   if(request!==assignmentRequest||requestAccount!==me?.id||activePageName()!=='assignment'||!canViewAssignment())return;
@@ -2513,13 +2527,59 @@ async function loadAssignmentDashboard(){
   const staffInspectorCards=assignmentGroups.flatMap(([,names])=>names.map(n=>{const c=counts.get(n)||0;return `<button type="button" class="assignmentInspectorCard" data-assignment-person="${esc(n)}"><span>${esc(n)}</span><strong>${c.toLocaleString()}건</strong></button>`})).join('');
   const inspectorCards=allInspectorCard+missingInspectorCard+staffInspectorCards;
   $('assignmentInspectors').innerHTML=inspectorCards||'<p class="hint">점검계획 미등록 현장이 없습니다.</p>';
-  const draw=()=>{const filtered=assignmentSelectedInspector?missing.filter(r=>namesOf(r).includes(assignmentSelectedInspector)||(!namesOf(r).length&&assignmentSelectedInspector==='점검원 미입력')):missing;const shown=[...filtered].sort(compareAssignmentRows);$('assignmentListTitle').textContent=assignmentSelectedInspector?`${assignmentSelectedInspector} · 점검계획 미등록 현장`:'점검계획 미등록 및 점검원 미입력 현장 전체';$('assignmentListMeta').textContent=`${shown.length.toLocaleString()}건`;const liveOrder=[...$('assignmentTable').tHead.rows[0].cells].filter(th=>!th.hidden).map(th=>th.dataset.assignmentCol);$('assignmentRows').innerHTML=shown.map((r,i)=>{const draft=assignmentDraftFor(r.source_id),cells=liveOrder.map(k=>{const original=assignmentCellValue(r,k),value=draft[k]??original;if(k==='inspectors'||k==='plan_start'||k==='plan_end'){const displayValue=(value==='미등록'||value==='점검원 미입력')?'':value,originalValue=(original==='미등록'||original==='점검원 미입력')?'':original;return `<td data-assignment-col="${k}"><input class="assignmentInlineInput" type="text" data-assignment-edit="${k}" data-assignment-original="${esc(originalValue)}" value="${esc(displayValue)}" placeholder="${k==='inspectors'?'점검원 입력':'YYYY-MM-DD 또는 미점검'}" aria-label="${esc(r.site_name||'현장')} ${esc(assignmentColumns.find(x=>x[0]===k)?.[1]||k)} 입력"></td>`}return `<td data-assignment-col="${k}">${k==='site_name'?`<button type="button" class="assignmentSiteOpen">${esc(r.site_name||'현장')}</button>`:esc(String(value??'').trim()===''?'-':value)}</td>`}).join('');return `<tr class="assignmentClickableRow" data-assignment-row="${i}" data-assignment-row-id="${esc(r.source_id)}" data-assignment-base-inspectors="${esc(namesOf(r).join(', '))}" data-assignment-base-plan-start="${esc(r.plan_start||'')}" data-assignment-base-plan-end="${esc(r.plan_end||'')}" tabindex="0" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기">${cells}</tr>`}).join('')||`<tr><td colspan="${Math.max(liveOrder.length,1)}" class="assignmentEmpty">점검계획 미등록 현장이 없습니다.</td></tr>`;
-   $('assignmentRows').querySelectorAll('[data-assignment-row]').forEach((tr,i)=>{const open=()=>window.STAFF_SCHEDULE_UI?.openRecord({...shown[i],assignmentUnscheduled:true});tr.onclick=e=>{if(e.target.closest('[data-assignment-edit]')){e.stopPropagation();return}if(e.target.closest('.assignmentSiteOpen')){open();return}open()};tr.querySelectorAll('[data-assignment-edit]').forEach(input=>{input.addEventListener('input',()=>updateAssignmentDraftFromRow(tr));input.addEventListener('click',e=>e.stopPropagation());input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();const next=[...tr.querySelectorAll('[data-assignment-edit]')],at=next.indexOf(input);(next[at+1]||$('assignmentSaveChangesBtn'))?.focus()}});input.addEventListener('blur',()=>{if(input.dataset.assignmentEdit==='plan_start'||input.dataset.assignmentEdit==='plan_end'){const normalized=assignmentNormalizeDate(input.value);if(normalized)input.value=normalized;updateAssignmentDraftFromRow(tr)}})});tr.onkeydown=e=>{if(e.target.closest('[data-assignment-edit]'))return;if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}}});
-   $('assignmentInspectors').querySelectorAll('[data-assignment-person]').forEach(b=>b.classList.toggle('selected',b.dataset.assignmentPerson===assignmentSelectedInspector));updateAssignmentSaveButton();
-   printButton?.toggleAttribute('disabled',!shown.length);
+  const draw=()=>{
+   const filtered=assignmentSelectedInspector?missing.filter(r=>namesOf(r).includes(assignmentSelectedInspector)||(!namesOf(r).length&&assignmentSelectedInspector==='점검원 미입력')):missing;
+   const shown=[...filtered].sort(compareAssignmentRows);
+   $('assignmentListTitle').textContent=assignmentSelectedInspector?`${assignmentSelectedInspector} · 점검계획 미등록 현장`:'점검계획 미등록 및 점검원 미입력 현장 전체';
+   $('assignmentListMeta').textContent=`${shown.length.toLocaleString()}건`;
+   const liveOrder=assignmentColumnHeaders($('assignmentTable')).filter(th=>!th.hidden).map(th=>th.dataset.assignmentCol);
+   const body=$('assignmentRows');
+   body.innerHTML=shown.map((r,i)=>{
+    const draft=assignmentDraftFor(r.source_id);
+    const cells=liveOrder.map(key=>{
+     const original=assignmentCellValue(r,key),value=draft[key]??original;
+     if(key==='inspectors'||key==='plan_start'||key==='plan_end'){
+      const displayValue=(value==='미등록'||value==='점검원 미입력')?'':value,originalValue=(original==='미등록'||original==='점검원 미입력')?'':original;
+      return `<td data-assignment-col="${key}"><input class="assignmentInlineInput" type="text" data-assignment-edit="${key}" data-assignment-original="${esc(originalValue)}" value="${esc(displayValue)}" placeholder="${key==='inspectors'?'점검원 입력':'YYYY-MM-DD 또는 미점검'}" aria-label="${esc(r.site_name||'현장')} ${esc(assignmentColumns.find(x=>x[0]===key)?.[1]||key)} 입력"></td>`;
+     }
+     return `<td data-assignment-col="${key}">${key==='site_name'?`<button type="button" class="assignmentSiteOpen">${esc(r.site_name||'현장')}</button>`:esc(String(value??'').trim()===''?'-':value)}</td>`;
+    }).join('');
+    const check=`<td class="siteSelectCol assignmentSelectCol">${listPrintCheckboxHtml(r)}</td>`;
+    return `<tr class="assignmentClickableRow" data-assignment-row="${i}" data-assignment-row-id="${esc(r.source_id)}" data-assignment-base-inspectors="${esc(namesOf(r).join(', '))}" data-assignment-base-plan-start="${esc(r.plan_start||'')}" data-assignment-base-plan-end="${esc(r.plan_end||'')}" tabindex="0" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기">${check}${cells}</tr>`;
+   }).join('')||`<tr><td colspan="${liveOrder.length+1}" class="assignmentEmpty">점검계획 미등록 현장이 없습니다.</td></tr>`;
+   body.querySelectorAll('[data-assignment-row]').forEach((tr,i)=>{
+    const open=()=>window.STAFF_SCHEDULE_UI?.openRecord({...shown[i],assignmentUnscheduled:true});
+    tr.onclick=e=>{if(!e.target.closest('[data-assignment-edit],.assignmentSelectCol'))open()};
+    tr.querySelectorAll('[data-assignment-edit]').forEach(input=>{
+     input.addEventListener('input',()=>updateAssignmentDraftFromRow(tr));
+     input.addEventListener('click',e=>e.stopPropagation());
+     input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();input.blur();const next=[...tr.querySelectorAll('[data-assignment-edit]')],at=next.indexOf(input);(next[at+1]||$('assignmentSaveChangesBtn'))?.focus()}});
+     input.addEventListener('blur',()=>{if(input.dataset.assignmentEdit==='plan_start'||input.dataset.assignmentEdit==='plan_end'){const normalized=assignmentNormalizeDate(input.value);if(normalized)input.value=normalized;updateAssignmentDraftFromRow(tr)}});
+    });
+    tr.onkeydown=e=>{if(e.target===tr&&(e.key==='Enter'||e.key===' ')){e.preventDefault();open()}};
+   });
+   $('assignmentInspectors').querySelectorAll('[data-assignment-person]').forEach(b=>b.classList.toggle('selected',b.dataset.assignmentPerson===assignmentSelectedInspector));
+   updateAssignmentSaveButton();
+   assignmentPrintSelection.sync({pruneMissing:true});
   };
-  $('assignmentInspectors').querySelectorAll('[data-assignment-person]').forEach(b=>b.onclick=()=>{assignmentSelectedInspector=b.dataset.assignmentPerson;draw()});draw();$('assignmentMessage').textContent=`집계 완료 · ${serverAll?'전체 현장 기준':`${scopeName||'본인'} 담당 현장 기준`} · ${new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}`;
- }catch(e){if(request!==assignmentRequest)return;const detail=String(e?.message||e),timedOut=/statement timeout|canceling statement/i.test(detail),hint=timedOut?'조회 대상이 많아 DB 실행 시간이 초과되었습니다. database/V322_점검배정_조회시간초과_수정.sql을 Supabase에서 실행해 주세요.':`조회 오류: ${detail}`;$('assignmentMessage').textContent='점검배정 집계 실패: '+detail;$('assignmentSummary').replaceChildren();$('assignmentInspectors').replaceChildren();const span=Math.max(assignmentVisibleColumns.length,1);$('assignmentRows').innerHTML=`<tr><td colspan="${span}" class="assignmentEmpty">${esc(hint)}</td></tr>`}
+  $('assignmentInspectors').querySelectorAll('[data-assignment-person]').forEach(button=>button.onclick=()=>{
+   const inspector=button.dataset.assignmentPerson;
+   if(inspector!==assignmentSelectedInspector)assignmentPrintSelection.selectedIds.clear();
+   assignmentSelectedInspector=inspector;
+   draw();
+  });
+  draw();
+  $('assignmentMessage').textContent=`집계 완료 · ${serverAll?'전체 현장 기준':`${scopeName||'본인'} 담당 현장 기준`} · ${new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}`;
+ }catch(e){
+  if(request!==assignmentRequest)return;
+  const detail=String(e?.message||e),timedOut=/statement timeout|canceling statement/i.test(detail);
+  const hint=timedOut?'조회 대상이 많아 DB 실행 시간이 초과되었습니다. database/V322_점검배정_조회시간초과_수정.sql을 Supabase에서 실행해 주세요.':`조회 오류: ${detail}`;
+  $('assignmentMessage').textContent='점검배정 집계 실패: '+detail;
+  $('assignmentSummary').replaceChildren();$('assignmentInspectors').replaceChildren();
+  const span=assignmentColumnHeaders($('assignmentTable')).filter(th=>!th.hidden).length+1;
+  $('assignmentRows').innerHTML=`<tr><td colspan="${span}" class="assignmentEmpty">${esc(hint)}</td></tr>`;
+  assignmentPrintSelection.sync();
+ }
 }
 async function ensureFullSiteRow(id,row=null){
  let r=row||lastSites.find(x=>Number(x.source_id)===Number(id))||searchSourceRows.find(x=>Number(x.source_id)===Number(id))||{};
@@ -3138,7 +3198,7 @@ function parseLocalDate(v,col){v=normalizeCell(v,col);if(!v)return null;const s=
 function elapsedFromReceipt(r){const d=parseLocalDate(reportValue(r,27),27);if(!d)return null;const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(0,Math.floor((today-d)/86400000))}
 function elapsedClass(days){if(days===null)return'';if(days>=30)return'elapsedDanger';if(days>=14)return'elapsedWarn';if(days>=7)return'elapsedWatch';return'elapsedNormal'}
 function setUnwrittenListFilter(mode,owner){
- if(mode!==unwrittenListMode||owner!==unwrittenOwnerFilter)unwrittenSelectedIds.clear();
+ if(mode!==unwrittenListMode||owner!==unwrittenOwnerFilter)unwrittenPrintSelection.selectedIds.clear();
  unwrittenListMode=mode;unwrittenOwnerFilter=owner;
 }
 function renderUnwrittenDashboardSummary(){
@@ -3169,7 +3229,7 @@ async function loadUnwrittenDashboard(force=false){
  const current=()=>request===unwrittenRequestSeq&&account===me?.id&&canViewUnwritten();
  const summary=$('unwrittenSummary'),owners=$('unwrittenOwners'),list=$('unwrittenList');
  if(summary)summary.innerHTML='<div class="dashLoading">미작성 현황을 불러오는 중...</div>';if(owners)owners.innerHTML='';if(list)list.innerHTML='';
- syncUnwrittenSelectionUi();
+ unwrittenPrintSelection.sync();
  unwrittenLoadPromise=(async()=>{try{
   const [rows,exemptions]=await Promise.all([
    fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}).order('source_id',{ascending:true})),
@@ -3514,37 +3574,40 @@ function unwrittenResultTitle(){
  const title=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':'미작성 현장';
  return unwrittenOwnerFilter==='all'?`${title} 전체`:`${unwrittenOwnerFilter} · ${title}`;
 }
-function unwrittenRowCheckHtml(row){
- return `<input type="checkbox" class="siteRowCheck" data-unwritten-select="${esc(row.source_id)}" aria-label="${esc(row.site_name||'현장')} 선택">`;
+function listPrintCheckboxHtml(row){
+ return `<input type="checkbox" class="siteRowCheck" data-print-site-id="${esc(row.source_id)}" aria-label="${esc(row.site_name||'현장')} 인쇄 선택">`;
 }
-function syncUnwrittenSelectionUi(){
- const root=$('unwrittenList'),checks=root.querySelectorAll('[data-unwritten-select]');
- let count=0;
- for(const check of checks){
-  check.checked=unwrittenSelectedIds.has(check.dataset.unwrittenSelect);
-  if(check.checked)count++;
+function setupListPrintSelection(prefix,listId){
+ const selectedIds=new Set(),list=$(listId);
+ const selectAll=$(prefix+'SelectAll'),clear=$(prefix+'ClearSelection'),counter=$(prefix+'SelectedCount'),print=$(prefix+'Print');
+ const checkboxes=()=>[...list.querySelectorAll('[data-print-site-id]')];
+ function sync({pruneMissing=false}={}){
+  const checks=checkboxes();
+  if(pruneMissing&&selectedIds.size){
+   const visibleIds=new Set(checks.map(check=>check.dataset.printSiteId));
+   for(const id of selectedIds)if(!visibleIds.has(id))selectedIds.delete(id);
+  }
+  let count=0;
+  for(const check of checks){
+   check.checked=selectedIds.has(check.dataset.printSiteId);
+   if(check.checked)count++;
+  }
+  counter.textContent=`선택 ${count.toLocaleString()}건`;
+  selectAll.disabled=count===checks.length;
+  clear.disabled=print.disabled=count===0;
  }
- const master=root.querySelector('[data-unwritten-select-master]'),allSelected=checks.length>0&&count===checks.length;
- if(master){master.checked=allSelected;master.indeterminate=count>0&&!allSelected}
- $('unwrittenSelectedCount').textContent=`선택 ${count.toLocaleString()}건`;
- $('unwrittenSelectAll').disabled=!checks.length||allSelected;
- $('unwrittenClearSelection').disabled=!count;
- $('unwrittenPrint').disabled=!count;
-}
-function setAllUnwrittenRowsChecked(checked){
- unwrittenSelectedIds.clear();
- if(checked){
-  for(const check of $('unwrittenList').querySelectorAll('[data-unwritten-select]'))unwrittenSelectedIds.add(check.dataset.unwrittenSelect);
- }
- syncUnwrittenSelectionUi();
-}
-function handleUnwrittenSelectionChange(event){
- const check=event.target;
- if(check.matches('[data-unwritten-select-master]')){setAllUnwrittenRowsChecked(check.checked);return}
- const id=check.dataset.unwrittenSelect;
- if(!id)return;
- if(check.checked)unwrittenSelectedIds.add(id);else unwrittenSelectedIds.delete(id);
- syncUnwrittenSelectionUi();
+ selectAll.onclick=()=>{
+  for(const check of checkboxes())selectedIds.add(check.dataset.printSiteId);
+  sync();
+ };
+ clear.onclick=()=>{selectedIds.clear();sync()};
+ list.addEventListener('change',event=>{
+  const check=event.target,id=check.dataset.printSiteId;
+  if(!id)return;
+  if(check.checked)selectedIds.add(id);else selectedIds.delete(id);
+  sync();
+ });
+ return {selectedIds,sync};
 }
 function buildUnwrittenPrintHtml(selectedRows){
  ensureUnwrittenColumnOrder();
@@ -3564,29 +3627,25 @@ function buildUnwrittenPrintHtml(selectedRows){
 }
 function printUnwrittenList(){
  if(!canViewUnwritten()||$('unwrittenPrint').disabled)return;
- const selectedRows=filteredUnwrittenRows().filter(row=>unwrittenSelectedIds.has(String(row.source_id)));
+ const selectedRows=filteredUnwrittenRows().filter(row=>unwrittenPrintSelection.selectedIds.has(String(row.source_id)));
  if(selectedRows.length)openListPrintFrame(buildUnwrittenPrintHtml(selectedRows),'미작성 현장 리스트 인쇄');
 }
 function renderUnwrittenList(){
  if(!canViewUnwritten())return;
  const exempt=unwrittenListMode==='exempt';
  $('unwrittenSelectionControls').hidden=exempt;
- if(exempt){renderUnwrittenExemptions();syncUnwrittenSelectionUi();return}
+ if(exempt){renderUnwrittenExemptions();unwrittenPrintSelection.sync({pruneMissing:true});return}
  const filtered=filteredUnwrittenRows();
- if(unwrittenSelectedIds.size){
-  const visibleIds=new Set(filtered.map(row=>String(row.source_id)));
-  for(const id of unwrittenSelectedIds)if(!visibleIds.has(id))unwrittenSelectedIds.delete(id);
- }
  $('unwrittenListTitle').textContent=unwrittenResultTitle();
  const desktop=window.matchMedia('(min-width:801px)').matches;
  $('unwrittenListMeta').textContent=desktop?`${filtered.length.toLocaleString()}건 · 제목 클릭: 정렬 · 제목 드래그: 열 이동 · 오른쪽 경계 드래그: 열 폭 조절 · 현장 행 클릭: 상세조회`:`${filtered.length.toLocaleString()}건 · 현장카드에서 상세·수정할 수 있습니다.`;
- const root=$('unwrittenList');if(!filtered.length){const empty=unwrittenListMode==='over14'?'파일접수 후 14일 이상 경과한 미작성 현장이 없습니다.':unwrittenListMode==='over30'?'파일접수 후 30일 이상 경과한 미작성 현장이 없습니다.':'해당 담당자의 미작성 보고서가 없습니다.';root.innerHTML=`<div class="emptyDashboard">${empty}</div>`;syncUnwrittenSelectionUi();return}
+ const root=$('unwrittenList');if(!filtered.length){const empty=unwrittenListMode==='over14'?'파일접수 후 14일 이상 경과한 미작성 현장이 없습니다.':unwrittenListMode==='over30'?'파일접수 후 30일 이상 경과한 미작성 현장이 없습니다.':'해당 담당자의 미작성 보고서가 없습니다.';root.innerHTML=`<div class="emptyDashboard">${empty}</div>`;unwrittenPrintSelection.sync({pruneMissing:true});return}
  if(desktop){
    ensureUnwrittenColumnOrder();
    const sorted=sortedUnwrittenRows(filtered);
-   const selectHead='<th scope="col" class="center siteSelectCol uw-col-select" data-resize-key="unwritten-select"><input type="checkbox" data-unwritten-select-master aria-label="현재 표시된 현장 전체선택"></th>';
+   const selectHead='<th scope="col" class="center siteSelectCol uw-col-select" data-resize-key="unwritten-select" aria-label="인쇄 선택"></th>';
    const headers=selectHead+unwrittenColumnOrder.map(unwrittenHeaderHtml).join('');
-   const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}"><td class="center siteSelectCol uw-col-select">${unwrittenRowCheckHtml(r)}</td>${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
+   const rows=sorted.map((r,i)=>`<tr class="unwrittenRow" data-report-detail="${r.source_id}"><td class="center siteSelectCol uw-col-select">${listPrintCheckboxHtml(r)}</td>${unwrittenColumnOrder.map(key=>unwrittenCellHtml(r,key,i)).join('')}</tr>`).join('');
    root.innerHTML=`<div class="unwrittenFreezeToolbar"><div class="unwrittenFreezeButtons"><button type="button" class="ghost unwrittenFreezeSelectBtn" data-unwritten-freeze-select>📌 틀 고정 위치 선택</button><button type="button" class="ghost" data-unwritten-freeze-clear>🔓 틀 고정 해제</button></div><span class="unwrittenFreezeStatus" data-unwritten-freeze-status></span></div><div class="unwrittenListHint"><strong>틀 고정:</strong> 위치 선택 버튼 → 원하는 셀 클릭 (선택 셀의 위쪽·왼쪽 고정) · <strong>정렬:</strong> 제목 클릭 · <strong>열 이동:</strong> 제목 드래그 · <strong>열 폭:</strong> 제목 오른쪽 경계 드래그</div><div class="unwrittenTableWrap"><table class="unwrittenTable"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div>`;
    const unwrittenTable=root.querySelector('.unwrittenTable');
    bindUnwrittenHeaderInteractions(root);bindUnwrittenFreezeControls(root,unwrittenTable);
@@ -3599,11 +3658,11 @@ function renderUnwrittenList(){
     const days=elapsedFromReceipt(r),title=selected.includes('site_name')?esc(r.site_name||'-'):'미작성 현장';
     const badge=selected.includes('elapsed')?`<span class="elapsedBadge ${elapsedClass(days)}">${days===null?'접수일 없음':days+'일 경과'}</span>`:'';
     const details=selected.filter(k=>k!=='site_name'&&k!=='elapsed').map(k=>`<div><dt>${esc(UNWRITTEN_LIST_COLUMNS[k].label)}</dt><dd>${esc(mobileValue(r,k))}</dd></div>`).join('');
-    const check=`<label class="mobileSiteSelect unwrittenCardSelect">${unwrittenRowCheckHtml(r)} 인쇄 선택</label>`;
+    const check=`<label class="mobileSiteSelect unwrittenCardSelect">${listPrintCheckboxHtml(r)} 인쇄 선택</label>`;
     return `<article class="unwrittenCard"><div class="unwrittenCardHead"><h4>${title}</h4>${badge}</div>${details?`<dl>${details}</dl>`:''}<div class="siteActions">${check}<button class="smallBtn" data-report-detail-btn="${r.source_id}">상세</button>${canEditSite()?`<button class="primary smallBtn" data-report-edit="${r.source_id}">수정</button><button class="ghost smallBtn" data-report-unneeded="${r.source_id}">작성 불필요</button>`:''}</div></article>`;
    }).join('');
  }
- syncUnwrittenSelectionUi();
+ unwrittenPrintSelection.sync({pruneMissing:true});
  if(!can('can_view_staff_sites'))root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.remove());
  root.querySelectorAll('[data-report-detail-btn]').forEach(b=>b.onclick=e=>{e.stopPropagation();openDetail(Number(b.dataset.reportDetailBtn))});
  root.querySelectorAll('[data-report-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSiteEditor(Number(b.dataset.reportEdit))});
@@ -4474,9 +4533,6 @@ enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('cont
 $('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=closeSiteEditor;$('siteEditCancel').onclick=closeSiteEditor;$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteFormAddress').oninput=()=>{if(siteAddressMode==='manual')syncRegionFromSiteAddress()};$('siteFormAddress').onblur=()=>syncRegionFromSiteAddress();$('siteFormAddressDetail').oninput=()=>syncRegionFromSiteAddress();$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('siteSearchPrint').onclick=printSiteSearchResults;
 $('assignmentPrint').onclick=printAssignmentResults;
-$('unwrittenSelectAll').onclick=()=>setAllUnwrittenRowsChecked(true);
-$('unwrittenClearSelection').onclick=()=>setAllUnwrittenRowsChecked(false);
-$('unwrittenList').addEventListener('change',handleUnwrittenSelectionChange);
 $('unwrittenPrint').onclick=printUnwrittenList;$('unwrittenRefresh').onclick=()=>loadUnwrittenDashboard(true);$('unwrittenFieldBtn').onclick=()=>{if(canViewUnwritten())setupUnwrittenFields()};$('unwrittenFieldsSelectAll').onclick=()=>setUnwrittenFieldChecks('all');$('unwrittenFieldsSelectDefault').onclick=()=>setUnwrittenFieldChecks('default');$('unwrittenFieldsClearAll').onclick=()=>setUnwrittenFieldChecks('none');$('unwrittenFieldsSave').onclick=saveUnwrittenFields;$('unwrittenFieldsClose').onclick=()=>$('unwrittenFieldsDlg').close();
 
 // V168: presentation only. Existing data, permissions, export and save handlers are reused.
