@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261113-v361';
+  const BUILD='20261113-v362';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -482,6 +482,8 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #monthlyDashStatus.monthlyError{color:#fca5a5}
 #detailBody.monthlyDetailGrid{display:block}
 .monthlyDetailPanel{padding:4px 0;min-width:0}
+.siteMonthlyEditor:not([hidden]){margin:0 clamp(12px,3vw,20px) 16px}
+.siteMonthlyEditor .monthlyEditBack{margin-bottom:12px}
 .monthlyDialog{width:min(1050px,calc(100% - 24px));max-width:1050px}
 .monthlyDialogBody{padding:16px;color:#173154;overflow:auto;max-height:calc(90vh - 85px)}
 .monthlyDialogBody p,.monthlyDetailPanel p{margin:0 0 12px}
@@ -520,6 +522,12 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .monthlyError{color:#a62022}
 .monthlyAbsenceList{display:grid;gap:6px;padding-inline-start:22px}
 .monthlyAbsenceList time{font-weight:700;color:#173f7a;margin-right:6px}
+@media(max-width:800px){
+ .siteMonthlyEditor .monthlyTable :is(th,td):last-child{position:sticky;right:0;box-shadow:-1px 0 #d6e0ec}
+ .siteMonthlyEditor .monthlyTable th:last-child{background:#e8effc}
+ .siteMonthlyEditor .monthlyTable td:last-child{background:#fff}
+ .siteMonthlyEditor .monthlyTable tr:nth-child(even) td:last-child{background:#f5f8fd}
+}
 @media(max-width:600px){
  .monthlyDialogBody{padding:12px}
  .monthlyFormGrid,.monthlyReadGrid{grid-template-columns:1fr}
@@ -548,7 +556,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V361</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V362</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -769,6 +777,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <button class="primary" type="submit">직원 등록</button><div id="userMsg" class="msg"></div></form></dialog>
 
 <dialog id="siteEditDlg" class="siteEditDlg"><div class="dlgHead"><div><h3 id="siteEditTitle">현장 직접등록</h3><small id="siteEditHint">권한이 있는 사용자만 등록·수정할 수 있습니다.</small></div><button class="iconBtn" id="siteEditClose">×</button></div>
+<div id="siteEditTabs" class="filterRow siteEditTabs"></div>
 <form id="siteEditForm" class="siteEditForm">
   <input id="siteEditSourceId" type="hidden">
   <section id="siteTemplateSearchPanel" class="siteTemplateSearchPanel hidden">
@@ -778,14 +787,14 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div id="siteTemplateResults" class="siteTemplateResults hidden"></div>
     <p class="siteTemplateHelp">현장을 선택하면 기존 등록정보를 불러오되, 신규등록용 S/N은 유지합니다. 현재 입력 중인 내용은 선택한 현장 정보로 대체됩니다.</p>
   </section>
-  <div id="siteEditTabs" class="filterRow siteEditTabs"></div>
   <div id="siteEditFields" class="siteEditFields"></div>
   <section class="siteContactSection"><h4>관리주체 연락처·주소</h4>
     <div class="siteContactGrid"><label>전화번호<textarea id="siteFormPhone" inputmode="tel" autocomplete="tel" rows="1" placeholder="여러 번호는 /, 쉼표 또는 줄바꿈으로 구분하세요. 예: 010-1234-5678 / 031-123-4567"></textarea><small class="fieldHelp">전화번호가 여러 개면 각각 별도의 전화걸기 버튼으로 표시됩니다. 학교 현장의 일반전화번호를 등록·수정하면 같은 학교명(괄호 뒤 정보 제외)의 관련 현장에 함께 반영됩니다. 각 현장의 휴대폰 번호는 유지됩니다.</small></label><label>이메일<input id="siteFormEmail" lang="en" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" type="email" autocomplete="email" placeholder="예: manager@example.com"><small class="fieldHelp">학교의 관리주체 이메일을 등록·수정하면 같은 학교명(괄호 뒤 정보 제외)의 관련 현장에 함께 반영됩니다.</small></label></div>
     <div class="siteAddressBox"><label>주소 검색어<div class="addressSearchRow"><input id="siteAddressQuery" lang="ko" inputmode="text" autocomplete="off" placeholder="도로명·건물명·지번"><button type="button" id="siteAddressSearchBtn" class="primary">주소 검색</button></div></label><p id="siteAddressMsg" class="addressHelp">검색 결과에서 주소를 선택하거나, 검색되지 않으면 직접입력을 선택하세요.</p><label>주소<input id="siteFormAddress" readonly placeholder="검색 결과에서 주소를 선택하세요"></label><label id="siteAddressDetailLabel">상세주소<input id="siteFormAddressDetail" placeholder="동·층·호 등 상세주소(선택)"></label><div class="addressModeButtons"><button type="button" id="siteManualAddressBtn" class="ghost">직접입력</button><button type="button" id="siteSearchAddressModeBtn" class="ghost hidden">주소검색으로 전환</button></div></div>
   </section>
   <div id="siteEditMsg" class="msg siteEditMsg" role="status" aria-live="polite"></div><div class="dlgFoot siteEditFoot"><button type="button" id="siteEditCancel">취소</button><button class="primary" id="siteEditSave" type="submit">저장</button></div>
-</form></dialog>
+</form>
+<section id="siteMonthlyEditor" class="monthlyDetailPanel siteMonthlyEditor" aria-label="월점검 수정" hidden></section></dialog>
 <dialog id="contactEditDlg"><div class="dlgHead"><h3>관리주체 연락처·주소 수정</h3><button class="iconBtn" id="contactEditClose">×</button></div><form id="contactEditForm" class="formGrid">
 <label>현장명<input id="contactSiteName" disabled></label>
 <label>관리주체 전화번호<textarea id="contactPhone" inputmode="tel" autocomplete="tel" rows="2" placeholder="여러 번호는 /, 쉼표 또는 줄바꿈으로 구분하세요. 예: 010-1234-5678 / 031-123-4567"></textarea><small class="fieldHelp">저장 후 번호별로 전화할 수 있습니다. 학교 현장의 일반전화번호를 변경하면 같은 학교명(괄호 뒤 정보 제외)의 관련 현장에도 반영됩니다. 각 현장의 휴대폰 번호는 유지됩니다.</small></label>
@@ -1208,7 +1217,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v359"></script><script id="bundled-app-js" data-build="V361">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v362"></script><script id="bundled-app-js" data-build="V362">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1550,6 +1559,7 @@ const canViewAllSchedule=()=>isAdmin()||can('can_view_staff_schedule');
 const canViewSchedule=()=>!!me?.approved&&!!me?.can_use_staff_portal&&(isAdmin()||can('can_view_own_staff_schedule')||can('can_view_staff_schedule')||can('can_edit_staff_schedule'));
 const canEditMonthlySchedule=()=>!!me?.approved&&!!me?.can_use_staff_portal&&can('can_edit_staff_monthly_schedule');
 const canViewMonthlySchedule=()=>!!me?.approved&&!!me?.can_use_staff_portal&&(can('can_view_staff_monthly_schedule')||canEditMonthlySchedule());
+const canEditMonthlySite=()=>can('can_view_staff_sites')&&canEditMonthlySchedule();
 const canViewAnySchedule=()=>canViewSchedule()||canViewMonthlySchedule();
 let activeScheduleTab='regular';
 const canViewAssignment=()=>!!me?.approved&&!!me?.can_use_staff_portal&&(isAdmin()||can('can_view_staff_assignment')||can('can_view_all_staff_assignment'));
@@ -2116,6 +2126,8 @@ async function profileFor(user){
 }
 async function boot(){const{data:{session}}=await sb.auth.getSession();if(!session)return showLogin();const p=await profileFor(session.user);if(!p?.approved||!p.can_use_staff_portal){await sb.auth.signOut();showLogin();notify($('loginMsg'),'사용이 승인되지 않은 계정입니다. 관리자에게 문의하세요.');return}me=p;await loadUserUiPreferences(p);resetTablePreferenceState();applyDisplayFieldPreference(p);applyUnwrittenDisplayFieldPreference(p);showApp()}
 function showLogin(){
+ if($('siteEditDlg').open)$('siteEditDlg').close();
+ $('detailBody').querySelector('[data-monthly-source-id]')?.remove();
  inspectionDashRequest++;inspectionDashRows=[];inspectionDashMissing=[];inspectionDashScope='';inspectionDashSelectedYear=0;
  inspectionListDrafts=new Map();inspectionListSaving=false;$('inspectionListSaveStatus').textContent='';$('inspectionDashStatus').dataset.ready='0';
  monthlyInspection.clear();searchSubmitted=false;searchActiveQuery='';lastSites=[];$('siteQuery').value='';clearBoards();if(window.STAFF_SCHEDULE_UI)window.STAFF_SCHEDULE_UI.clear();siteColumnFiltersEnabled=false;siteColumnFilters.clear();$('siteColumnFilterDlg')?.close();salesDashboardInitialized=false;salesDashboardOwners.clear();salesDashboardPeriod='annual';$('loginView').classList.remove('hidden');$('appView').classList.add('hidden')}
@@ -2138,6 +2150,8 @@ function savedPage(){
 }
 function rememberPage(name){try{if(me&&pageAllowed(name))localStorage.setItem(activePageStorageKey(),name)}catch(e){}}
 function showApp(){
+ if($('siteEditDlg').open&&siteEditGroupIndex==='monthly')$('siteEditDlg').close();
+ $('detailBody').querySelector('[data-monthly-source-id]')?.remove();
  monthlyInspection.clear();
  activeScheduleTab=isMonthlyInspectionCategory()?'monthly':'regular';
  $('monthlyInspectionDashboard').classList.toggle('hidden',!isMonthlyInspectionCategory());
@@ -3298,7 +3312,7 @@ function activateSitePage(name){document.querySelectorAll('.page').forEach(el=>e
 function restoreSiteReturn(state){activateSitePage(state?.page||'search');requestAnimationFrame(()=>window.scrollTo(state?.x||0,state?.y||0))}
 function clearPageReport(){if(activePageReportClose){activePageReportClose(false);activePageReportClose=null} $('detailReportHost').replaceChildren();$('standaloneReportHost').replaceChildren()}
 function showDetailInformation(){clearPageReport();$('detailBody').classList.remove('hidden');$('detailReportHost').classList.add('hidden');$('detailTabs').querySelector('[data-report-files]')?.classList.remove('active')}
-function closeDetailPage(){clearPageReport();restoreSiteReturn(detailReturnState)}
+function closeDetailPage(){clearPageReport();$('detailBody').querySelector('[data-monthly-source-id]')?.remove();restoreSiteReturn(detailReturnState)}
 async function openSiteReports(id){
  try{const row=await ensureFullSiteRow(id);if(!row)throw new Error('현장을 찾을 수 없습니다.');
  const reportApiUrl=await getSharedReportApi();
@@ -3337,7 +3351,7 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
  ).join('')
   +`<button type="button" class="chip detailActionChip" data-report-files="${r.source_id}">보고서 조회</button>
     <button type="button" class="chip detailActionChip" data-quantity-print="${r.source_id}">확정수량 출력</button>
-    ${canEditSite()?`<button type="button" class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;
+    ${(canEditSite()||canEditMonthlySite())?`<button type="button" class="chip detailActionChip" data-detail-site-edit="${r.source_id}">현장 정보 수정</button>`:''}`;
  const render=i=>{
   showDetailInformation();
   const monthly=i==='monthly';
@@ -3347,6 +3361,7 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
    body.classList.remove('quantityGrid');
    const container=document.createElement('section');
    container.className='monthlyDetailPanel';
+   container.dataset.monthlySourceId=r.source_id;
    body.replaceChildren(container);
    monthlyInspection.renderDetail(container,r.source_id);
    return;
@@ -3368,7 +3383,9 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
  tabs.querySelector('[data-report-files]').onclick=()=>openSiteReports(Number(r.source_id));
  tabs.querySelector('[data-quantity-print]').onclick=()=>openQuantityPrint(r);
  const editButton=tabs.querySelector('[data-detail-site-edit]');
- if(editButton)editButton.onclick=()=>openSiteEditor(Number(r.source_id));
+ if(editButton)editButton.onclick=()=>openSiteEditor(Number(r.source_id),{
+  monthly:canEditMonthlySite()&&(activeDetailGroup()==='monthly'||!canEditSite())
+ });
  activateSitePage('site-detail');
  render(group==='monthly'&&monthlyButton?'monthly':Math.max(0,Math.min(groups.length-1,Number(group)||0)));
  if(!preserveReturn)window.scrollTo(0,0);
@@ -3434,9 +3451,51 @@ $('siteCreateEditorHost').addEventListener('touchend',e=>{
 },{passive:true});
 $('siteCreateEditorHost').addEventListener('touchcancel',()=>{createTouchStart=null},{passive:true});
 mobileCreateMedia.addEventListener('change',()=>{if($('page-site-create').classList.contains('active')){if(siteEditGroupIndex<0&&!mobileCreatePages())siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields()}});
-function renderSiteEditTabsDesktop(){const root=$('siteEditTabs');root.innerHTML=siteEditGroups.map((g,i)=>{const has=schema.fields.some(f=>siteFieldInGroup(f,g)&&siteFieldAllowed(f));return has?`<button type="button" class="chip ${i===siteEditGroupIndex?'active':''}" data-site-group="${i}">${g[0]}</button>`:''}).join('');root.querySelectorAll('[data-site-group]').forEach(b=>b.onclick=()=>{siteEditGroupIndex=Number(b.dataset.siteGroup);renderSiteEditFields();renderSiteEditTabs()})}
+function renderSiteEditTabsDesktop(){
+ const root=$('siteEditTabs');
+ const monthlyTab=siteEditMode==='edit'&&canEditMonthlySite()
+  ?`<button type="button" class="chip ${siteEditGroupIndex==='monthly'?'active':''}" data-site-monthly-edit>월점검</button>`:'';
+ const canEditFields=siteEditMode==='create'||canEditSite();
+ root.innerHTML=siteEditGroups.map((group,index)=>{
+  const hasFields=canEditFields&&schema.fields.some(field=>siteFieldInGroup(field,group)&&siteFieldAllowed(field));
+  const tab=hasFields?`<button type="button" class="chip ${index===siteEditGroupIndex?'active':''}" data-site-group="${index}">${group[0]}</button>`:'';
+  return (group[0]==='유지관리 전체수량'?monthlyTab:'')+tab;
+ }).join('');
+ root.querySelectorAll('[data-site-group]').forEach(button=>button.onclick=()=>selectSiteEditGroup(Number(button.dataset.siteGroup)));
+ const monthlyButton=root.querySelector('[data-site-monthly-edit]');
+ if(monthlyButton)monthlyButton.onclick=()=>selectSiteEditGroup('monthly');
+}
+function selectSiteEditGroup(group){
+ if(group===siteEditGroupIndex)return;
+ siteEditGroupIndex=group;
+ renderSiteEditTabs();
+ renderSiteEditFields();
+ const tab=$('siteEditTabs').querySelector('.active');
+ tab?.focus({preventScroll:true});
+ tab?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function renderSiteMonthlyEditor(container){
+ const row=siteEditRow,account=me?.id;
+ monthlyInspection.renderDetail(container,row.source_id,{
+  canEdit:()=>container.isConnected&&$('siteEditDlg').open&&siteEditRow===row&&siteEditGroupIndex==='monthly'&&me?.id===account&&canEditMonthlySite(),
+  onSaved:()=>{
+   if(me?.id!==account||activePageName()!=='site-detail'||activeDetailGroup()!=='monthly')return;
+   const detail=$('detailBody').querySelector('[data-monthly-source-id]');
+   if(detail?.dataset.monthlySourceId===String(row.source_id))return monthlyInspection.renderDetail(detail,row.source_id);
+  }
+ });
+}
 function siteScheduleDateField(id,label,value,enabled){const raw=String(value??'').trim(),parsed=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31'),iso=parsed||(raw==='미점검'?'미점검':'');return `<label class="siteField"><span>${label}</span><span class="siteDateInputWrap"><input id="${id}" data-site-schedule-date="${id==='siteScheduleStart'?'start':'end'}" type="text" inputmode="text" autocomplete="off" placeholder="YYYY-MM-DD 또는 미점검" value="${esc(iso)}" ${enabled?'':'disabled'}><button type="button" class="siteDateCalendarButton" data-site-open-calendar aria-label="${label} 달력 열기" ${enabled?'':'disabled'}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></svg></button><input class="siteDatePickerOverlay" type="date" data-site-date-picker min="2000-01-01" max="2050-12-31" value="${esc(parsed||'')}" aria-label="${label} 달력 선택" tabindex="-1" ${enabled?'':'disabled'}></span></label>`}
 function renderSiteEditFields(){
+ const monthly=siteEditGroupIndex==='monthly';
+ const monthlyEditor=$('siteMonthlyEditor');
+ $('siteEditForm').hidden=monthly;
+ monthlyEditor.hidden=!monthly;
+ if(monthly){
+  if(canEditMonthlySite()&&siteEditRow)renderSiteMonthlyEditor(monthlyEditor);
+  return;
+ }
+ monthlyEditor.replaceChildren();
  syncMobileCreatePanels();if(mobileCreatePages()&&siteEditGroupIndex===-1){$('siteEditFields').innerHTML='';return}
  syncInspectionType(false);syncContractAmount(false);
  const g=siteEditGroups[siteEditGroupIndex]||siteEditGroups[0];
@@ -3614,6 +3673,8 @@ function mountSiteEditor(asPage){
  const host=asPage?$('siteCreateEditorHost'):$('siteEditDlg');
  const source=asPage?$('siteEditDlg'):$('siteCreateEditorHost');
  while(source.firstChild)host.appendChild(source.firstChild);
+ if(asPage)$('siteTemplateSearchPanel').after($('siteEditTabs'));
+ else $('siteEditForm').before($('siteEditTabs'));
  $('siteEditClose').textContent=asPage?'현장 검색으로':'×';
  $('siteEditClose').classList.toggle('siteCreateBack',asPage);
 }
@@ -3624,7 +3685,43 @@ function closeSiteEditor(){
  }else $('siteEditDlg').close();
 }
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');const selectedIds=[...selectedSiteIds];if(selectedIds.length>1)return alert('유사 현장을 자동 적용하려면 현장 검색 결과에서 한 곳만 선택해 주세요.');const selectedTemplate=selectedIds.length===1?lastSites.find(r=>Number(r.source_id)===Number(selectedIds[0])):null;siteEditMode='create';mountSiteEditor(true);resetSiteEditor();if(mobileCreatePages())siteEditGroupIndex=-1;$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);if(selectedTemplate){$('siteTemplateQuery').value=String(selectedTemplate.site_name||'');await applySiteTemplate(Number(selectedTemplate.source_id),{fromSearch:true})}else setTimeout(()=>{if(!mobileCreatePages())$('siteTemplateQuery')?.focus()},60)}
-async function openSiteEditor(id){if(!canEditSite())return alert('현장 수정 권한이 없습니다.');$('siteTemplateSearchPanel')?.classList.add('hidden');let r;try{r=await ensureFullSiteRow(id)}catch(e){return alert('수정할 현장을 불러오지 못했습니다: '+e.message)}if(!r)return alert('수정할 현장을 찾을 수 없습니다.');siteEditMode='edit';mountSiteEditor(false);resetSiteEditor();siteEditRow=r;siteScheduleDraft={start:r.schedule_plan_start==='완료'?'':(r.schedule_plan_start||''),end:r.schedule_plan_end==='완료'?'':(r.schedule_plan_end||''),initialStart:r.schedule_plan_start||'',initialEnd:r.schedule_plan_end||'',endEdited:false,inspectors:r.schedule_inspectors||'',changed:false,uninspected:r.schedule_plan_start==='미점검'||r.schedule_plan_end==='미점검'};$('siteEditSourceId').value=String(id);let vals=Array.isArray(r.safe_values)?[...r.safe_values]:Array(137).fill('');while(vals.length<137)vals.push('');siteEditValues=vals.slice(0,137).map((v,i)=>normalizeCell(v,i+1));seedPerformanceConfirmedBlanks();$('siteEditTitle').textContent='현장 정보 수정';$('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');$('siteFormPhone').value=formatPhoneList(r.client_phone||'');$('siteFormPhone').disabled=!isAdmin();$('siteFormEmail').value=r.client_email||'';$('siteFormAddress').value=r.site_address||'';$('siteAddressQuery').value=r.site_address||'';setSiteAddressMode('search');syncRegionFromSiteAddress();renderSiteEditTabs();renderSiteEditFields();$('siteEditDlg').showModal()}
+async function openSiteEditor(id,{monthly=false}={}){
+ const account=me?.id;
+ const allowed=()=>canEditSite()||(monthly&&canEditMonthlySite());
+ if(!allowed())return alert('현장 수정 권한이 없습니다.');
+ let row;
+ try{row=await ensureFullSiteRow(id)}catch(error){return alert('수정할 현장을 불러오지 못했습니다: '+error.message)}
+ if(me?.id!==account||!allowed())return;
+ if(!row)return alert('수정할 현장을 찾을 수 없습니다.');
+ siteEditMode='edit';
+ mountSiteEditor(false);
+ resetSiteEditor();
+ siteEditRow=row;
+ if(monthly&&canEditMonthlySite())siteEditGroupIndex='monthly';
+ $('siteEditTitle').textContent='현장 정보 수정';
+ if(canEditSite()){
+  const start=row.schedule_plan_start||'',end=row.schedule_plan_end||'';
+  siteScheduleDraft={start:start==='완료'?'':start,end:end==='완료'?'':end,initialStart:start,initialEnd:end,endEdited:false,inspectors:row.schedule_inspectors||'',changed:false,uninspected:start==='미점검'||end==='미점검'};
+  $('siteEditSourceId').value=String(id);
+  const values=Array.isArray(row.safe_values)?row.safe_values:[];
+  siteEditValues=Array.from({length:137},(_,index)=>normalizeCell(values[index],index+1));
+  seedPerformanceConfirmedBlanks();
+  $('siteEditHint').textContent=isAdmin()?'관리자는 전체 현장정보와 금액정보를 수정할 수 있습니다.':(canEditMoney()?'현장 수정 및 금액 수정 권한이 적용됩니다. 금액정보는 권한이 있는 사용자에게만 표시됩니다.':'부여된 현장 수정권한으로 비금액 현장정보를 수정할 수 있습니다. 금액정보는 금액수정 권한이 필요합니다.');
+  $('siteFormPhone').value=formatPhoneList(row.client_phone||'');
+  $('siteFormPhone').disabled=!isAdmin();
+  $('siteFormEmail').value=row.client_email||'';
+  $('siteFormAddress').value=row.site_address||'';
+  $('siteAddressQuery').value=row.site_address||'';
+  setSiteAddressMode('search');
+  syncRegionFromSiteAddress();
+ }else{
+  $('siteEditHint').textContent=row.site_name;
+ }
+ renderSiteEditTabs();
+ renderSiteEditFields();
+ $('siteEditDlg').showModal();
+ if(siteEditGroupIndex==='monthly')$('siteEditTabs').querySelector('.active')?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
 function sitePayload(){siteEditValues=siteEditValues.map((v,i)=>normalizeCell(v,i+1));syncInspectionType(false);syncContractAmount(false);syncRegionFromSiteAddress();syncFieldEndFromPlan();syncBindingRatioFromAmounts(false);const base=String($('siteFormAddress').value||'').trim(),detail=siteAddressMode==='manual'?'':String($('siteFormAddressDetail').value||'').trim();const phone=normalizePhoneList($('siteFormPhone').value||''),email=String($('siteFormEmail').value||'').trim();siteEditValues[42]=[phone,email].filter(Boolean).join(' ');return{values:siteEditValues,site_name:String(siteEditValues[3]??'').trim(),client_phone:phone,client_email:email,site_address:[base,detail].filter(Boolean).join(' ').trim()}}
 async function saveSiteEdit(e){e.preventDefault();$('siteEditFields')?.querySelectorAll('[data-site-col]').forEach(input=>{const col=Number(input.dataset.siteCol),raw=String(input.value??'').trim();if(dateCols.has(col)){if(siteEditDirtyCols.has(col)){const iso=parseSiteKeyboardDate(raw),sentinel=[28,29,30].includes(col)&&raw==='미점검';siteEditValues[col-1]=iso||(sentinel?'미점검':raw)}}else siteEditValues[col-1]=normalizeCell(input.value,col)});for(const input of $('siteEditFields')?.querySelectorAll('[data-site-col]')||[]){const col=Number(input.dataset.siteCol);if(!dateCols.has(col)||!siteEditDirtyCols.has(col)||[28,29].includes(col))continue;const raw=String(input.value??'').trim(),sentinel=[28,29,30].includes(col)&&raw==='미점검';if(raw&&!parseSiteKeyboardDate(raw)&&!sentinel){input.setCustomValidity('날짜는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.');input.reportValidity();return}}for(const [key,label] of [['start','점검시작 계획일자'],['end','점검종료 계획일자']]){const input=$(`siteSchedule${key==='start'?'Start':'End'}`),raw=String(input?.value??'').trim();if(raw&&!parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31')&&raw!=='미점검'){input?.setCustomValidity(`${label}는 YYYY-MM-DD 또는 8자리 YYYYMMDD로 입력하세요.`);input?.reportValidity();return}}if(!commitDocumentRevenueFormula($('siteEditFields')?.querySelector('[data-site-col="50"]')))return;siteEditValues[3]=String(siteEditValues[3]||'').trim();if(!siteEditValues[3]){siteEditGroupIndex=0;renderSiteEditTabs();renderSiteEditFields();return notify($('siteEditMsg'),'현장명을 입력하세요.')}const payload=sitePayload();if(siteScheduleDraft.changed){if(!canEditSchedule())return notify($('siteEditMsg'),'점검일정 수정 권한이 없습니다.');if(!siteScheduleDraft.uninspected&&!!siteScheduleDraft.start!==!!siteScheduleDraft.end)return notify($('siteEditMsg'),'점검 계획 시작일과 종료일을 함께 입력하세요.');if(!siteScheduleDraft.uninspected&&siteScheduleDraft.start>siteScheduleDraft.end)return notify($('siteEditMsg'),'계획 종료일은 시작일보다 빠를 수 없습니다.')}notify($('siteEditMsg'),'저장 중...',true);try{let savedId=0;if(siteEditMode==='create'){if(!canCreateSite())throw new Error('현장 직접등록 권한이 없습니다.');const{data,error}=await sb.rpc(siteScheduleDraft.changed?'staff_create_site_with_schedule':'staff_create_site',siteScheduleDraft.changed?{p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_data:payload});if(error)throw error;savedId=Number(data)||0;if(siteScheduleDraft.uninspected&&siteScheduleDraft.changed){const marked=await sb.rpc('staff_schedule_mark_uninspected',{p_source_id:savedId,p_inspectors:String(siteEditValues[30]??'').trim()});if(marked.error)throw marked.error}notify($('siteEditMsg'),`현장 등록이 완료되었습니다. (ID ${data})`,true)}else{if(!canEditSite())throw new Error('현장 수정 권한이 없습니다.');savedId=Number($('siteEditSourceId').value);const{error}=await sb.rpc(siteScheduleDraft.changed?'staff_update_site_with_schedule':'staff_update_site',siteScheduleDraft.changed?{p_source_id:savedId,p_data:payload,p_start:siteScheduleDraft.start||null,p_end:siteScheduleDraft.end||null,p_inspectors:String(siteEditValues[30]??'').trim()}:{p_source_id:savedId,p_data:payload});if(error)throw error;if(siteScheduleDraft.uninspected&&siteScheduleDraft.changed){const marked=await sb.rpc('staff_schedule_mark_uninspected',{p_source_id:savedId,p_inspectors:String(siteEditValues[30]??'').trim()});if(marked.error)throw marked.error}notify($('siteEditMsg'),'현장 수정이 완료되었습니다.',true)}
  if(siteEditMode==='edit'){const check=await sb.rpc('staff_site_secure_detail',{p_source_id:savedId});if(check.error)throw new Error('저장 후 DB 확인 실패: '+check.error.message);const savedName=String(check.data?.site_name??'').trim();if(savedName!==String(payload.site_name??'').trim())throw new Error(`DB 저장값 확인 실패: 입력한 현장명과 저장된 현장명이 다릅니다. 저장값: ${savedName||'(비어 있음)'}`)}
@@ -5121,6 +5218,9 @@ if(resultLayoutMedia.addEventListener)resultLayoutMedia.addEventListener('change
 const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
 if(isStandalone()){const n=$('standaloneNotice');n?.classList.remove('hidden');$('standaloneHelp')?.addEventListener('click',()=>alert('현재 Chrome에 설치된 웹앱으로 실행 중입니다.\n\n일반 Chrome 탭으로 사용하려면:\n1. 이 앱 창 오른쪽 위 ⋮ 메뉴를 누릅니다.\n2. 앱 제거/삭제를 선택합니다.\n3. 또는 Chrome 주소창에 chrome://apps 를 입력한 뒤 현장 검색 앱을 제거합니다.\n4. 이후 https://nameplate76-bot.github.io/search/ 를 Chrome 일반 탭에서 다시 여세요.'));}
 enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('contactEditForm'));enableEnterToNext($('userForm'));
+$('siteEditDlg').addEventListener('close',()=>{
+ if(!$('siteEditDlg').open)$('siteMonthlyEditor').replaceChildren();
+});
 $('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=closeSiteEditor;$('siteEditCancel').onclick=closeSiteEditor;$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteFormAddress').oninput=()=>{if(siteAddressMode==='manual')syncRegionFromSiteAddress()};$('siteFormAddress').onblur=()=>syncRegionFromSiteAddress();$('siteFormAddressDetail').oninput=()=>syncRegionFromSiteAddress();$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('siteSearchPrint').onclick=printSiteSearchResults;
 $('assignmentPrint').onclick=printAssignmentResults;

@@ -106,17 +106,27 @@
         </dl>`;
     }
 
-    async function openRound(row, { proposedDate = '', onSaved, focus } = {}) {
+    function openRound(row, { proposedDate = '', onSaved, focus, readOnly = false } = {}) {
       if (!deps.canView()) return;
       const { element, body } = dialog('월점검 일정');
-      if (!deps.canEdit()) {
+      if (readOnly || !deps.canEdit()) {
         renderReadOnlyRound(body, row);
         return;
       }
+      return renderRoundForm(body, row, {
+        proposedDate, focus, canEdit: () => element.open && deps.canEdit(),
+        onSaved: () => {
+          if (element.open) element.close();
+          return onSaved?.();
+        }
+      });
+    }
+
+    async function renderRoundForm(body, row, { proposedDate = '', onSaved, focus, canEdit }) {
       body.textContent = '월점검원 목록을 불러오는 중…';
       try {
         const inspectors = await deps.rpc('staff_monthly_inspectors');
-        if (!element.isConnected || !deps.canEdit()) return;
+        if (!body.isConnected || !canEdit()) return;
         const current = String(row.inspector_id || '');
         const existingOption = current && !inspectors.some(person => person.id === current)
           ? `<option selected value="${esc(current)}">${esc(row.inspector_name)} (기존 담당자)</option>` : '';
@@ -165,10 +175,10 @@
           form.elements.planned_on.value = '';
           status(message, '저장하면 달력에서 이 계획이 해제됩니다.');
         };
-        form.elements[focus]?.focus();
+        if (focus) form.elements[focus]?.focus();
         form.onsubmit = async event => {
           event.preventDefault();
-          if (!deps.canEdit() || button.disabled) return;
+          if (!body.isConnected || !canEdit() || button.disabled) return;
           const names = ['target_month', 'inspector_id', 'planned_on', 'inspected_on', 'vehicle_number',
             'report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'];
           const patch = Object.fromEntries(names.map(name => [name, form.elements[name].value.trim() || null]));
@@ -180,7 +190,6 @@
           status(message, '저장 중…');
           try {
             await deps.rpc('staff_monthly_save_round', { p_round_id: row.id, p_revision: row.revision, p_patch: patch });
-            if (element.isConnected) element.close();
             await Promise.allSettled([refreshAfterSave(), onSaved?.()]);
           } catch (error) {
             status(message, errorMessage(error), true);
@@ -188,11 +197,11 @@
           }
         };
       } catch (error) {
-        if (element.isConnected) status(body, errorMessage(error), true);
+        if (body.isConnected) status(body, errorMessage(error), true);
       }
     }
 
-    function contractForm(container, data, onSaved) {
+    function contractForm(container, data, onSaved, canEdit = deps.canEdit) {
       const { source, candidates } = data;
       if (!source) {
         container.innerHTML = '<p class="hint">등록된 월점검 계약이 없습니다.</p>';
@@ -200,7 +209,7 @@
       }
       const options = candidates.map(row => `<option value="${row.id}">${displayPeriod(row)} · ${count(row.inspection_count)}회 · S/N ${esc(row.reference_sn || '—')}</option>`).join('');
       const description = `<p><strong>${esc(source.site_name)}</strong> · S/N ${dateText(source.sn)}</p>`;
-      if (!deps.canEdit()) {
+      if (!canEdit()) {
         container.innerHTML = description + `<p class="hint">월점검 계약 연결 전${source.inspection_count > 0 ? ` · 계약 ${count(source.inspection_count)}회` : ''}</p>`;
         return;
       }
@@ -235,7 +244,7 @@
       sync();
       form.onsubmit = async event => {
         event.preventDefault();
-        if (!deps.canEdit() || button.disabled) return;
+        if (!container.isConnected || !canEdit() || button.disabled) return;
         const existing = contractId();
         const args = {
           p_source_id: source.source_id,
@@ -257,7 +266,7 @@
       };
     }
 
-    function table(rows, { showSite = false, showProgress = false, open, action = '수정' } = {}) {
+    function table(rows, { showSite = false, showProgress = false, open, action = '수정', editable = deps.canEdit() } = {}) {
       const headers = [...(showSite ? ['현장명'] : []), '회차', '대상 월', '계획일자', '점검일자', '월점검원',
         '차량번호', ...(showProgress ? ['점검횟수/계약횟수'] : []), '보고서', '관리'];
       const completed = rows.filter(row => row.inspected_on).length;
@@ -270,7 +279,7 @@
           <td>${dateText(row.inspected_on)}</td><td>${dateText(row.inspector_name)}</td><td>${dateText(row.vehicle_number)}</td>
           ${showProgress ? `<td>${count(completed)} / ${count(row.inspection_count)}회</td>` : ''}
           <td><span class="monthlyPill" data-report-state="${row.report_submitted_on ? 'done' : row.inspected_on ? 'pending' : 'none'}">${reportStatus(row)}</span></td>
-          <td><button type="button" data-monthly-row="${i}">${deps.canEdit() ? action : '조회'}</button></td></tr>`).join('')
+          <td><button type="button" data-monthly-row="${i}">${editable ? action : '조회'}</button></td></tr>`).join('')
           || `<tr><td colspan="${headers.length}">해당 회차가 없습니다.</td></tr>`}</tbody></table>`;
       for (const button of result.querySelectorAll('[data-monthly-row]')) {
         button.onclick = () => open(rows[Number(button.dataset.monthlyRow)]);
@@ -278,25 +287,36 @@
       return result;
     }
 
-    async function renderDetail(container, sourceId) {
-      container.innerHTML = '<p class="monthlyStatus" role="status">월점검 계약을 불러오는 중…</p>';
+    async function renderDetail(container, sourceId, { canEdit = () => false, onSaved } = {}) {
+      const content = document.createElement('div');
+      container.replaceChildren(content);
       if (!deps.canView()) {
-        container.textContent = '월점검 일정조회 권한이 필요합니다.';
+        status(content, '월점검 일정조회 권한이 필요합니다.', true);
         return;
       }
+      content.innerHTML = '<p class="monthlyStatus" role="status">월점검 계약을 불러오는 중…</p>';
+      const reload = () => renderDetail(container, sourceId, { canEdit, onSaved });
+      const saved = () => Promise.allSettled([content.isConnected ? reload() : undefined, onSaved?.()]);
       try {
         const data = await detail('source', sourceId);
-        if (!container.isConnected || !deps.canView()) return;
+        if (!content.isConnected || !deps.canView()) return;
         if (!data.contract) {
-          contractForm(container, data, () => renderDetail(container, sourceId));
+          contractForm(content, data, saved, canEdit);
           return;
         }
         const { contract, rounds } = data;
-        container.innerHTML = `<div class="monthlyContractSummary"><div><h3>월점검 계약</h3><span>${displayPeriod(contract)} · S/N ${dateText(contract.reference_sn || contract.sn)}</span></div>
+        content.innerHTML = `<div class="monthlyContractSummary"><div><h3>월점검 계약</h3><span>${displayPeriod(contract)} · S/N ${dateText(contract.reference_sn || contract.sn)}</span></div>
           <strong>점검횟수/계약횟수 ${count(rounds.filter(row => row.inspected_on).length)} / ${count(contract.inspection_count)}회</strong></div>`;
-        container.append(table(rounds, { showProgress: true, open: row => openRound(row, { onSaved: () => renderDetail(container, sourceId) }) }));
+        const editable = canEdit();
+        content.append(table(rounds, { showProgress: true, editable, open: row => {
+          if (!editable) return openRound(row, { readOnly: true });
+          if (!canEdit()) return;
+          content.innerHTML = '<button type="button" class="ghost monthlyEditBack">회차 목록으로</button><div></div>';
+          content.firstElementChild.onclick = reload;
+          renderRoundForm(content.lastElementChild, row, { canEdit, onSaved: saved, focus: 'target_month' });
+        } }));
       } catch (error) {
-        if (container.isConnected) status(container.querySelector('[role="status"]') || container, errorMessage(error), true);
+        if (content.isConnected) status(content.querySelector('[role="status"]') || content, errorMessage(error), true);
       }
     }
 
@@ -351,7 +371,7 @@
           const sites = await deps.rpc('staff_monthly_search', { p_query: query });
           if (!element.isConnected || token !== request || !deps.canEdit()) return;
           if (!sites.length) {
-            status(results, '일치하는 월점검 계약이 없습니다. 현장 상세의 월점검 탭에서 계약을 등록할 수 있습니다.');
+            status(results, '일치하는 월점검 계약이 없습니다. 현장 정보 수정의 월점검 탭에서 계약을 등록할 수 있습니다.');
             return;
           }
           results.innerHTML = sites.map((row, i) => `<button type="button" data-monthly-choice="${i}"><strong>${esc(row.site_name)}</strong>
