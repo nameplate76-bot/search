@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
-<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v359">
+<title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261113-v359';
+  const BUILD='20261113-v360';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -1208,7 +1208,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v359"></script><script id="bundled-app-js" data-build="V359">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v359"></script><script id="bundled-app-js" data-build="V360">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2698,13 +2698,19 @@ window.STAFF_ASSIGNMENT_PLAN_SAVED=(id,plan)=>{
 };
 const assignmentCoreColumns=[['site_name','field_4'],['sn','field_1'],['inspectors','field_31'],['plan_start','schedule_start'],['plan_end','schedule_end']].map(([key,siteKey])=>[key,siteListColumn(siteKey).label]);
 // 검색결과 표시 설정과 같은 선택 가능 필드 집합을 사용합니다. S/N·현장명·점검원은 배정표 전용 편집 열로 이미 제공됩니다.
-const assignmentDataFields=selectableDisplayFields().filter(f=>Number(f.col)<138&&!new Set([1,4,31]).has(Number(f.col)));
-// 선택창뿐 아니라 실제 표 머리글도 현장검색의 열 제목을 기준으로 생성합니다.
-const assignmentDataColumns=assignmentDataFields.map(f=>[`field_${f.col}`,siteListColumn(`field_${f.col}`).label]);
-const assignmentColumns=[...assignmentCoreColumns,...assignmentDataColumns];
+// V360: 로그인 전에는 사용자 권한이 확정되지 않습니다. 점검배정 열 정의는 로그인 계정별로 다시 생성합니다.
+let assignmentDataFields=[],assignmentDataColumns=[],assignmentColumns=[...assignmentCoreColumns];
+function refreshAssignmentColumnDefinitions(){
+ assignmentDataFields=selectableDisplayFields().filter(f=>Number(f.col)<138&&!new Set([1,4,31]).has(Number(f.col)));
+ assignmentDataColumns=assignmentDataFields.map(f=>[`field_${f.col}`,Number(f.col)===49?'계약금액(VAT 제외)':siteListColumn(`field_${f.col}`).label]);
+ assignmentColumns=[...assignmentCoreColumns,...assignmentDataColumns];
+ // 과거 권한 사용자의 로컬 저장값을 그대로 노출하지 않도록 렌더링 시 허용 열만 사용합니다.
+ const allowed=new Set(assignmentColumns.map(([key])=>key));
+ assignmentVisibleColumns=assignmentVisibleColumns.filter(key=>allowed.has(key));
+}
 let assignmentActiveTab='basic';
 function assignmentColumnTab(key){if(key.startsWith('field_')){const c=Number(key.slice(6));if(c>=55&&c<=81)return'maintenance';if(c>=83&&c<=109)return'performance'}return'basic'}
-function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));return row.safe_values?.[col-1]??''}
+function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));if(col===49)return canViewMoney()?siteMoneyDisplay(row.safe_values?.[48]??'',49):'';return row.safe_values?.[col-1]??''}
 const assignmentDefaultVisibleColumns=['site_name','sn','inspectors','plan_start','plan_end'];
 let assignmentVisibleColumns=[...assignmentDefaultVisibleColumns];
 const assignmentDrafts=new Map();
@@ -2748,10 +2754,10 @@ async function saveAssignmentDrafts(){
 function assignmentOptionsRoot(tab=assignmentActiveTab){return $('assignmentFieldOptions'+({basic:'Basic',maintenance:'Maintenance',performance:'Performance'}[tab]||'Basic'))}
 function updateAssignmentFieldsCount(){const dlg=$('assignmentFieldsDlg'),count=dlg?.querySelector('[data-assignment-fields-count]');if(count)count.textContent=`${dlg.querySelectorAll('[data-assignment-field]:checked').length} / ${assignmentColumns.length}개 선택`}
 function setAssignmentDisplayTab(tab){assignmentActiveTab=['basic','maintenance','performance'].includes(tab)?tab:'basic';document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.assignmentTab===assignmentActiveTab)));document.querySelectorAll('#assignmentFieldsDlg [data-assignment-panel]').forEach(p=>p.hidden=p.dataset.assignmentPanel!==assignmentActiveTab);updateAssignmentFieldsCount()}
-function renderAssignmentFieldOptions(){for(const tab of ['basic','maintenance','performance']){const root=assignmentOptionsRoot(tab);if(!root)continue;const cols=assignmentColumns.filter(([key])=>assignmentColumnTab(key)===tab);root.innerHTML=cols.map(([key,label])=>{const f=key.startsWith('field_')?assignmentDataFields.find(x=>`field_${x.col}`===key):null;const text=f?(tab==='basic'?siteCompactFieldLabel(f,'search'):siteQuantityEquipmentLabel(f)):label;return `<label><input type="checkbox" data-assignment-field="${key}" value="${key}" ${assignmentVisibleColumns.includes(key)?'checked':''}>${esc(text)}</label>`}).join('');root.querySelectorAll('input').forEach(x=>x.onchange=updateAssignmentFieldsCount)}setAssignmentDisplayTab(assignmentActiveTab)}
+function renderAssignmentFieldOptions(){refreshAssignmentColumnDefinitions();for(const tab of ['basic','maintenance','performance']){const root=assignmentOptionsRoot(tab);if(!root)continue;const cols=assignmentColumns.filter(([key])=>assignmentColumnTab(key)===tab);root.innerHTML=cols.map(([key,label])=>{const f=key.startsWith('field_')?assignmentDataFields.find(x=>`field_${x.col}`===key):null;const text=Number(f?.col)===49?'계약금액(VAT 제외)':f?(tab==='basic'?siteCompactFieldLabel(f,'search'):siteQuantityEquipmentLabel(f)):label;return `<label><input type="checkbox" data-assignment-field="${key}" value="${key}" ${assignmentVisibleColumns.includes(key)?'checked':''}>${esc(text)}</label>`}).join('');root.querySelectorAll('input').forEach(x=>x.onchange=updateAssignmentFieldsCount)}setAssignmentDisplayTab(assignmentActiveTab)}
 function openAssignmentFields(){if(!canViewAllAssignment())return;renderAssignmentFieldOptions();$('assignmentFieldsDlg')?.showModal()}
 function setAssignmentFieldChecks(mode){const root=assignmentOptionsRoot();if(!root)return;const defaults=new Set(assignmentDefaultVisibleColumns);root.querySelectorAll('input').forEach(x=>x.checked=mode==='all'||(mode==='default'&&defaults.has(x.value)));updateAssignmentFieldsCount()}
-function saveAssignmentFieldSelection(){if(!canViewAllAssignment())return;const selected=[...$('assignmentFieldsDlg').querySelectorAll('[data-assignment-field]:checked')].map(x=>x.value);if(!selected.length)return alert('점검배정 리스트에 표시할 항목을 하나 이상 선택해 주세요.');assignmentVisibleColumns=selected;saveAssignmentColumns();$('assignmentFieldsDlg').close();loadAssignmentDashboard()}
+function saveAssignmentFieldSelection(){if(!canViewAllAssignment())return;refreshAssignmentColumnDefinitions();const allowed=new Set(assignmentColumns.map(([key])=>key));const selected=[...$('assignmentFieldsDlg').querySelectorAll('[data-assignment-field]:checked')].map(x=>x.value).filter(key=>allowed.has(key));if(!selected.length)return alert('점검배정 리스트에 표시할 항목을 하나 이상 선택해 주세요.');assignmentVisibleColumns=selected;saveAssignmentColumns();$('assignmentFieldsDlg').close();loadAssignmentDashboard()}
 function compareAssignmentValues(a,b){
  const av=String(a??'').trim(),bv=String(b??'').trim(),empty=v=>!v||v==='-'||v==='미등록'||v==='점검원 미입력';
  if(empty(av)&&empty(bv))return 0;if(empty(av))return 1;if(empty(bv))return -1;
@@ -2784,7 +2790,7 @@ function updateAssignmentSortHeaders(){
 }
 function assignmentColumnHeaders(table){return [...table.tHead.querySelectorAll('th[data-assignment-col]')]}
 function setupAssignmentColumns(){
- const table=$('assignmentTable');if(!table)return;
+ const table=$('assignmentTable');if(!table)return;refreshAssignmentColumnDefinitions();
  const selectHead='<th scope="col" class="siteSelectCol assignmentSelectCol" aria-label="인쇄 선택"></th>';
  table.tHead.innerHTML='<tr>'+selectHead+assignmentColumns.map(([k,label])=>`<th scope="col" tabindex="0" data-assignment-col="${k}">${esc(label)}</th>`).join('')+'</tr>';
  const key='staffAssignmentColumns:'+String(me?.id||'guest');let prefs={};
