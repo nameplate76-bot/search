@@ -179,8 +179,10 @@
             !['report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'].some(name => form.elements[name].value);
           form.elements.report_submitted_on.disabled = !form.elements.report_written_on.value && !form.elements.report_submitted_on.value;
         };
-        form.elements.inspected_on.onchange = syncReportFields;
-        form.elements.report_written_on.onchange = syncReportFields;
+        for (const name of ['inspected_on', 'report_written_on']) {
+          form.elements[name].addEventListener('input', syncReportFields);
+          form.elements[name].addEventListener('change', syncReportFields);
+        }
         syncReportFields();
         const clearPlan = form.querySelector('[data-clear-monthly-plan]');
         if (clearPlan) clearPlan.onclick = () => {
@@ -336,7 +338,7 @@
     function openCalendarRegistration(date) {
       if (!deps.canEdit()) return;
       const { element, body } = dialog('월점검 일정 등록');
-      body.innerHTML = `<form class="monthlySearchForm"><label>현장명 또는 S/N<input type="search" name="query" maxlength="100" required></label>
+      body.innerHTML = `<form class="monthlySearchForm" data-enter-native><label>현장명 또는 S/N<input type="search" name="query" maxlength="100" required></label>
         <button type="submit" class="primary">현장 검색</button></form>
         <div class="monthlySearchResults" aria-live="polite"></div><div class="monthlySearchContract"></div>`;
       const form = body.querySelector('form');
@@ -357,9 +359,9 @@
           const first = rounds.find(row => date?.slice(0, 7) === row.target_month.slice(0, 7) && !row.planned_on && !row.inspected_on)
             || rounds.find(row => !row.planned_on && !row.inspected_on) || rounds[0];
           contractArea.innerHTML = `<div class="monthlyContractSummary"><div><h3>${esc(contract.site_name)}</h3><span>${displayPeriod(contract)} · 계약 ${count(contract.inspection_count)}회</span></div></div>
-            <div class="monthlyChooseRound"><label>월점검 회차<select>${rounds.map(row =>
+            <div class="monthlyChooseRound" data-enter-next><label>월점검 회차<select>${rounds.map(row =>
               `<option value="${row.id}" ${row.id === first?.id ? 'selected' : ''}>${row.round_no}회차 · ${monthText(row.target_month)} · ${visitStatus(row)}</option>`
-            ).join('')}</select></label><button type="button" class="primary">회차 열기</button></div>`;
+            ).join('')}</select></label><button type="button" class="primary" data-enter-next-action>회차 열기</button></div>`;
           contractArea.querySelector('button').onclick = () => {
             const selection = contractArea.querySelector('select').value;
             const row = rounds.find(item => String(item.id) === selection);
