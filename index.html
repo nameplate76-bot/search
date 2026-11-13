@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261113-v364';
+  const BUILD='20261113-v365';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -483,7 +483,45 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 #detailBody.monthlyDetailGrid{display:block}
 .monthlyDetailPanel{padding:4px 0;min-width:0}
 .siteMonthlyEditor:not([hidden]){margin:0 clamp(12px,3vw,20px) 16px}
-.siteMonthlyEditor .monthlyEditBack{margin-bottom:12px}
+.siteEditDlg.monthlyInlineActive{width:min(1320px,97vw);height:88vh;overflow:hidden}
+.siteEditDlg.monthlyInlineActive[open]{display:flex;flex-direction:column}
+.monthlyInlineActive>.dlgHead,.monthlyInlineActive>.siteEditTabs{flex:none}
+.monthlyInlineActive .siteMonthlyEditor,.monthlyInlineActive .siteMonthlyEditor>div,.monthlyInlineForm{min-height:0;display:flex;flex-direction:column}
+.monthlyInlineActive .siteMonthlyEditor{overflow:auto;flex:1}
+.monthlyInlineForm,.monthlyInlineTableWrap{flex:1;min-height:0}
+.monthlyInlineForm .monthlyInlineTableWrap{overflow:auto}
+.monthlyInlineBar,.monthlyInlineActive .monthlyContractSummary{flex:none}
+.monthlyInlineBar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+.monthlyInlineBar button{flex:none}
+.monthlyInlineMessages{min-width:0;font-size:13px;color:#3e5977}
+.monthlyInlineMessages p{margin:0}
+.monthlyInlineMessages ul{margin:6px 0 0;padding-inline-start:18px;color:#a62022;max-height:96px;overflow:auto}
+.monthlyTable.monthlyInlineTable{table-layout:fixed;min-width:940px}
+.monthlyInlineTable thead th{position:sticky;top:0;z-index:1}
+.monthlyInlineTable thead th:first-child{width:68px}
+.monthlyInlineTable thead th:nth-child(2){width:174px}
+.monthlyInlineTable thead th:nth-child(3),.monthlyInlineTable thead th:nth-child(4){width:146px}
+.monthlyInlineTable thead th:nth-child(5){width:144px}
+.monthlyInlineTable thead th:nth-child(6){width:106px}
+.monthlyInlineTable tbody th{position:static;z-index:auto;background:inherit}
+.monthlyInlineTable tbody tr[data-monthly-dirty]{background:#eaf3ff}
+.monthlyInlineTable tbody tr[data-monthly-row-error]{background:#fff0ee}
+.monthlyInlineTable input,.monthlyInlineTable select{width:100%;min-width:0;height:38px;padding:6px;border:1px solid #c5d5ea;border-radius:6px;background:#fff;color:#173154;font-size:13px}
+.monthlyInlineTable input:disabled,.monthlyInlineTable select:disabled{background:#edf1f7;color:#60718b}
+.monthlyInlineTable :is(td,th){vertical-align:middle}
+.monthlyInlineTable label{display:block;min-width:0}
+.monthlyInlineTable label>span,.monthlyInlineTable .monthlyTargetMonth>span,.monthlyRoundAccessible{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.monthlyInlineTable .monthlyTargetMonthChoices{gap:4px}
+.monthlyInlineTable td.monthlyInlineReportCell{text-align:left;white-space:normal}
+.monthlyInlineReportCell summary{cursor:pointer;white-space:nowrap;text-align:center;padding:8px 0;color:#173f7a}
+.monthlyInlineReportCell fieldset{min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(155px,100%),1fr));gap:5px;margin:2px 0 0;padding:6px;border:1px solid #d6e0ec;border-radius:6px}
+.monthlyInlineReportCell fieldset label>span{position:static;width:auto;height:auto;clip-path:none;font-size:11px}
+.monthlyInlineReportCell fieldset:disabled{opacity:.65}
+.monthlyInlineReportCell .monthlyReportDateHint{margin:4px 0;font-size:12px;color:#3e5977}
+.monthlyInlineReportCell [data-monthly-report-link]{grid-column:1/-1}
+.monthlyInlineReportCell [data-monthly-report-link]:empty{display:none}
+.monthlyInlineForm nav{flex:none}
+.monthlyInlineForm nav[hidden]{display:none}
 .monthlyDialog{width:min(1050px,calc(100% - 24px));max-width:1050px}
 .monthlyDialogBody{padding:16px;color:#173154;overflow:auto;max-height:calc(90vh - 85px)}
 .monthlyDialogBody p,.monthlyDetailPanel p{margin:0 0 12px}
@@ -524,11 +562,18 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .monthlyError{color:#a62022}
 .monthlyAbsenceList{display:grid;gap:6px;padding-inline-start:22px}
 .monthlyAbsenceList time{font-weight:700;color:#173f7a;margin-right:6px}
-@media(max-width:800px){
- .siteMonthlyEditor .monthlyTable :is(th,td):last-child{position:sticky;right:0;box-shadow:-1px 0 #d6e0ec}
- .siteMonthlyEditor .monthlyTable th:last-child{background:#e8effc}
- .siteMonthlyEditor .monthlyTable td:last-child{background:#fff}
- .siteMonthlyEditor .monthlyTable tr:nth-child(even) td:last-child{background:#f5f8fd}
+@media(max-width:1020px){
+ .siteEditDlg.monthlyInlineActive{width:100vw;height:100dvh}
+ .monthlyInlineTableWrap{border:0}
+ .monthlyTable.monthlyInlineTable,.monthlyInlineTable tbody{display:block;min-width:0}
+ .monthlyInlineTable thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .monthlyInlineTable tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 10px;padding:10px;border:1px solid #d6e0ec;border-radius:9px}
+ .monthlyInlineTable tbody :is(th,td){display:block;min-width:0;padding:0;text-align:left;white-space:normal;border:0}
+ .monthlyInlineTable tbody th,.monthlyInlineReportCell{grid-column:1/-1}
+ .monthlyInlineTable label>span,.monthlyInlineTable .monthlyTargetMonth>span{position:static;display:block;width:auto;height:auto;clip-path:none;margin:0 0 3px;font-size:11px}
+ .monthlyInlineTable .monthlyTargetMonth{gap:0}
+ .monthlyInlineTable input,.monthlyInlineTable select{font-size:16px;min-height:40px}
+ .monthlyInlineReportCell summary{text-align:left}
 }
 @media(max-width:600px){
  .monthlyDialogBody{padding:12px}
@@ -558,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V364</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V365</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1219,7 +1264,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v364"></script><script id="bundled-app-js" data-build="V364">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v365"></script><script id="bundled-app-js" data-build="V365">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3500,12 +3545,18 @@ function renderSiteEditTabsDesktop(){
 }
 function selectSiteEditGroup(group){
  if(group===siteEditGroupIndex)return;
+ if(!canLeaveSiteMonthlyEditor())return;
  siteEditGroupIndex=group;
  renderSiteEditTabs();
  renderSiteEditFields();
  const tab=$('siteEditTabs').querySelector('.active');
  tab?.focus({preventScroll:true});
  tab?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+function canLeaveSiteMonthlyEditor(){
+ const editor=$('siteMonthlyEditor');
+ if(editor.querySelector('.monthlyInlineForm[aria-busy="true"]'))return false;
+ return !monthlyInspection.hasUnsavedChanges(editor)||confirm('저장하지 않은 월점검 변경사항을 버릴까요?');
 }
 function renderSiteMonthlyEditor(container){
  const row=siteEditRow,account=me?.id;
@@ -3522,6 +3573,7 @@ function siteScheduleDateField(id,label,value,enabled){const raw=String(value??'
 function renderSiteEditFields(){
  const monthly=siteEditGroupIndex==='monthly';
  const monthlyEditor=$('siteMonthlyEditor');
+ $('siteEditDlg').classList.toggle('monthlyInlineActive',monthly);
  $('siteEditForm').hidden=monthly;
  monthlyEditor.hidden=!monthly;
  if(monthly){
@@ -3715,7 +3767,7 @@ function closeSiteEditor(){
  if(siteEditMode==='create'){
   showPage('search');mountSiteEditor(false);
   window.scrollTo(0,0);
- }else $('siteEditDlg').close();
+ }else if(canLeaveSiteMonthlyEditor())$('siteEditDlg').close();
 }
 async function openCreateSite(){if(!canCreateSite())return alert('현장 직접등록 권한이 없습니다.');const selectedIds=[...selectedSiteIds];if(selectedIds.length>1)return alert('유사 현장을 자동 적용하려면 현장 검색 결과에서 한 곳만 선택해 주세요.');const selectedTemplate=selectedIds.length===1?lastSites.find(r=>Number(r.source_id)===Number(selectedIds[0])):null;siteEditMode='create';mountSiteEditor(true);resetSiteEditor();if(mobileCreatePages())siteEditGroupIndex=-1;$('siteEditTitle').textContent='현장 직접등록';$('siteEditHint').textContent=canCreateMoney()?'유사 현장을 불러온 뒤 진행·담당·계약과 금액정보까지 수정하여 신규등록할 수 있습니다.':'유사 현장을 불러오거나 새 현장을 등록할 수 있습니다. 금액정보 입력은 별도의 금액입력 권한이 필요합니다.';$('siteTemplateSearchPanel')?.classList.remove('hidden');$('siteFormPhone').disabled=false;$('siteFormEmail').disabled=false;$('siteFormAddress').disabled=false;await applyNextSiteSn(false);renderSiteEditTabs();renderSiteEditFields();showPage('site-create',false);window.scrollTo(0,0);if(selectedTemplate){$('siteTemplateQuery').value=String(selectedTemplate.site_name||'');await applySiteTemplate(Number(selectedTemplate.source_id),{fromSearch:true})}else setTimeout(()=>{if(!mobileCreatePages())$('siteTemplateQuery')?.focus()},60)}
 async function openSiteEditor(id,{monthly=false}={}){
@@ -5251,8 +5303,14 @@ if(resultLayoutMedia.addEventListener)resultLayoutMedia.addEventListener('change
 const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
 if(isStandalone()){const n=$('standaloneNotice');n?.classList.remove('hidden');$('standaloneHelp')?.addEventListener('click',()=>alert('현재 Chrome에 설치된 웹앱으로 실행 중입니다.\n\n일반 Chrome 탭으로 사용하려면:\n1. 이 앱 창 오른쪽 위 ⋮ 메뉴를 누릅니다.\n2. 앱 제거/삭제를 선택합니다.\n3. 또는 Chrome 주소창에 chrome://apps 를 입력한 뒤 현장 검색 앱을 제거합니다.\n4. 이후 https://nameplate76-bot.github.io/search/ 를 Chrome 일반 탭에서 다시 여세요.'));}
 enableEnterToNext($('siteEditForm'),{siteEditor:true});enableEnterToNext($('contactEditForm'));enableEnterToNext($('userForm'));
+$('siteEditDlg').addEventListener('cancel',event=>{
+ if(!canLeaveSiteMonthlyEditor())event.preventDefault();
+});
 $('siteEditDlg').addEventListener('close',()=>{
- if(!$('siteEditDlg').open)$('siteMonthlyEditor').replaceChildren();
+ if(!$('siteEditDlg').open){
+  $('siteEditDlg').classList.remove('monthlyInlineActive');
+  $('siteMonthlyEditor').replaceChildren();
+ }
 });
 $('siteCreateBtn').onclick=openCreateSite;$('siteTemplateSearchBtn').onclick=searchSimilarSiteTemplates;$('siteTemplateQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();e.stopPropagation();searchSimilarSiteTemplates()}};$('siteEditClose').onclick=closeSiteEditor;$('siteEditCancel').onclick=closeSiteEditor;$('siteEditForm').onsubmit=saveSiteEdit;$('siteAddressSearchBtn').onclick=searchSiteAddress;$('siteAddressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchSiteAddress()}};$('siteFormAddress').oninput=()=>{if(siteAddressMode==='manual')syncRegionFromSiteAddress()};$('siteFormAddress').onblur=()=>syncRegionFromSiteAddress();$('siteFormAddressDetail').oninput=()=>syncRegionFromSiteAddress();$('siteManualAddressBtn').onclick=()=>setSiteAddressMode('manual');$('siteSearchAddressModeBtn').onclick=()=>setSiteAddressMode('search');$('siteFormPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};
 $('siteSearchPrint').onclick=printSiteSearchResults;

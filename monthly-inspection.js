@@ -7,6 +7,9 @@
     const dialogs = new Set();
     const firstYear = 2000;
     const lastYear = 2050;
+    const roundsPerPage = 24;
+    const reportFields = ['report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'];
+    const roundFields = ['inspector_id', 'planned_on', 'inspected_on', 'vehicle_number', ...reportFields];
     let chartYear = null;
     let dashboardRequest = 0;
     let calendar;
@@ -74,7 +77,7 @@
       }).join('');
     }
 
-    function targetMonthFields(value) {
+    function targetMonthFields(value, prefix = '') {
       const [year, month] = value.split('-').map(Number);
       const options = Array.from({ length: 12 }, (_, index) => {
         const number = index + 1;
@@ -83,14 +86,69 @@
       return `<div class="monthlyTargetMonth" role="group" aria-label="대상 월">
         <span>대상 월</span>
         <div class="monthlyTargetMonthChoices">
-          <select name="target_year" aria-label="대상 연도">${yearOptions(year)}</select>
-          <select name="target_month" aria-label="대상 월">${options}</select>
+          <select name="target_year" aria-label="${prefix}대상 연도">${yearOptions(year)}</select>
+          <select name="target_month" aria-label="${prefix}대상 월">${options}</select>
         </div>
       </div>`;
     }
 
     function dateInput(name, label, value) {
-      return `<label>${esc(label)}<input type="date" name="${name}" min="2000-01-01" max="2050-12-31" value="${esc(value || '')}"></label>`;
+      return `<label>${esc(label)}${dateControl(name, value)}</label>`;
+    }
+
+    function dateControl(name, value) {
+      return `<input type="date" name="${name}" min="2000-01-01" max="2050-12-31" value="${esc(value || '')}">`;
+    }
+
+    function inspectorSelect(row, inspectors, showId = true) {
+      const current = String(row.inspector_id || '');
+      const placeholder = !current && row.inspector_name ? `${esc(row.inspector_name)} (기존 담당자)` : '선택하세요';
+      const names = new Set();
+      const duplicates = new Set();
+      if (!showId) for (const person of inspectors) {
+        if (names.has(person.name)) duplicates.add(person.name);
+        names.add(person.name);
+      }
+      const existingOption = current && !inspectors.some(person => person.id === current)
+        ? `<option selected value="${esc(current)}">${esc(row.inspector_name)} (기존 담당자)</option>` : '';
+      const options = inspectors.map(person =>
+        `<option value="${esc(person.id)}" ${person.id === current ? 'selected' : ''}>${esc(person.name)}${showId || duplicates.has(person.name) ? ` · ${esc(person.user_id)}` : ''}</option>`
+      ).join('');
+      return `<select name="inspector_id"><option value="">${placeholder}</option>${existingOption}${options}</select>`;
+    }
+
+    function roundValues(fields) {
+      const values = Object.fromEntries(roundFields.map(name => [name, fields[name].value.trim() || null]));
+      values.target_month = `${fields.target_year.value}-${fields.target_month.value}-01`;
+      return values;
+    }
+
+    function canEnterReport(fields) {
+      return Boolean(fields.inspected_on.value || reportFields.some(name => fields[name].value));
+    }
+
+    function syncSubmissionDate(fields) {
+      fields.report_submitted_on.disabled = !fields.report_written_on.value && !fields.report_submitted_on.value;
+    }
+
+    function bindReportDates(fields, sync) {
+      for (const name of ['inspected_on', 'report_written_on']) {
+        fields[name].addEventListener('input', sync);
+        fields[name].addEventListener('change', sync);
+      }
+      sync();
+    }
+
+    function missingInspector(row, values) {
+      return Boolean((values.planned_on || values.inspected_on) && !values.inspector_id && !(hasInspector(row) && !row.inspector_id));
+    }
+
+    function saveRound(row, patch) {
+      return deps.rpc('staff_monthly_save_round', { p_round_id: row.id, p_revision: row.revision, p_patch: patch });
+    }
+
+    function reportPill(row) {
+      return `<span class="monthlyPill" data-report-state="${row.report_submitted_on ? 'done' : row.inspected_on ? 'pending' : 'none'}">${reportStatus(row)}</span>`;
     }
 
     function reportLink(value) {
@@ -139,17 +197,11 @@
       try {
         const inspectors = await deps.rpc('staff_monthly_inspectors');
         if (!body.isConnected || !canEdit()) return;
-        const current = String(row.inspector_id || '');
-        const existingOption = current && !inspectors.some(person => person.id === current)
-          ? `<option selected value="${esc(current)}">${esc(row.inspector_name)} (기존 담당자)</option>` : '';
-        const options = inspectors.map(person =>
-          `<option value="${esc(person.id)}" ${person.id === current ? 'selected' : ''}>${esc(person.name)} · ${esc(person.user_id)}</option>`
-        ).join('');
         body.innerHTML = `<form class="monthlyRoundForm">
           <p><strong>${esc(row.site_name)} · ${row.round_no}회차</strong> <span class="hint">${displayPeriod(row)}</span></p>
           <div class="monthlyFormGrid">
             ${targetMonthFields(row.target_month)}
-            <label>월점검원<select name="inspector_id"><option value="">${!current && row.inspector_name ? esc(row.inspector_name) + ' (기존 담당자)' : '선택하세요'}</option>${existingOption}${options}</select></label>
+            <label>월점검원${inspectorSelect(row, inspectors)}</label>
             ${dateInput('planned_on', '계획일자', row.planned_on || proposedDate)}
             ${dateInput('inspected_on', '점검일자', row.inspected_on)}
             <label>차량번호<input name="vehicle_number" maxlength="80" value="${esc(row.vehicle_number)}"></label>
@@ -174,16 +226,10 @@
         const report = form.querySelector('fieldset');
         const message = form.querySelector('[role="status"]');
         const button = form.querySelector('button[type="submit"]');
-        const syncReportFields = () => {
-          report.disabled = !form.elements.inspected_on.value &&
-            !['report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'].some(name => form.elements[name].value);
-          form.elements.report_submitted_on.disabled = !form.elements.report_written_on.value && !form.elements.report_submitted_on.value;
-        };
-        for (const name of ['inspected_on', 'report_written_on']) {
-          form.elements[name].addEventListener('input', syncReportFields);
-          form.elements[name].addEventListener('change', syncReportFields);
-        }
-        syncReportFields();
+        bindReportDates(form.elements, () => {
+          report.disabled = !canEnterReport(form.elements);
+          syncSubmissionDate(form.elements);
+        });
         const clearPlan = form.querySelector('[data-clear-monthly-plan]');
         if (clearPlan) clearPlan.onclick = () => {
           form.elements.planned_on.value = '';
@@ -193,18 +239,15 @@
         form.onsubmit = async event => {
           event.preventDefault();
           if (!body.isConnected || !canEdit() || button.disabled) return;
-          const names = ['inspector_id', 'planned_on', 'inspected_on', 'vehicle_number',
-            'report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'];
-          const patch = Object.fromEntries(names.map(name => [name, form.elements[name].value.trim() || null]));
-          patch.target_month = `${form.elements.target_year.value}-${form.elements.target_month.value}-01`;
-          if ((patch.planned_on || patch.inspected_on) && !patch.inspector_id && !(hasInspector(row) && !row.inspector_id)) {
+          const patch = roundValues(form.elements);
+          if (missingInspector(row, patch)) {
             status(message, '월점검원을 선택하세요.', true);
             return;
           }
           button.disabled = true;
           status(message, '저장 중…');
           try {
-            await deps.rpc('staff_monthly_save_round', { p_round_id: row.id, p_revision: row.revision, p_patch: patch });
+            await saveRound(row, patch);
             await Promise.allSettled([refreshAfterSave(), onSaved?.()]);
           } catch (error) {
             status(message, errorMessage(error), true);
@@ -293,13 +336,217 @@
           <td>${row.round_no}회차</td><td>${monthText(row.target_month)}</td><td>${dateText(row.planned_on)}</td>
           <td>${dateText(row.inspected_on)}</td><td>${dateText(row.inspector_name)}</td><td>${dateText(row.vehicle_number)}</td>
           ${showProgress ? `<td>${count(completed)} / ${count(row.inspection_count)}회</td>` : ''}
-          <td><span class="monthlyPill" data-report-state="${row.report_submitted_on ? 'done' : row.inspected_on ? 'pending' : 'none'}">${reportStatus(row)}</span></td>
+          <td>${reportPill(row)}</td>
           <td><button type="button" data-monthly-row="${i}">${editable ? action : '조회'}</button></td></tr>`).join('')
           || `<tr><td colspan="${headers.length}">해당 회차가 없습니다.</td></tr>`}</tbody></table>`;
       for (const button of result.querySelectorAll('[data-monthly-row]')) {
         button.onclick = () => open(rows[Number(button.dataset.monthlyRow)]);
       }
       return result;
+    }
+
+    async function renderInlineRounds(content, contract, rounds, canEdit, onSaved) {
+      const loading = document.createElement('p');
+      loading.className = 'monthlyStatus';
+      loading.setAttribute('role', 'status');
+      status(loading, '월점검원 목록을 불러오는 중…');
+      content.append(loading);
+      const inspectors = await deps.rpc('staff_monthly_inspectors');
+      if (!content.isConnected || !canEdit()) return;
+      loading.remove();
+
+      const form = document.createElement('form');
+      form.className = 'monthlyInlineForm';
+      form.noValidate = true;
+      const headers = ['회차', '대상 월', '계획일자', '점검일자', '월점검원', '차량번호', '보고서'];
+      form.innerHTML = `<div class="monthlyInlineBar">
+          <div class="monthlyInlineMessages"><p role="status" aria-live="polite"></p><ul hidden></ul></div>
+          <button type="submit" class="primary" id="monthlyInlineSave" disabled>변경사항 저장</button>
+        </div>
+        <div class="monthlyTableWrap monthlyInlineTableWrap">
+          <table class="monthlyTable monthlyInlineTable" aria-label="월점검 회차 입력">
+            <thead><tr>${headers.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody></tbody>
+          </table>
+        </div>
+        <nav class="actions monthlyWorkPagination" aria-label="월점검 회차 페이지" hidden>
+          <button type="button" data-monthly-previous>이전</button><span aria-live="polite"></span><button type="button" data-monthly-next>다음</button>
+        </nav>`;
+      content.append(form);
+      const summaryCount = content.querySelector('[data-monthly-completed]');
+      const tbody = form.querySelector('tbody');
+      const message = form.querySelector('[role="status"]');
+      const errorList = form.querySelector('.monthlyInlineMessages ul');
+      const save = form.querySelector('#monthlyInlineSave');
+      const tableWrap = form.querySelector('.monthlyInlineTableWrap');
+      const pagination = form.querySelector('nav');
+      const previous = pagination.querySelector('[data-monthly-previous]');
+      const next = pagination.querySelector('[data-monthly-next]');
+      const drafts = new Map();
+      const errors = new Map();
+      let page = 0;
+      let saving = false;
+
+      function renderMessages() {
+        save.disabled = saving || !drafts.size;
+        save.textContent = saving ? '저장 중…' : '변경사항 저장';
+        status(message, drafts.size ? `변경된 회차 ${drafts.size}건` : '', false);
+        errorList.hidden = !errors.size;
+        errorList.replaceChildren(...[...errors].map(([row, error]) => {
+          const item = document.createElement('li');
+          item.textContent = `${row.round_no}회차 · ${error}`;
+          return item;
+        }));
+      }
+
+      function paintReport(tr, row) {
+        const details = tr.querySelector('details');
+        details.querySelector('summary').innerHTML = `<span>보고서</span> ${reportPill(row)}`;
+        details.querySelector('[data-monthly-report-link]').innerHTML = reportLink(row.report_url);
+      }
+
+      function renderPage() {
+        const first = page * roundsPerPage;
+        const visible = rounds.slice(first, first + roundsPerPage);
+        const openReports = new Set([...tbody.querySelectorAll('tr:has(details[open])')].map(tr => tr.dataset.monthlyRoundId));
+        tbody.innerHTML = visible.map(row => {
+          const draft = drafts.get(row);
+          const values = { ...row, ...draft?.patch };
+          const prefix = `${row.round_no}회차 `;
+          const label = (name, control) => `<label><span><span class="monthlyRoundAccessible">${prefix}</span>${name}</span>${control}</label>`;
+          const planned = dateControl('planned_on', values.planned_on);
+          const inspected = dateControl('inspected_on', values.inspected_on);
+          const vehicle = `<input name="vehicle_number" maxlength="80" value="${esc(values.vehicle_number || '')}">`;
+          const recipient = `<input name="report_recipient" maxlength="200" value="${esc(values.report_recipient || '')}">`;
+          const url = `<input type="url" name="report_url" maxlength="2000" value="${esc(values.report_url || '')}">`;
+          return `<tr data-monthly-round-id="${esc(row.id)}" ${draft ? 'data-monthly-dirty' : ''} ${errors.has(row) ? 'data-monthly-row-error' : ''}>
+            <th scope="row">${row.round_no}회차</th>
+            <td>${targetMonthFields(values.target_month, prefix)}</td>
+            <td>${label('계획일자', planned)}</td><td>${label('점검일자', inspected)}</td>
+            <td>${label('월점검원', inspectorSelect(values, inspectors, false))}</td>
+            <td>${label('차량번호', vehicle)}</td>
+            <td class="monthlyInlineReportCell"><details ${openReports.has(String(row.id)) || reportFields.some(name => Object.hasOwn(draft?.patch || {}, name)) ? 'open' : ''}>
+              <summary></summary>
+              <p class="monthlyReportDateHint">점검일자를 입력하면 보고서를 기록할 수 있습니다.</p>
+              <fieldset aria-label="${prefix}보고서 입력">
+                ${label('작성일자', dateControl('report_written_on', values.report_written_on))}
+                ${label('제출일자', dateControl('report_submitted_on', values.report_submitted_on))}
+                ${label('제출처', recipient)}${label('보고서 링크', url)}
+                <span data-monthly-report-link></span>
+              </fieldset>
+            </details></td>
+          </tr>`;
+        }).join('') || `<tr><td colspan="${headers.length}">해당 회차가 없습니다.</td></tr>`;
+        visible.forEach((row, index) => {
+          const tr = tbody.rows[index];
+          const fields = Object.fromEntries([...tr.querySelectorAll('input,select')].map(field => [field.name, field]));
+          const report = tr.querySelector('fieldset');
+          const reportHint = tr.querySelector('.monthlyReportDateHint');
+          const syncReport = () => {
+            report.disabled = !canEnterReport(fields);
+            reportHint.hidden = !report.disabled;
+            syncSubmissionDate(fields);
+          };
+          bindReportDates(fields, syncReport);
+          paintReport(tr, row);
+          const updateDraft = () => {
+            if (saving) return;
+            const values = roundValues(fields);
+            const patch = Object.fromEntries(Object.entries(values).filter(([name, value]) => value !== (row[name]?.trim() || null)));
+            const invalid = Object.values(fields).find(field => field.willValidate &&
+              (field.validity.badInput || (Object.hasOwn(patch, field.name) && !field.validity.valid)));
+            if (Object.keys(patch).length || invalid) drafts.set(row, { patch, invalid: invalid?.name });
+            else drafts.delete(row);
+            errors.delete(row);
+            tr.toggleAttribute('data-monthly-dirty', drafts.has(row));
+            tr.removeAttribute('data-monthly-row-error');
+            renderMessages();
+          };
+          tr.addEventListener('input', updateDraft);
+          tr.addEventListener('change', updateDraft);
+        });
+        pagination.hidden = rounds.length <= roundsPerPage;
+        previous.disabled = page === 0;
+        next.disabled = first + roundsPerPage >= rounds.length;
+        pagination.querySelector('span').textContent = `${page + 1} / ${Math.ceil(rounds.length / roundsPerPage)} 페이지`;
+      }
+
+      function focusRound(row, fieldName) {
+        const targetPage = Math.floor(rounds.indexOf(row) / roundsPerPage);
+        if (targetPage !== page) {
+          page = targetPage;
+          renderPage();
+        }
+        const tr = tbody.querySelector(`[data-monthly-round-id="${CSS.escape(String(row.id))}"]`);
+        const field = tr?.querySelector(`[name="${fieldName}"]`);
+        const details = field?.closest('details');
+        if (details) details.open = true;
+        field?.focus();
+      }
+
+      function movePage(direction) {
+        page += direction;
+        renderPage();
+        tableWrap.scrollTop = 0;
+      }
+      previous.onclick = () => movePage(-1);
+      next.onclick = () => movePage(1);
+      renderPage();
+      form.onsubmit = async event => {
+        event.preventDefault();
+        if (saving || !drafts.size || !form.isConnected || !canEdit()) return;
+        const invalid = [...drafts].find(([, draft]) => draft.invalid);
+        const unassigned = [...drafts].find(([row, draft]) => missingInspector(row, { ...row, ...draft.patch }));
+        if (invalid || unassigned) {
+          const [row, draft] = invalid || unassigned;
+          focusRound(row, draft.invalid || 'inspector_id');
+          status(message, `${row.round_no}회차 · ${invalid ? '날짜 또는 보고서 링크 입력을 확인하세요.' : '월점검원을 선택하세요.'}`, true);
+          return;
+        }
+
+        saving = true;
+        errors.clear();
+        renderMessages();
+        status(message, '변경한 회차를 저장하는 중…');
+        tableWrap.inert = true;
+        pagination.inert = true;
+        form.setAttribute('aria-busy', 'true');
+        let savedCount = 0;
+        try {
+          for (const [row, draft] of [...drafts]) {
+            if (!form.isConnected || !canEdit()) break;
+            try {
+              const saved = await saveRound(row, draft.patch);
+              Object.assign(row, saved);
+              drafts.delete(row);
+              savedCount++;
+            } catch (error) {
+              errors.set(row, errorMessage(error));
+            }
+          }
+          if (savedCount) await Promise.allSettled([refreshAfterSave(), onSaved?.()]);
+        } finally {
+          tableWrap.inert = false;
+          pagination.inert = false;
+          form.removeAttribute('aria-busy');
+          saving = false;
+          if (form.isConnected) {
+            summaryCount.textContent = `점검횟수/계약횟수 ${count(rounds.filter(row => row.inspected_on).length)} / ${count(contract.inspection_count)}회`;
+            for (const tr of tbody.querySelectorAll('tr[data-monthly-round-id]')) {
+              const row = rounds[(page * roundsPerPage) + tr.sectionRowIndex];
+              tr.toggleAttribute('data-monthly-dirty', drafts.has(row));
+              tr.toggleAttribute('data-monthly-row-error', errors.has(row));
+              paintReport(tr, row);
+            }
+            renderMessages();
+            if (errors.size) status(message, `저장 완료 ${savedCount}건 · 저장 실패 ${errors.size}건`, true);
+            else if (savedCount) status(message, `월점검 회차 ${savedCount}건을 저장했습니다.`);
+          }
+        }
+      };
+    }
+
+    function hasUnsavedChanges(container) {
+      return Boolean(container.querySelector('.monthlyInlineForm:not([aria-busy="true"]) #monthlyInlineSave:enabled'));
     }
 
     async function renderDetail(container, sourceId, { canEdit = () => false, onSaved } = {}) {
@@ -321,15 +568,9 @@
         }
         const { contract, rounds } = data;
         content.innerHTML = `<div class="monthlyContractSummary"><div><h3>월점검 계약</h3><span>${displayPeriod(contract)} · S/N ${dateText(contract.reference_sn || contract.sn)}</span></div>
-          <strong>점검횟수/계약횟수 ${count(rounds.filter(row => row.inspected_on).length)} / ${count(contract.inspection_count)}회</strong></div>`;
-        const editable = canEdit();
-        content.append(table(rounds, { showProgress: true, editable, open: row => {
-          if (!editable) return openRound(row, { readOnly: true });
-          if (!canEdit()) return;
-          content.innerHTML = '<button type="button" class="ghost monthlyEditBack">회차 목록으로</button><div></div>';
-          content.firstElementChild.onclick = reload;
-          renderRoundForm(content.lastElementChild, row, { canEdit, onSaved: saved, focus: 'target_year' });
-        } }));
+          <strong data-monthly-completed>점검횟수/계약횟수 ${count(rounds.filter(row => row.inspected_on).length)} / ${count(contract.inspection_count)}회</strong></div>`;
+        if (canEdit()) await renderInlineRounds(content, contract, rounds, canEdit, onSaved);
+        else content.append(table(rounds, { showProgress: true, editable: false, open: row => openRound(row, { readOnly: true }) }));
       } catch (error) {
         if (content.isConnected) status(content.querySelector('[role="status"]') || content, errorMessage(error), true);
       }
@@ -568,6 +809,6 @@
       };
     }
 
-    return { init, clear, open: () => calendar.open(), loadDashboard, renderDetail };
+    return { init, clear, open: () => calendar.open(), loadDashboard, renderDetail, hasUnsavedChanges };
   };
 })(window);
