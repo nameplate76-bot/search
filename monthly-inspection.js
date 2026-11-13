@@ -5,6 +5,8 @@
     const $ = id => document.getElementById(id);
     const esc = deps.escape;
     const dialogs = new Set();
+    const firstYear = 2000;
+    const lastYear = 2050;
     let chartYear = null;
     let dashboardRequest = 0;
     let calendar;
@@ -65,16 +67,26 @@
       await Promise.allSettled(jobs);
     }
 
-    function monthOptions(row) {
-      const start = new Date(`${row.starts_on.slice(0, 7)}-01T00:00:00Z`);
-      const end = row.ends_on.slice(0, 7);
-      const options = [];
-      while (start.toISOString().slice(0, 7) <= end) {
-        const value = start.toISOString().slice(0, 10);
-        options.push(`<option value="${value}" ${value === row.target_month ? 'selected' : ''}>${monthText(value)}</option>`);
-        start.setUTCMonth(start.getUTCMonth() + 1);
-      }
-      return options.join('');
+    function yearOptions(selectedYear) {
+      return Array.from({ length: lastYear - firstYear + 1 }, (_, index) => {
+        const year = lastYear - index;
+        return `<option value="${year}" ${year === selectedYear ? 'selected' : ''}>${year}년</option>`;
+      }).join('');
+    }
+
+    function targetMonthFields(value) {
+      const [year, month] = value.split('-').map(Number);
+      const options = Array.from({ length: 12 }, (_, index) => {
+        const number = index + 1;
+        return `<option value="${String(number).padStart(2, '0')}" ${number === month ? 'selected' : ''}>${number}월</option>`;
+      }).join('');
+      return `<div class="monthlyTargetMonth" role="group" aria-label="대상 월">
+        <span>대상 월</span>
+        <div class="monthlyTargetMonthChoices">
+          <select name="target_year" aria-label="대상 연도">${yearOptions(year)}</select>
+          <select name="target_month" aria-label="대상 월">${options}</select>
+        </div>
+      </div>`;
     }
 
     function dateInput(name, label, value) {
@@ -136,7 +148,7 @@
         body.innerHTML = `<form class="monthlyRoundForm">
           <p><strong>${esc(row.site_name)} · ${row.round_no}회차</strong> <span class="hint">${displayPeriod(row)}</span></p>
           <div class="monthlyFormGrid">
-            <label>대상 월<select name="target_month">${monthOptions(row)}</select></label>
+            ${targetMonthFields(row.target_month)}
             <label>월점검원<select name="inspector_id"><option value="">${!current && row.inspector_name ? esc(row.inspector_name) + ' (기존 담당자)' : '선택하세요'}</option>${existingOption}${options}</select></label>
             ${dateInput('planned_on', '계획일자', row.planned_on || proposedDate)}
             ${dateInput('inspected_on', '점검일자', row.inspected_on)}
@@ -179,9 +191,10 @@
         form.onsubmit = async event => {
           event.preventDefault();
           if (!body.isConnected || !canEdit() || button.disabled) return;
-          const names = ['target_month', 'inspector_id', 'planned_on', 'inspected_on', 'vehicle_number',
+          const names = ['inspector_id', 'planned_on', 'inspected_on', 'vehicle_number',
             'report_written_on', 'report_submitted_on', 'report_recipient', 'report_url'];
           const patch = Object.fromEntries(names.map(name => [name, form.elements[name].value.trim() || null]));
+          patch.target_month = `${form.elements.target_year.value}-${form.elements.target_month.value}-01`;
           if ((patch.planned_on || patch.inspected_on) && !patch.inspector_id && !(hasInspector(row) && !row.inspector_id)) {
             status(message, '월점검원을 선택하세요.', true);
             return;
@@ -313,7 +326,7 @@
           if (!canEdit()) return;
           content.innerHTML = '<button type="button" class="ghost monthlyEditBack">회차 목록으로</button><div></div>';
           content.firstElementChild.onclick = reload;
-          renderRoundForm(content.lastElementChild, row, { canEdit, onSaved: saved, focus: 'target_month' });
+          renderRoundForm(content.lastElementChild, row, { canEdit, onSaved: saved, focus: 'target_year' });
         } }));
       } catch (error) {
         if (content.isConnected) status(content.querySelector('[role="status"]') || content, errorMessage(error), true);
@@ -454,9 +467,7 @@
         `<button type="button" class="inspectionDashMonth" data-monthly-open="monthly" data-year="${chartYear}" data-month="${row.month}" aria-label="${row.month}월 ${count(row.sites)}곳, ${count(row.rounds)}회"><span class="inspectionDashMonthValue">${count(row.sites)}곳</span><span class="inspectionDashMonthTrack"><i style="height:${row.sites / maxMonthly * 100}%"></i></span><b>${row.month}월</b></button>`
       ).join('');
       const picker = $('monthlyDashYear');
-      const last = Math.max(year + 1, chartYear);
-      picker.innerHTML = Array.from({ length: last - 1999 }, (_, i) => `<option value="${last - i}">${last - i}년</option>`).join('');
-      picker.value = String(chartYear);
+      picker.innerHTML = yearOptions(chartYear);
       $('monthlyDashCharts').classList.remove('hidden');
     }
 

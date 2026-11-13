@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261113-v362';
+  const BUILD='20261113-v363';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -503,6 +503,8 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .monthlyPill[data-report-state="done"]{background:#e6f6ed;color:#166534}
 .monthlyFormGrid,.monthlyReadGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
 .monthlyRoundForm label,.monthlyContractForm label,.monthlySearchForm label,.monthlyChooseRound label{display:grid;gap:5px;font-size:14px;font-weight:700;color:#173154}
+.monthlyTargetMonth{display:grid;gap:5px;min-width:0;font-size:14px;font-weight:700;color:#173154}
+.monthlyTargetMonthChoices{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:8px}
 .monthlyRoundForm input,.monthlyRoundForm select,.monthlyContractForm input,.monthlyContractForm select,.monthlySearchForm input,.monthlyChooseRound select{width:100%;min-width:0;min-height:40px;box-sizing:border-box;padding:8px;border:1px solid #c5d5ea;border-radius:7px;background:#fff;color:#173154}
 .monthlyRoundForm fieldset,.monthlyContractForm fieldset{margin:12px 0;padding:12px;border:1px solid #c5d5ea;border-radius:9px}
 .monthlyRoundForm legend,.monthlyContractForm legend{font-weight:700}
@@ -556,7 +558,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V362</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V363</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1217,7 +1219,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v362"></script><script id="bundled-app-js" data-build="V362">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v363"></script><script id="bundled-app-js" data-build="V363">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
