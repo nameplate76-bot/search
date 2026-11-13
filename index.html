@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261113-v360';
+  const BUILD='20261113-v361';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -548,7 +548,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V358</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V361</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1208,7 +1208,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v359"></script><script id="bundled-app-js" data-build="V360">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v359"></script><script id="bundled-app-js" data-build="V361">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1562,6 +1562,30 @@ const canPrintSales=()=>isAdmin()||can('can_print_staff_sales');
 const canImportSites=()=>isAdmin()||can('can_import_staff_sites');
 const canManageUsers=()=>isAdmin()||can('can_manage_staff_users');
 const canViewMoney=()=>isAdmin()||can('can_view_money');
+
+// V361: 목록의 safe_values는 금액을 제거한 공개 데이터입니다.
+// 권한을 서버에서 재검증하는 전용 RPC로 실제 계약금액만 받아, 해당 현장 행에 표시용으로 병합합니다.
+// DB에 값을 쓰지 않으며 다른 금액 필드는 조회하지 않습니다.
+async function attachAuthorizedContractAmounts(rows){
+ if(!canViewMoney()||!Array.isArray(rows)||!rows.length)return;
+ const ids=[...new Set(rows.map(row=>Number(row.source_id)).filter(Number.isSafeInteger))];
+ if(!ids.length)return;
+ const byId=new Map();
+ for(let i=0;i<ids.length;i+=400){
+  const {data,error}=await sb.rpc('staff_site_contract_amounts_v361',{p_source_ids:ids.slice(i,i+400)});
+  if(error)throw new Error('계약금액 권한조회 실패 (V361 SQL 적용 여부 확인): '+error.message);
+  for(const entry of data||[])byId.set(Number(entry.source_id),entry.contract_amount);
+ }
+ for(const row of rows){
+  const id=Number(row.source_id);
+  const values=Array.isArray(row.safe_values)?[...row.safe_values]:[];
+  // 결과가 없는 행은 금액 정보를 노출하지 않습니다.
+  while(values.length<=48)values.push(null);
+  values[48]=byId.has(id)?byId.get(id):null;
+  row.safe_values=values;
+ }
+}
+
 const canCreateMoney=()=>isAdmin()||can('can_create_money');
 const canEditMoney=()=>isAdmin()||can('can_edit_money');
 // V191 공지사항·자료실: 권한은 DB에서 재검사하며 UI는 없는 작업을 숨깁니다.
@@ -2279,6 +2303,8 @@ async function searchSites(force=false,submit=false){
    const plan=plansBySite.get(Number(row.source_id));
    row.schedule_plan_start=plan?.plan_start||'';row.schedule_plan_end=plan?.plan_end||'';
   }
+  await attachAuthorizedContractAmounts(rows);
+  if(requestId!==searchRequestSeq||requestAccount!==me?.id||!can('can_view_staff_sites'))return;
   searchSourceRows=rows;searchCacheQuery=q;searchCacheReady=true;searchLoadedAt=Date.now();stopSearchLoading(requestId);applySearchCache();return true;
  }catch(e){if(requestId!==searchRequestSeq)return;$('searchMeta').textContent='검색 오류: '+e.message;$('siteSearchPrint')?.setAttribute('disabled','');$('siteResults').innerHTML='';return false}finally{stopSearchLoading(requestId)}
 }
@@ -2883,6 +2909,9 @@ async function loadAssignmentDashboard(){
   if(request!==assignmentRequest||requestAccount!==me?.id||activePageName()!=='assignment'||!canViewAssignment())return;
   if(error)throw error;
   const payload=Array.isArray(data)?{rows:data,scope_all:access.all,scope_name:access.name}:data||{},sourceRows=Array.isArray(payload.rows)?payload.rows:[],serverAll=!!payload.scope_all,scopeName=String(payload.scope_name||''),namesOf=r=>Array.from(new Set(String(r.inspectors||r.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).map(n=>n.trim()).filter(Boolean)));
+  // 점검배정은 목록 전용 RPC로 safe_values가 마스킹되어 있으므로 조회 시 금액을 별도로 병합합니다.
+  await attachAuthorizedContractAmounts(sourceRows);
+  if(request!==assignmentRequest||requestAccount!==me?.id||activePageName()!=='assignment'||!canViewAssignment())return;
   const isHistoryComplete=r=>String(r.plan_status||'')==='완료';
   // 네 회차 항목이 전부 비어 있는 현장만 점검배정 대상에서 제외합니다.
   // 하나라도 입력되어 있으면 미등록 집계에 포함하며 숫자 0도 입력값입니다.
