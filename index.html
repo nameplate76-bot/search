@@ -961,9 +961,22 @@ function open(ctx){
     panel.querySelector('[data-folder-close]').onclick=()=>{panel.hidden=true};
     panel.querySelectorAll('[data-folder-index]').forEach(b=>b.onclick=()=>browseFolder(data.folders[Number(b.dataset.folderIndex)].path));
     const use=panel.querySelector('[data-folder-use]');if(use)use.onclick=()=>{q('[data-folder]').value=data.folder;q('[data-preferred]').value='';mappingDirty=true;saveStatus('실제 폴더를 선택했습니다. 아래 파일 목록에서 보고서를 선택하여 저장하세요.');panel.hidden=true;q('[data-candidates]').click()};
-   }catch(e){if(!closed)panel.textContent='실제 폴더 조회 실패: '+e.message+' 연결 PC의 server.py를 R8로 교체했는지 확인하세요.'}finally{if(!closed)q('[data-browse-folder]').disabled=false}
+   }catch(e){if(!closed){
+    const isLarge=e.httpStatus===413;
+    panel.textContent='실제 폴더 조회 실패: '+e.message+(isLarge?' · 폴더 항목이 너무 많습니다. 현장 폴더 경로에 더 깊은 하위 경로를 입력한 뒤 다시 선택하거나, 정확한 경로에서 「폴더의 파일 목록 불러오기」를 이용하세요. 기존 연결정보는 변경되지 않았습니다.':' · 연결 PC의 server.py R8 버전과 실제 NAS 경로를 확인하세요.');
+   }}finally{if(!closed)q('[data-browse-folder]').disabled=false}
   }
-  q('[data-browse-folder]').onclick=()=>{if(!busy&&!saving)browseFolder('')};
+  // V366: 기존에 저장된 현장 경로에서 시작해 NAS 최상위 대량 폴더 조회를 피합니다.
+  q('[data-browse-folder]').onclick=()=>{
+   if(busy||saving)return;
+   let folder='';
+   try{folder=reportRelativeFolder(q('[data-folder]').value)}catch(e){
+    const panel=q('[data-folder-browser]');panel.hidden=false;
+    panel.textContent='입력한 현장 폴더 경로를 확인하세요: '+e.message;
+    return;
+   }
+   browseFolder(folder);
+  };
   q('[data-candidates]').onclick=async()=>{if(busy||saving)return;const panel=q('[data-candidate-list]'),button=q('[data-candidates]');button.disabled=true;panel.textContent='폴더의 실제 파일 목록을 확인하고 있습니다…';try{const folder=reportRelativeFolder(q('[data-folder]').value);const data=await request('candidates?folder='+encodeURIComponent(folder));if(closed)return;if(!['R7','R8'].includes(data.bridge_version))throw Error('연결 PC의 server.py를 R7으로 교체하고 재시작하세요.');const chosen=new Set(q('[data-preferred]').value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean)),files=data.files||[];panel.innerHTML=files.length?'<p>조회할 보고서를 체크한 뒤 아래 버튼을 누르세요. 선택하지 않은 파일은 직원에게 표시되지 않습니다.</p>'+files.map((f,i)=>`<label style="display:flex;gap:8px;align-items:flex-start;padding:8px;border-bottom:1px solid #d6e1f0"><input type="checkbox" data-candidate="${i}" style="width:auto" ${chosen.has(f.relative_path)||chosen.has(f.name)?'checked':''}><span>${escape(f.name)}<small style="display:block">${escape(f.relative_path)}</small></span></label>`).join('')+'<button type="button" data-candidate-save>선택한 파일로 저장</button>':'<p>이 폴더에서 지원하는 파일을 찾지 못했습니다. 폴더 경로를 확인하세요.</p>';const save=panel.querySelector('[data-candidate-save]');if(save)save.onclick=()=>{q('[data-preferred]').value=[...panel.querySelectorAll('[data-candidate]:checked')].map(c=>files[Number(c.dataset.candidate)].relative_path).join('\n');mappingDirty=true;q('[data-save]').click()};}catch(e){if(!closed)panel.textContent='파일 목록 조회 실패: '+e.message+(e.httpStatus===404?' 위의 실제 NAS 폴더 찾아 선택 버튼으로 존재하는 폴더를 선택하세요.':'')}finally{if(!closed)button.disabled=false}};
   q('[data-api]').value=override||ctx.config.reportApiUrl||'';
   q('[data-api-save]').onclick=async()=>{if(saving){saveStatus('폴더 저장이 끝난 뒤 연결 주소를 변경하세요.',true);return}try{const value=endpoint(q('[data-api]').value);if(!value||!new URL(value).hostname.endsWith('.trycloudflare.com'))throw Error('PC에서 발급된 trycloudflare.com HTTPS 주소를 입력하세요.');if(ctx.saveApi){const btn=q('[data-api-save]');btn.disabled=true;status('공통 접속주소 저장 중…');try{await ctx.saveApi(value);try{localStorage.removeItem(apiKey)}catch(e){}}finally{btn.disabled=false}}else{localStorage.setItem(apiKey,value);if(localStorage.getItem(apiKey)!==value)throw Error('주소 저장에 실패했습니다.');}close(false);open({...ctx,config:{...ctx.config,reportApiUrl:value}})}catch(e){status(e.message)}};
@@ -1264,7 +1277,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261113-v365"></script><script id="bundled-app-js" data-build="V365">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261113-v365"></script><script id="bundled-app-js" data-build="V366">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
