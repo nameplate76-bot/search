@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261117-v369';
+  const BUILD='20261117-v370';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V369</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V370</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1327,7 +1327,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261117-v369"></script><script id="bundled-app-js" data-build="V369">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261117-v370"></script><script id="bundled-app-js" data-build="V370">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -4545,12 +4545,24 @@ function readSalesDashboardPrefs(){try{const v=JSON.parse(localStorage.getItem(s
 function saveSalesDashboardPrefs(){try{storeUserUiPreference(salesDashboardStorageKey(),JSON.stringify({period:salesDashboardPeriod,year:$('salesDashYear')?.value||'',month:$('salesDashMonth')?.value||'',owners:[...salesDashboardOwners]}))}catch(e){}}
 function salesDashboardOwnerNames(){return [...new Set([...salesRows.map(salesOwnerName),...salesAssignedRows.map(x=>String(x.owner_name||'').trim())].filter(x=>x&&x!=='미배정'))].sort((a,b)=>a.localeCompare(b,'ko'))}
 function updateSalesDashboardOwnerSummary(){const n=salesDashboardOwners.size,total=salesDashboardOwnerNames().length;const el=$('salesDashOwnerSummary');if(el)el.textContent=n?`담당자 ${n}명 선택${n===total?' · 전체':''}`:'담당자를 선택하세요'}
+// 매출 관리 전용 퇴직자 표시 그룹: 원본 담당자명과 매출 데이터는 변경하지 않습니다.
+const SALES_RETIRED_OWNER_NAMES=new Set(['김샘이나','박정우','박지수','신상식','엄현','임명수','장병호','장병호(영업)','장은주','지수연']);
+function groupedSalesDashboardOwners(names){
+ const groups=new Map([['재직자',[]],['퇴직자',[]],['기타 담당자',[]]]);
+ for(const name of [...new Set((names||[]).map(v=>String(v||'').trim()).filter(Boolean))]){
+  const originalGroup=employeeGroupLabel(name);
+  const group=SALES_RETIRED_OWNER_NAMES.has(name)||originalGroup==='퇴사자'?'퇴직자':originalGroup==='재직자'?'재직자':'기타 담당자';
+  groups.get(group).push(name);
+ }
+ for(const list of groups.values())list.sort((a,b)=>a.localeCompare(b,'ko'));
+ return [...groups].filter(([,list])=>list.length);
+}
 function renderSalesDashboardOwnerList(){
  const root=$('salesDashOwnerList');if(!root)return;
  const owners=salesDashboardOwnerNames();
  const search=$('salesDashOwnerSearch').value.trim().toLocaleLowerCase('ko');
  const visibleOwners=search?owners.filter(name=>name.toLocaleLowerCase('ko').includes(search)):owners;
- root.innerHTML=groupedEmployeeNames(visibleOwners).map(([group,names])=>{
+ root.innerHTML=groupedSalesDashboardOwners(visibleOwners).map(([group,names])=>{
   const options=names.map(name=>`<label><input type="checkbox" value="${esc(name)}" ${salesDashboardOwners.has(name)?'checked':''}><span>${esc(name)}</span></label>`).join('');
   return `<section class="salesDashOwnerGroup"><h4>${esc(group)}<small>${names.length.toLocaleString()}명</small></h4><div class="salesDashOwnerOptions">${options}</div></section>`;
  }).join('')||`<div class="salesDashEmpty" role="status">${search?'검색 결과가 없습니다.':'조회 가능한 담당자가 없습니다.'}</div>`;
