@@ -621,10 +621,58 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 </header>
 <main>
 <div id="uiPreferencesStatus" class="statusBanner warn hidden" role="status" aria-live="polite"></div>
+<style id="admin-overview-v367">
+/* V367 관리자 통합 홈 대시보드 - 기존 업무 화면 영향 없음 */
+.adminOverview{max-width:1500px;margin:0 auto 26px;padding:0 54px;color:#193859}
+.adminOverviewHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px}
+.adminOverviewHead h2{margin:0 0 4px;font-size:22px;color:#193859}
+.adminOverviewHead p,.adminOverviewStatus{margin:0;color:#657995;font-size:12px;line-height:1.6}
+.adminOverviewGroups{display:grid;grid-template-columns:minmax(0,5fr) minmax(280px,2fr);gap:16px}
+.adminOverviewGroup{min-width:0;border:1px solid #dce7f4;border-radius:16px;padding:17px;background:#fff;box-shadow:0 7px 22px #142c4b0a}
+.adminOverviewGroupTitle{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:13px}
+.adminOverviewGroupTitle h3{font-size:17px;margin:0;color:#203d63}
+.adminOverviewGroupTitle small{color:#7b8da4;font-size:11px}
+.adminOverviewCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.adminOverviewCards.report{grid-template-columns:repeat(2,minmax(0,1fr))}
+.adminOverviewCard{min-width:0;text-align:left;display:flex;flex-direction:column;gap:8px;border:1px solid #dce8f7;border-radius:12px;background:#f5f9ff;padding:14px 12px;cursor:pointer;transition:background .15s,border-color .15s,transform .15s;color:#36506d}
+.adminOverviewCard:hover{background:#eaf3ff;border-color:#7da9e7;transform:translateY(-2px)}
+.adminOverviewCard:focus-visible{outline:3px solid #468be0;outline-offset:2px}
+.adminOverviewCard span{font-size:12px;font-weight:800;word-break:keep-all;line-height:1.4}
+.adminOverviewCard strong{font-size:29px;color:#19549b;letter-spacing:-.7px;font-variant-numeric:tabular-nums}
+.adminOverviewCard strong small{font-size:13px;color:#667e99;letter-spacing:0}
+.adminOverviewCard em{font-size:11px;font-style:normal;color:#7185a0;line-height:1.45;word-break:keep-all}
+.adminOverviewCard.alert{background:#fff8f4;border-color:#f3ded2}.adminOverviewCard.alert strong{color:#bc5b2c}
+.adminOverviewStatus{margin-top:11px;min-height:20px}
+@media(max-width:1100px){.adminOverview{padding:0 28px}.adminOverviewGroups{grid-template-columns:1fr}.adminOverviewCards.report{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.adminOverview{padding:0 14px}.adminOverviewHead{align-items:flex-start}.adminOverviewHead h2{font-size:19px}.adminOverviewCards{grid-template-columns:repeat(2,minmax(0,1fr))}.adminOverviewGroup{padding:12px}.adminOverviewCard{padding:12px 10px}.adminOverviewCard strong{font-size:25px}}
+@media(max-width:360px){.adminOverviewCards,.adminOverviewCards.report{grid-template-columns:1fr}}
+</style>
 <section id="page-home" class="page homePage" aria-label="포털 메인 메뉴">
   <section class="homeHero">
     <div class="homeHeroCopy"><span class="homeEyebrow">PREMIUM NATIONAL BRAND · MECHANICAL FACILITY</span><h1>기계설비 안전의 기준을 세우고,<br>대한민국 대표 점검 브랜드로 나아갑니다.</h1><p>데이터와 현장을 연결해 더 정확한 점검과 신뢰할 수 있는 유지관리를 제공합니다.</p><div class="homeHeroBadges"><span>현장 중심</span><span>AI 데이터</span><span>안전과 신뢰</span></div></div>
     <div class="homeHeroArt" aria-hidden="true"><svg viewBox="0 0 760 300" fill="none"><path d="M65 260h635M105 260v-78h63v78m20 0V103h96v157m26 0v-119h99v119m28 0V62h108v198m28 0v-95h77v95" stroke="#c5eaff" stroke-width="2" opacity=".58"/><path d="m115 91 135-43 118 67L488 28l112 78 55-32" stroke="#74d0ff" stroke-width="2.5"/><g fill="#fff" stroke="#72d1ff" stroke-width="4"><circle cx="115" cy="91" r="6"/><circle cx="250" cy="48" r="6"/><circle cx="368" cy="115" r="6"/><circle cx="488" cy="28" r="6"/><circle cx="600" cy="106" r="6"/><circle cx="655" cy="74" r="6"/></g><circle cx="488" cy="29" r="38" stroke="#7bd2ff" opacity=".27"/><circle cx="488" cy="29" r="64" stroke="#7bd2ff" opacity=".16"/><path d="M296 168h43v42h-43zm221-60h49v44h-49z" stroke="#fff" opacity=".5"/><path d="M309 181h17m-17 12h17m199-52h23m-23 12h23" stroke="#8ed8ff" opacity=".8"/></svg></div>
+  </section>
+
+  <section id="adminOverview" class="adminOverview hidden" aria-label="관리자 통합 업무 대시보드">
+    <div class="adminOverviewHead"><div><h2>업무 현황 대시보드</h2><p>관리자 전용 · 현장별 중복 없이 집계 · 한국시간 기준</p></div><button type="button" id="adminOverviewRefresh" class="ghost">새로고침</button></div>
+    <div class="adminOverviewGroups">
+      <section class="adminOverviewGroup" aria-label="점검 현황"><div class="adminOverviewGroupTitle"><h3>점검</h3><small>계획 시작일 기준</small></div>
+        <div class="adminOverviewCards">
+          <button type="button" class="adminOverviewCard alert" data-admin-go="assignment"><span>점검계획 미등록</span><strong id="adminPlanMissing">—</strong><em>시작일 또는 종료일 미등록</em></button>
+          <button type="button" class="adminOverviewCard alert" data-admin-go="assignment"><span>점검원 미입력</span><strong id="adminInspectorMissing">—</strong><em>점검원 이름 미등록</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>월간 점검 대상</span><strong id="adminMonthPlanned">—</strong><em id="adminMonthPeriod">이번 달 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>주간 점검 대상</span><strong id="adminWeekPlanned">—</strong><em id="adminWeekPeriod">이번 주 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 예정</em></button>
+        </div>
+      </section>
+      <section class="adminOverviewGroup" aria-label="보고서 현황"><div class="adminOverviewGroupTitle"><h3>보고서</h3><small>기존 미작성 집계 기준</small></div>
+        <div class="adminOverviewCards report">
+          <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="all"><span>미작성 전체</span><strong id="adminReportUnwritten">—</strong><em>작성 불필요 현장 제외</em></button>
+          <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="over14"><span>파일접수 14일 이상</span><strong id="adminReportOver14">—</strong><em>미작성 중 접수 14일 이상</em></button>
+        </div>
+      </section>
+    </div>
+    <p id="adminOverviewStatus" class="adminOverviewStatus" role="status" aria-live="polite">현황을 조회하고 있습니다.</p>
   </section>
   <section id="inspectionDashboard" class="inspectionDashboard hidden" aria-label="점검 업무 대시보드">
     <div class="inspectionDashHead"><div><span class="inspectionDashEyebrow">INSPECTION OVERVIEW</span><h2>점검 업무 대시보드</h2><p>점검계획 기준으로 집계합니다. 현장을 선택하면 상세 일정을 확인할 수 있습니다.</p></div><button type="button" id="inspectionDashboardRefresh" class="ghost">새로고침</button></div>
@@ -2264,6 +2312,7 @@ function showApp(){
  $('salesImport')?.classList.toggle('hidden',!isAdmin());
  updateSalesActionVisibility();
  $('inspectionDashboard')?.classList.toggle('hidden',!isInspectionCategory());
+ $('adminOverview')?.classList.toggle('hidden',!isAdmin());
  showPage('home',false);
  $('homeGreeting').textContent=`${me.name||me.user_id||''}님, 환영합니다`;
  $('homeSearchCard').classList.toggle('hidden',!can('can_view_staff_sites'));
@@ -2305,6 +2354,68 @@ async function login(){
     notify($('loginMsg'),error?.message||'로그인에 실패했습니다. ID와 비밀번호를 확인하세요.');
   }
 }
+
+// V367: 관리자 전용 점검·보고서 메인 대시보드 (조회만 수행)
+let adminOverviewSeq=0;
+function adminSeoulDay(date=new Date()){
+ const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
+ const part=k=>Number(parts.find(x=>x.type===k)?.value||0);
+ return `${part('year')}-${String(part('month')).padStart(2,'0')}-${String(part('day')).padStart(2,'0')}`;
+}
+function adminOverviewSet(id,value){const el=$(id);if(el)el.textContent=value===null?'조회 오류':`${Number(value).toLocaleString('ko-KR')}건`}
+function adminOverviewDate(value){if(!value||String(value).trim()==='미점검')return '';const m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:''}
+async function loadAdminOverview(){
+ if(!isAdmin()||activePageName()!=='home')return;
+ const seq=++adminOverviewSeq,account=me?.id,live=()=>seq===adminOverviewSeq&&account===me?.id&&isAdmin()&&activePageName()==='home';
+ const ids=['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned','adminReportUnwritten','adminReportOver14'];
+ ids.forEach(id=>$(id).textContent='…');$('adminOverviewStatus').textContent='점검·보고서 현황을 조회하고 있습니다.';
+ const today=adminSeoulDay(),[year,month,day]=today.split('-').map(Number);
+ // 월요일~일요일, 서울의 달력 날짜를 사용합니다.
+ const utcDay=new Date(Date.UTC(year,month-1,day)),weekday=(utcDay.getUTCDay()+6)%7;
+ const weekStart=new Date(utcDay);weekStart.setUTCDate(utcDay.getUTCDate()-weekday);
+ const weekEnd=new Date(weekStart);weekEnd.setUTCDate(weekStart.getUTCDate()+6);
+ const ymd=d=>d.toISOString().slice(0,10),weekFirst=ymd(weekStart),weekLast=ymd(weekEnd);
+ $('adminMonthPeriod').textContent=`${year}년 ${month}월 · 시작 계획일`;
+ $('adminWeekPeriod').textContent=`${weekFirst} ~ ${weekLast}`;
+ $('adminTodayPeriod').textContent=`${today} · 시작 계획일`;
+ const errors=[];
+ await Promise.allSettled([
+  (async()=>{
+   try{
+    const {data,error}=await sb.rpc('staff_schedule_assignment_rows');if(error)throw error;
+    const rows=Array.isArray(data)?data:Array.isArray(data?.rows)?data.rows:[];
+    if(!Array.isArray(data)&&data?.scope_all===false)throw new Error('관리자 전체 조회 권한이 확인되지 않았습니다.');
+    if(!live())return;
+    // 점검배정과 같은 계약/계획 회차 존재 기준을 적용합니다. '완료', '미점검'은 미등록에서 제외합니다.
+    const qualified=r=>[r.performance_contract,r.performance_plan_count,r.maintenance_contract,r.maintenance_plan_count].some(inspectionHasPlanCount);
+    const eligible=rows.filter(qualified),unique=arr=>new Set(arr.map(r=>String(r.source_id))).size;
+    const active=eligible.filter(r=>r.plan_status!=='미점검');
+    adminOverviewSet('adminPlanMissing',unique(active.filter(r=>r.plan_status!=='완료'&&(!adminOverviewDate(r.plan_start)||!adminOverviewDate(r.plan_end)))));
+    adminOverviewSet('adminInspectorMissing',unique(active.filter(r=>!inspectionNames(r).length)));
+    const starts=active.filter(r=>!!adminOverviewDate(r.plan_start));
+    adminOverviewSet('adminMonthPlanned',unique(starts.filter(r=>adminOverviewDate(r.plan_start).slice(0,7)===today.slice(0,7))));
+    adminOverviewSet('adminWeekPlanned',unique(starts.filter(r=>{const v=adminOverviewDate(r.plan_start);return v>=weekFirst&&v<=weekLast})));
+    adminOverviewSet('adminTodayPlanned',unique(starts.filter(r=>adminOverviewDate(r.plan_start)===today)));
+   }catch(e){if(live()){errors.push('점검: '+(e?.message||e));['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned'].forEach(id=>adminOverviewSet(id,null))}}
+  })(),
+  (async()=>{
+   try{
+    const [rows,exemptions]=await Promise.all([
+     fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}).order('source_id',{ascending:true})),
+     fetchPaged('staff_report_exemptions','source_id',q=>q.order('source_id',{ascending:true}))
+    ]);
+    if(!live())return;
+    const exempt=new Set(exemptions.map(r=>String(r.source_id)));
+    const byId=new Map(rows.filter(r=>!exempt.has(String(r.source_id))).map(r=>[String(r.source_id),r]));
+    const pending=[...byId.values()];
+    adminOverviewSet('adminReportUnwritten',pending.length);
+    adminOverviewSet('adminReportOver14',pending.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length);
+   }catch(e){if(live()){errors.push('보고서: '+(e?.message||e));['adminReportUnwritten','adminReportOver14'].forEach(id=>adminOverviewSet(id,null))}}
+  })()
+ ]);
+ if(live())$('adminOverviewStatus').textContent=errors.length?`일부 집계 실패 · ${errors.join(' / ')}`:`최종 조회 ${new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})} · 각 카드를 누르면 해당 업무 화면으로 이동합니다.`;
+}
+
 function showPage(name,save=true){
  if(BOARD_KINDS[name]&&!boardCan(name,'view'))return alert('조회 권한이 없습니다.');
  if(name==='inspection-list'&&!isInspectionCategory())return alert('점검 대시보드는 점검 구분 사용자만 조회할 수 있습니다.');
@@ -2318,6 +2429,7 @@ function showPage(name,save=true){
  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#mainNav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('page-'+name).classList.add('active');$('appView').classList.toggle('homeMode',name==='home');if(save&&name!=='home')rememberPage(name);
  if(name==='schedule')openSchedulePage();
  if(name==='assignment'){loadAssignmentDashboard();}
+ if(name==='home'&&isAdmin())loadAdminOverview();
  if(name==='home'&&isInspectionCategory())loadInspectionDashboard();
  if(name==='home'&&isMonthlyInspectionCategory())monthlyInspection.loadDashboard();
  if(name==='inspection-list')renderInspectionList();
@@ -5400,6 +5512,7 @@ $('salesDashOwnerDetails').addEventListener('toggle',event=>{
  renderSalesDashboardOwnerList();
 });
 $('userPermissionRecoveryDownload').onclick=downloadUserPermissionRecovery;$('userPermissionRetry').onclick=retryUserPermissions;
+$('adminOverviewRefresh').onclick=()=>loadAdminOverview();document.querySelectorAll('#adminOverview [data-admin-go]').forEach(b=>b.onclick=()=>{if(!isAdmin())return;const target=b.dataset.adminGo;if(target==='unwritten'){setUnwrittenListFilter(b.dataset.adminReport==='over14'?'over14':'all','all')}showPage(target,true)});
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{await flushUiPreferencesSave().catch(()=>{});invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));document.querySelectorAll('.homeMenuCard[data-home-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.homePage,true));$('assignmentRefresh').onclick=()=>loadAssignmentDashboard();$('assignmentSaveChangesBtn').onclick=saveAssignmentDrafts;$('assignmentFieldsBtn').onclick=openAssignmentFields;document.querySelectorAll('#assignmentFieldsDlg [data-assignment-fields-close]').forEach(b=>b.onclick=()=>$('assignmentFieldsDlg').close());document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.onclick=()=>setAssignmentDisplayTab(b.dataset.assignmentTab));$('assignmentFieldsDlg').querySelector('[data-assignment-fields-all]').onclick=()=>setAssignmentFieldChecks('all');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-default]').onclick=()=>setAssignmentFieldChecks('default');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-none]').onclick=()=>setAssignmentFieldChecks('none');$('assignmentFieldsSave').onclick=saveAssignmentFieldSelection;$('searchBtn').onclick=()=>searchSites(true,true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();searchSites(true,true)}};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');document.querySelectorAll('#fieldsDlg [data-display-tab]').forEach(b=>b.onclick=()=>activateDisplayFieldTab(b.dataset.displayTab));document.querySelectorAll('#fieldsDlg [data-equipment-select]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentSelect}\"]`).forEach(x=>x.checked=true);updateFieldSelectionCount()});document.querySelectorAll('#fieldsDlg [data-equipment-clear]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentClear}\"]`).forEach(x=>x.checked=false);updateFieldSelectionCount()});$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersCurrentGroup').onclick=()=>setUserManagementGroup('current');$('usersRetiredGroup').onclick=()=>setUserManagementGroup('retired');$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
  $('inspectionDashboardRefresh').onclick=()=>loadInspectionDashboard(true);$('inspectionListTable').onclick=e=>{const b=e.target.closest('[data-inspection-sort-click]');if(!b||document.body.classList.contains('columnResizing'))return;const key=b.dataset.inspectionSortClick;inspectionListSort=inspectionListSort.key===key?{key,dir:inspectionListSort.dir==='asc'?'desc':'asc'}:{key,dir:'asc'};renderInspectionList()};bindInspectionListColumnMove($('inspectionListTable'));$('inspectionListFieldsBtn').onclick=setupFields;$('inspectionListSaveChanges').onclick=saveInspectionListDrafts;
