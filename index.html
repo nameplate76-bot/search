@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V365</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V368</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -622,7 +622,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 <main>
 <div id="uiPreferencesStatus" class="statusBanner warn hidden" role="status" aria-live="polite"></div>
 <style id="admin-overview-v367">
-/* V367 관리자 통합 홈 대시보드 - 기존 업무 화면 영향 없음 */
+/* V368 관리자 통합 홈 대시보드 및 조회 상태 개선 */
 .adminOverview{max-width:1500px;margin:0 auto 26px;padding:0 54px;color:#193859}
 .adminOverviewHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px}
 .adminOverviewHead h2{margin:0 0 4px;font-size:22px;color:#193859}
@@ -643,6 +643,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 .adminOverviewCard em{font-size:11px;font-style:normal;color:#7185a0;line-height:1.45;word-break:keep-all}
 .adminOverviewCard.alert{background:#fff8f4;border-color:#f3ded2}.adminOverviewCard.alert strong{color:#bc5b2c}
 .adminOverviewStatus{margin-top:11px;min-height:20px}
+.adminOverviewLoading{margin:0 0 15px;padding:20px 18px}.adminOverviewLoading .searchLoadingHead{margin-bottom:12px}.adminOverviewLoading .searchLoadingHead h3{font-size:20px}.adminOverviewLoading .searchLoadingHead p{font-size:13px}.adminOverviewLoading .searchLoadingSpinner{width:40px;height:40px;flex-basis:40px;border-width:4px}.adminOverviewLoadingFoot{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.adminOverviewLoadingFoot i{height:32px;border-radius:8px;background:#e4e9f1;position:relative;overflow:hidden}.adminOverviewLoadingFoot i:after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);animation:searchLoadingShimmer 1.8s ease-in-out infinite}@media(max-width:700px){.adminOverviewLoading{padding:15px 12px}.adminOverviewLoading .searchLoadingHead{flex-wrap:wrap}.adminOverviewLoadingFoot{grid-template-columns:repeat(3,1fr)}}@media(prefers-reduced-motion:reduce){.adminOverviewLoadingFoot i:after{animation:none}}
 @media(max-width:1100px){.adminOverview{padding:0 28px}.adminOverviewGroups{grid-template-columns:1fr}.adminOverviewCards.report{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.adminOverview{padding:0 14px}.adminOverviewHead{align-items:flex-start}.adminOverviewHead h2{font-size:19px}.adminOverviewCards{grid-template-columns:repeat(2,minmax(0,1fr))}.adminOverviewGroup{padding:12px}.adminOverviewCard{padding:12px 10px}.adminOverviewCard strong{font-size:25px}}
 @media(max-width:360px){.adminOverviewCards,.adminOverviewCards.report{grid-template-columns:1fr}}
@@ -655,6 +656,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 
   <section id="adminOverview" class="adminOverview hidden" aria-label="관리자 통합 업무 대시보드">
     <div class="adminOverviewHead"><div><h2>업무 현황 대시보드</h2><p>관리자 전용 · 현장별 중복 없이 집계 · 한국시간 기준</p></div><button type="button" id="adminOverviewRefresh" class="ghost">새로고침</button></div>
+    <div id="adminOverviewLoading" class="searchLoading adminOverviewLoading hidden" role="status" aria-live="polite" aria-label="관리자 대시보드 집계 진행 상태"><div class="searchLoadingTrack" aria-hidden="true"><i></i></div><div class="searchLoadingHead"><span class="searchLoadingSpinner" aria-hidden="true"></span><div><h3>자료를 불러오고 있습니다</h3><p id="adminOverviewLoadingHint">점검 및 보고서 건수를 집계하고 있습니다.</p></div><small id="adminOverviewLoadingElapsed">경과 0초</small></div><div class="adminOverviewLoadingFoot" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div>
     <div class="adminOverviewGroups">
       <section class="adminOverviewGroup" aria-label="점검 현황"><div class="adminOverviewGroupTitle"><h3>점검</h3><small>계획 시작일 기준</small></div>
         <div class="adminOverviewCards">
@@ -2356,7 +2358,17 @@ async function login(){
 }
 
 // V367: 관리자 전용 점검·보고서 메인 대시보드 (조회만 수행)
-let adminOverviewSeq=0;
+let adminOverviewSeq=0,adminOverviewLoadingTimer=null,adminOverviewLoadingClock=null;
+function adminOverviewStopLoading(){
+ clearTimeout(adminOverviewLoadingTimer);clearInterval(adminOverviewLoadingClock);adminOverviewLoadingTimer=null;adminOverviewLoadingClock=null;
+ $('adminOverviewLoading')?.classList.add('hidden');
+}
+function adminOverviewStartLoading(seq){
+ adminOverviewStopLoading();const started=Date.now();
+ const show=()=>{if(seq!==adminOverviewSeq||!isAdmin()||activePageName()!=='home')return;const el=$('adminOverviewLoading');if(!el)return;el.classList.remove('hidden');const tick=()=>{if(seq!==adminOverviewSeq){adminOverviewStopLoading();return}const sec=Math.floor((Date.now()-started)/1000);$('adminOverviewLoadingElapsed').textContent=`경과 ${sec}초`;if(sec>=8)$('adminOverviewLoadingHint').textContent='자료가 많아 집계에 시간이 걸리고 있습니다. 조회가 끝나면 자동으로 표시됩니다.'};tick();adminOverviewLoadingClock=setInterval(tick,1000)};
+ // 짧은 조회에서는 깜빡임을 방지하고, 긴 조회에서만 동일한 로딩 애니메이션 표시
+ adminOverviewLoadingTimer=setTimeout(show,350);
+}
 function adminSeoulDay(date=new Date()){
  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
  const part=k=>Number(parts.find(x=>x.type===k)?.value||0);
@@ -2369,6 +2381,7 @@ async function loadAdminOverview(){
  const seq=++adminOverviewSeq,account=me?.id,live=()=>seq===adminOverviewSeq&&account===me?.id&&isAdmin()&&activePageName()==='home';
  const ids=['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned','adminReportUnwritten','adminReportOver14'];
  ids.forEach(id=>$(id).textContent='…');$('adminOverviewStatus').textContent='점검·보고서 현황을 조회하고 있습니다.';
+ adminOverviewStartLoading(seq);
  const today=adminSeoulDay(),[year,month,day]=today.split('-').map(Number);
  // 월요일~일요일, 서울의 달력 날짜를 사용합니다.
  const utcDay=new Date(Date.UTC(year,month-1,day)),weekday=(utcDay.getUTCDay()+6)%7;
@@ -2413,6 +2426,7 @@ async function loadAdminOverview(){
    }catch(e){if(live()){errors.push('보고서: '+(e?.message||e));['adminReportUnwritten','adminReportOver14'].forEach(id=>adminOverviewSet(id,null))}}
   })()
  ]);
+ if(seq===adminOverviewSeq)adminOverviewStopLoading();
  if(live())$('adminOverviewStatus').textContent=errors.length?`일부 집계 실패 · ${errors.join(' / ')}`:`최종 조회 ${new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})} · 각 카드를 누르면 해당 업무 화면으로 이동합니다.`;
 }
 
@@ -2426,6 +2440,7 @@ function showPage(name,save=true){
  if(name==='unwritten'&&!canViewUnwritten())return alert('보고서 미작성 조회 권한이 없습니다.');
  if(name==='sales'&&!canViewSales())return alert('매출 조회 권한이 없습니다.');
  if(name==='users'&&!canManageUsers())return alert('사용자 관리 권한이 없습니다.');
+ if(name!=='home')adminOverviewStopLoading();
  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#mainNav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('page-'+name).classList.add('active');$('appView').classList.toggle('homeMode',name==='home');if(save&&name!=='home')rememberPage(name);
  if(name==='schedule')openSchedulePage();
  if(name==='assignment'){loadAssignmentDashboard();}
