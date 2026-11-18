@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261118-v374';
+  const BUILD='20261118-v375';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V374</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V375</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -648,7 +648,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 @media(max-width:700px){.adminOverview{padding:0 14px}.adminOverviewHead{align-items:flex-start}.adminOverviewHead h2{font-size:19px}.adminOverviewCards{grid-template-columns:repeat(2,minmax(0,1fr))}.adminOverviewGroup{padding:12px}.adminOverviewCard{padding:12px 10px}.adminOverviewCard strong{font-size:25px}}
 @media(max-width:360px){.adminOverviewCards,.adminOverviewCards.report{grid-template-columns:1fr}}
 
-/* V374 관리자 집계와 동일 자료로 열리는 상세 달력/미입력 목록 */
+/* V375 관리자 집계와 동일 자료로 열리는 상세 달력/미입력 목록 */
 .adminDrillDialog{border:0;border-radius:16px;padding:0;width:min(1220px,96vw);max-width:96vw;max-height:92vh;background:#fff;color:#183354;box-shadow:0 18px 65px #0f264b55}
 .adminDrillDialog::backdrop{background:rgba(9,25,51,.65)}
 .adminDrillHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f0f5fd;padding:17px 20px;border-bottom:1px solid #d5e2f2}
@@ -1119,7 +1119,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V374';
+root.STAFF_SCHEDULE_VERSION='V375';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1352,7 +1352,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261118-v374"></script><script id="bundled-app-js" data-build="V374">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261118-v375"></script><script id="bundled-app-js" data-build="V375">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2416,7 +2416,7 @@ function adminOverviewDrillRows(kind,today){
  return adminOverviewUniqueRows(starts.filter(r=>adminOverviewDate(r.plan_start)===today));
 }
 function adminDrillEscape(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-// V374: 메인 대시보드 상세조회는 별도 읽기 전용 달력이 아니라
+// V375: 메인 대시보드 상세조회는 별도 읽기 전용 달력이 아니라
 // 기존 점검배정의 동일한 수정 가능한 표에서 해당 조건으로 열어 줍니다.
 function openAdminOverviewDetail(kind){
  if(!isAdmin()||activePageName()!=='home')return;
@@ -3019,7 +3019,7 @@ function refreshAssignmentColumnDefinitions(){
 }
 let assignmentActiveTab='basic';
 function assignmentColumnTab(key){if(key.startsWith('field_')){const c=Number(key.slice(6));if(c>=55&&c<=81)return'maintenance';if(c>=83&&c<=109)return'performance'}return'basic'}
-function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));if(col===49)return canViewMoney()?siteMoneyDisplay(row.safe_values?.[48]??'',49):'';return row.safe_values?.[col-1]??''}
+function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));if(col===49)return canViewMoney()?siteMoneyDisplay(row.safe_values?.[48]??'',49):'';if(col===53)return row.classification_number??row.safe_values?.[52]??'';if(col===44)return row.safe_values?.[43]??row.contract_start??'';if(col===45)return row.safe_values?.[44]??row.contract_end??'';return row.safe_values?.[col-1]??''}
 const assignmentDefaultVisibleColumns=['site_name','sn','inspectors','plan_start','plan_end'];
 let assignmentVisibleColumns=[...assignmentDefaultVisibleColumns];
 const assignmentDrafts=new Map();
@@ -3181,6 +3181,38 @@ function printAssignmentResults(){
  if(includesDrafts)details.push('미저장 입력값 포함');
  openListPrintFrame(buildPortalListPrintHtml({title,details,columns,rows}),title);
 }
+// V375: 기간별 현장 목록은 점검배정 RPC의 일정 정보와 현장검색 DB의 전체 표시 필드를 source_id로 연결합니다.
+// 조회 전용이며, 접근권한은 각 DB 뷰의 RLS/GRANT 정책을 그대로 따릅니다.
+async function enrichAssignmentPeriodSiteFields(rows){
+ if(!Array.isArray(rows)||!rows.length)return;
+ const ids=[...new Set(rows.map(r=>Number(r.source_id)).filter(id=>Number.isSafeInteger(id)&&id>0))];
+ const found=new Map();
+ // URL 길이 및 PostgREST in 필터 크기 제한을 피하기 위해 작게 분할합니다.
+ for(let offset=0;offset<ids.length;offset+=100){
+  const chunk=ids.slice(offset,offset+100);
+  const {data,error}=await sb.from('staff_site_search_list').select('*').in('source_id',chunk);
+  if(error)throw new Error('기간별 현장정보 조회 실패: '+error.message);
+  for(const record of data||[])found.set(Number(record.source_id),record);
+ }
+ for(const row of rows){
+  const site=found.get(Number(row.source_id));
+  if(!site)continue;
+  const original=Array.isArray(row.safe_values)?row.safe_values:[];
+  const fetched=Array.isArray(site.safe_values)?site.safe_values:[];
+  const safe=Array.from({length:Math.max(original.length,fetched.length,137)},(_,i)=>fetched[i]??original[i]??null);
+  // 구형 검색 뷰에서도 실제 계약 일자와 분류번호를 확인할 수 있도록 명시 필드를 보완합니다.
+  const fallbacks={43:site.contract_start,44:site.contract_end,52:site.classification_number};
+  for(const [index,value] of Object.entries(fallbacks))if((safe[index]===null||safe[index]==='')&&value!==undefined&&value!==null)safe[index]=value;
+  // V361 금액 권한 RPC로 조회된 계약금액만 유지. 조회 권한이 없으면 어떤 뷰 결과도 금액으로 사용하지 않습니다.
+  safe[48]=canViewMoney()?(original[48]??null):null;
+  row.safe_values=safe;
+  row.classification_number=site.classification_number??safe[52]??row.classification_number;
+  row.contract_start=site.contract_start??safe[43]??row.contract_start;
+  row.contract_end=site.contract_end??safe[44]??row.contract_end;
+ }
+ const missing=ids.filter(id=>!found.has(id));
+ if(missing.length)throw new Error(`기간별 현장 상세정보 ${missing.length}건을 DB에서 찾지 못했습니다. 현장검색 DB의 접근권한 또는 source_id를 확인하세요.`);
+}
 async function loadAssignmentDashboard(){
  if(!canViewAssignment()||activePageName()!=='assignment')return;
  const request=++assignmentRequest,requestAccount=me?.id;
@@ -3215,6 +3247,14 @@ async function loadAssignmentDashboard(){
   });
   const missing=mode==='inspector'?eligible.filter(r=>!hasInspector(r)):
    mode?periodRows:sourceRows.filter(r=>hasAnyCount(r)&&(((!r.plan_start||!r.plan_end)&&!isHistoryComplete(r))||(serverAll&&!hasInspector(r))));
+  // 월간·주간·오늘 목록은 현장검색 DB의 전체 안전 표시 필드를 병합한 뒤 그립니다.
+  // 선택한 표시 항목을 재조회할 때도 동일한 데이터를 사용합니다.
+  if(['month','week','today'].includes(mode)){
+   $('assignmentMessage').textContent=`${mode==='month'?'월간':mode==='week'?'주간':'오늘'} 점검 대상의 현장정보를 DB에서 불러오고 있습니다…`;
+   await enrichAssignmentPeriodSiteFields(missing);
+   if(request!==assignmentRequest||requestAccount!==me?.id||activePageName()!=='assignment'||!canViewAssignment())return;
+  }
+
   const periodLabel=mode==='month'?`${today.slice(0,7)}-01 ~ ${new Date(Date.UTC(Number(today.slice(0,4)),Number(today.slice(5,7)),0)).toISOString().slice(0,10)}`:
    mode==='week'?`${weekFirst} ~ ${weekLast}`:today;
   const modeTitle=mode==='inspector'?'점검원 미입력':mode==='month'?'월간 점검 대상':mode==='week'?'주간 점검 대상':mode==='today'?'오늘 점검 대상':'';
