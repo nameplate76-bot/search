@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261118-v376';
+  const BUILD='20261119-v377';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V376</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V377</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -689,9 +689,10 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
           <button type="button" class="adminOverviewCard" data-admin-detail="today"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 또는 종료 예정</em></button>
         </div>
       </section>
-      <section class="adminOverviewGroup" aria-label="보고서 현황"><div class="adminOverviewGroupTitle"><h3>보고서</h3><small>기존 미작성 집계 기준</small></div>
+      <section class="adminOverviewGroup" aria-label="보고서 현황"><div class="adminOverviewGroupTitle"><h3>보고서</h3><small>문서작성 담당자 배정·완료일 기준</small></div>
         <div class="adminOverviewCards report">
-          <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="all"><span>미작성 전체</span><strong id="adminReportUnwritten">—</strong><em>작성 불필요 현장 제외</em></button>
+          <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="unassigned"><span>미배정</span><strong id="adminReportUnassigned">—</strong><em>문서작성 담당자 미지정</em></button>
+          <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="assigned"><span>미작성</span><strong id="adminReportAssigned">—</strong><em>담당자 지정 · 작성 미완료</em></button>
           <button type="button" class="adminOverviewCard alert" data-admin-go="unwritten" data-admin-report="over14"><span>파일접수 14일 이상</span><strong id="adminReportOver14">—</strong><em>미작성 중 접수 14일 이상</em></button>
         </div>
       </section>
@@ -1119,7 +1120,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V376';
+root.STAFF_SCHEDULE_VERSION='V377';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1352,7 +1353,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261118-v376"></script><script id="bundled-app-js" data-build="V376">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261118-v377"></script><script id="bundled-app-js" data-build="V377">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2428,7 +2429,7 @@ function openAdminOverviewDetail(kind){
 async function loadAdminOverview(){
  if(!isAdmin()||activePageName()!=='home')return;
  const seq=++adminOverviewSeq,account=me?.id,live=()=>seq===adminOverviewSeq&&account===me?.id&&isAdmin()&&activePageName()==='home';
- const ids=['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned','adminReportUnwritten','adminReportOver14'];
+ const ids=['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned','adminReportUnassigned','adminReportAssigned','adminReportOver14'];
  ids.forEach(id=>$(id).textContent='…');$('adminOverviewStatus').textContent='점검·보고서 현황을 조회하고 있습니다.';
  adminOverviewInspectionRows=null;adminOverviewInspectionAccount=null;
  adminOverviewStartLoading(seq);
@@ -2464,17 +2465,18 @@ async function loadAdminOverview(){
   })(),
   (async()=>{
    try{
-    const [rows,exemptions]=await Promise.all([
-     fetchPaged('staff_unwritten_fast','*',q=>q.order('excel_row',{ascending:true}).order('source_id',{ascending:true})),
-     fetchPaged('staff_report_exemptions','source_id',q=>q.order('source_id',{ascending:true}))
-    ]);
+    // 보고서 미작성 화면과 동일한 데이터 취득/제외/점검 불필요 보완 규칙을 사용합니다.
+    // 캐시가 유효하면 재사용하여 대시보드와 실제 상세 목록 건수를 일치시킵니다.
+    const loaded=await loadUnwrittenDashboard(false);
+    if(!loaded)throw new Error('보고서 현황을 조회하지 못했습니다.');
     if(!live())return;
-    const exempt=new Set(exemptions.map(r=>String(r.source_id)));
-    const byId=new Map(rows.filter(r=>!exempt.has(String(r.source_id))).map(r=>[String(r.source_id),r]));
-    const pending=[...byId.values()];
-    adminOverviewSet('adminReportUnwritten',pending.length);
+    const pending=unwrittenRows;
+    const unassigned=pending.filter(r=>reportOwnerName(r)==='미배정');
+    const assigned=pending.filter(r=>reportOwnerName(r)!=='미배정');
+    adminOverviewSet('adminReportUnassigned',unassigned.length);
+    adminOverviewSet('adminReportAssigned',assigned.length);
     adminOverviewSet('adminReportOver14',pending.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length);
-   }catch(e){if(live()){errors.push('보고서: '+(e?.message||e));['adminReportUnwritten','adminReportOver14'].forEach(id=>adminOverviewSet(id,null))}}
+   }catch(e){if(live()){errors.push('보고서: '+(e?.message||e));['adminReportUnassigned','adminReportAssigned','adminReportOver14'].forEach(id=>adminOverviewSet(id,null))}}
   })()
  ]);
  if(seq===adminOverviewSeq)adminOverviewStopLoading();
@@ -4105,6 +4107,8 @@ function renderUnwrittenDashboardSummary(){
  const over14=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=14).length,over30=unwrittenRows.filter(r=>(elapsedFromReceipt(r)??-1)>=30).length;
  const cards=[
   ['all','전체 미작성',unwrittenRows.length,''],
+  ['unassigned','미배정',unwrittenRows.filter(r=>reportOwnerName(r)==='미배정').length,'warn'],
+  ['assigned','미작성 (담당자 지정)',unwrittenRows.filter(r=>reportOwnerName(r)!=='미배정').length,''],
   ['exempt','보고서 작성 불필요',unwrittenExemptions.length,'exemptKpi'],
   ['over14','파일접수 14일 이상',over14,'warn'],
   ['over30','파일접수 30일 이상',over30,'danger']
@@ -4132,7 +4136,7 @@ async function loadUnwrittenDashboard(force=false){
    fetchPaged('staff_report_exemptions','source_id,reason,created_by_name,created_at',q=>q.order('created_at',{ascending:false}).order('source_id',{ascending:true})),
    // 점검 불필요라 하더라도 황화일 접수일자가 있다면 보고서 작성이 필요할 수 있습니다.
    // 기존 조회 뷰를 바꾸지 않고 접근 권한이 적용된 현장 조회 뷰로 누락 후보만 보완합니다.
-   fetchPaged('staff_site_search_list','*',q=>q.in('field_end',['미점검','점검 불필요']).order('excel_row',{ascending:true})).catch(error=>{console.warn('점검 불필요 미작성 보완 조회 실패',error);return []})
+   fetchPaged('staff_site_search_list','*',q=>q.order('excel_row',{ascending:true})).catch(error=>{console.warn('점검 불필요 미작성 보완 조회 실패',error);return []})
   ]);
   if(!current())return;
   unwrittenExemptions=exemptions;
@@ -4146,11 +4150,14 @@ async function loadUnwrittenDashboard(force=false){
    const scheduleIsNoInspection=(!site.schedule_plan_start&&!site.schedule_plan_end)||[site.schedule_plan_start,site.schedule_plan_end].every(isNoInspectionValue);
    const huangReceipt=raw(26); // 황화일 접수일자
    const completed=String(site.report_complete_date||raw(32)||'').trim();
-   if(!allNoInspection||!huangReceipt||!parseLocalDate(huangReceipt,26)||completed||!scheduleIsNoInspection)continue;
+   const owner=String(site.document_owner||raw(19)||'').trim();
+   const receivedNoInspection=allNoInspection&&!!huangReceipt&&!!parseLocalDate(huangReceipt,26)&&scheduleIsNoInspection;
+   const assignedIncomplete=!!owner&&!completed;
+   if(completed||(!receivedNoInspection&&!assignedIncomplete))continue;
    const id=Number(site.source_id);if(!id||byId.has(id))continue;
    // 기존 보고서 목록의 표시·담당자 집계·상세조회 형식을 재사용합니다.
-   const safe=[...vals];if(!String(safe[26]??'').trim())safe[26]=huangReceipt;
-   byId.set(id,{...site,source_id:id,safe_values:safe,document_owner:site.document_owner||raw(19),receipt_date:huangReceipt,field_end:'점검 불필요',_noInspectionReceipt:true});
+   const safe=[...vals];if(receivedNoInspection&&!String(safe[26]??'').trim())safe[26]=huangReceipt;
+   byId.set(id,{...site,source_id:id,safe_values:safe,document_owner:owner,receipt_date:site.receipt_date||huangReceipt,field_end:receivedNoInspection?'점검 불필요':(site.field_end||raw(30)||''),_noInspectionReceipt:receivedNoInspection,_assignedIncomplete:assignedIncomplete});
   }
   unwrittenSourceRows=[...byId.values()].sort((a,b)=>(Number(a.excel_row)||0)-(Number(b.excel_row)||0));
   unwrittenRows=unwrittenSourceRows.filter(r=>!exemptIds.has(Number(r.source_id)));
@@ -4479,12 +4486,14 @@ function filteredUnwrittenRows(){
  if(unwrittenListMode==='exempt')return [];
  const minDays=unwrittenListMode==='over14'?14:unwrittenListMode==='over30'?30:0;
  return unwrittenRows.filter(row=>
-  (unwrittenOwnerFilter==='all'||reportOwnerName(row)===unwrittenOwnerFilter)&&
+     (unwrittenOwnerFilter==='all'||reportOwnerName(row)===unwrittenOwnerFilter)&&
+   (unwrittenListMode!=='assigned'||reportOwnerName(row)!=='미배정')&&
+   (unwrittenListMode!=='unassigned'||reportOwnerName(row)==='미배정')&&
   (!minDays||(elapsedFromReceipt(row)??-1)>=minDays)
  );
 }
 function unwrittenResultTitle(){
- const title=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':'미작성 현장';
+ const title=unwrittenListMode==='over14'?'파일접수 14일 이상 현장':unwrittenListMode==='over30'?'파일접수 30일 이상 현장':unwrittenListMode==='unassigned'?'문서작성 담당자 미배정 현장':unwrittenListMode==='assigned'?'담당자 지정 · 보고서 미작성 현장':'미작성 현장';
  return unwrittenOwnerFilter==='all'?`${title} 전체`:`${unwrittenOwnerFilter} · ${title}`;
 }
 function listPrintCheckboxHtml(row){
@@ -5671,7 +5680,7 @@ $('salesDashOwnerDetails').addEventListener('toggle',event=>{
  renderSalesDashboardOwnerList();
 });
 $('userPermissionRecoveryDownload').onclick=downloadUserPermissionRecovery;$('userPermissionRetry').onclick=retryUserPermissions;
-$('adminOverviewRefresh').onclick=()=>loadAdminOverview();document.querySelectorAll('#adminOverview [data-admin-go]').forEach(b=>b.onclick=()=>{if(!isAdmin())return;const target=b.dataset.adminGo;if(target==='unwritten'){setUnwrittenListFilter(b.dataset.adminReport==='over14'?'over14':'all','all')}showPage(target,true)});document.querySelectorAll('#adminOverview [data-admin-detail]').forEach(b=>b.onclick=()=>openAdminOverviewDetail(b.dataset.adminDetail));
+$('adminOverviewRefresh').onclick=()=>loadAdminOverview();document.querySelectorAll('#adminOverview [data-admin-go]').forEach(b=>b.onclick=()=>{if(!isAdmin())return;const target=b.dataset.adminGo;if(target==='unwritten'){const mode=b.dataset.adminReport;setUnwrittenListFilter(mode==='over14'?'over14':mode==='assigned'?'assigned':'all',mode==='unassigned'?'미배정':'all')}showPage(target,true)});document.querySelectorAll('#adminOverview [data-admin-detail]').forEach(b=>b.onclick=()=>openAdminOverviewDetail(b.dataset.adminDetail));
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{await flushUiPreferencesSave().catch(()=>{});invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));document.querySelectorAll('.homeMenuCard[data-home-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.homePage,true));$('assignmentRefresh').onclick=()=>loadAssignmentDashboard();$('assignmentSaveChangesBtn').onclick=saveAssignmentDrafts;$('assignmentFieldsBtn').onclick=openAssignmentFields;document.querySelectorAll('#assignmentFieldsDlg [data-assignment-fields-close]').forEach(b=>b.onclick=()=>$('assignmentFieldsDlg').close());document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.onclick=()=>setAssignmentDisplayTab(b.dataset.assignmentTab));$('assignmentFieldsDlg').querySelector('[data-assignment-fields-all]').onclick=()=>setAssignmentFieldChecks('all');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-default]').onclick=()=>setAssignmentFieldChecks('default');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-none]').onclick=()=>setAssignmentFieldChecks('none');$('assignmentFieldsSave').onclick=saveAssignmentFieldSelection;$('searchBtn').onclick=()=>searchSites(true,true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();searchSites(true,true)}};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');document.querySelectorAll('#fieldsDlg [data-display-tab]').forEach(b=>b.onclick=()=>activateDisplayFieldTab(b.dataset.displayTab));document.querySelectorAll('#fieldsDlg [data-equipment-select]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentSelect}\"]`).forEach(x=>x.checked=true);updateFieldSelectionCount()});document.querySelectorAll('#fieldsDlg [data-equipment-clear]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentClear}\"]`).forEach(x=>x.checked=false);updateFieldSelectionCount()});$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersCurrentGroup').onclick=()=>setUserManagementGroup('current');$('usersRetiredGroup').onclick=()=>setUserManagementGroup('retired');$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
  $('inspectionDashboardRefresh').onclick=()=>loadInspectionDashboard(true);$('inspectionListTable').onclick=e=>{const b=e.target.closest('[data-inspection-sort-click]');if(!b||document.body.classList.contains('columnResizing'))return;const key=b.dataset.inspectionSortClick;inspectionListSort=inspectionListSort.key===key?{key,dir:inspectionListSort.dir==='asc'?'desc':'asc'}:{key,dir:'asc'};renderInspectionList()};bindInspectionListColumnMove($('inspectionListTable'));$('inspectionListFieldsBtn').onclick=setupFields;$('inspectionListSaveChanges').onclick=saveInspectionListDrafts;
