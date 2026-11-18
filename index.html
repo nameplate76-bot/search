@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261118-v375';
+  const BUILD='20261118-v376';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V375</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V376</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -686,7 +686,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
           <button type="button" class="adminOverviewCard alert" data-admin-detail="inspector"><span>점검원 미입력</span><strong id="adminInspectorMissing">—</strong><em>점검원 이름 미등록</em></button>
           <button type="button" class="adminOverviewCard" data-admin-detail="month"><span>월간 점검 대상</span><strong id="adminMonthPlanned">—</strong><em id="adminMonthPeriod">이번 달 시작 예정</em></button>
           <button type="button" class="adminOverviewCard" data-admin-detail="week"><span>주간 점검 대상</span><strong id="adminWeekPlanned">—</strong><em id="adminWeekPeriod">이번 주 시작 예정</em></button>
-          <button type="button" class="adminOverviewCard" data-admin-detail="today"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-detail="today"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 또는 종료 예정</em></button>
         </div>
       </section>
       <section class="adminOverviewGroup" aria-label="보고서 현황"><div class="adminOverviewGroupTitle"><h3>보고서</h3><small>기존 미작성 집계 기준</small></div>
@@ -1119,7 +1119,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V375';
+root.STAFF_SCHEDULE_VERSION='V376';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1352,7 +1352,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261118-v375"></script><script id="bundled-app-js" data-build="V375">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261118-v376"></script><script id="bundled-app-js" data-build="V376">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2413,7 +2413,7 @@ function adminOverviewDrillRows(kind,today){
  const starts=rows.filter(r=>adminOverviewDate(r.plan_start));
  if(kind==='month')return adminOverviewUniqueRows(starts.filter(r=>adminOverviewDate(r.plan_start).slice(0,7)===today.slice(0,7)));
  if(kind==='week')return adminOverviewUniqueRows(starts.filter(r=>{const d=adminOverviewDate(r.plan_start);return d>=first&&d<=last}));
- return adminOverviewUniqueRows(starts.filter(r=>adminOverviewDate(r.plan_start)===today));
+ return adminOverviewUniqueRows(rows.filter(r=>adminOverviewDate(r.plan_start)===today||adminOverviewDate(r.plan_end)===today));
 }
 function adminDrillEscape(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 // V375: 메인 대시보드 상세조회는 별도 읽기 전용 달력이 아니라
@@ -2440,7 +2440,7 @@ async function loadAdminOverview(){
  const ymd=d=>d.toISOString().slice(0,10),weekFirst=ymd(weekStart),weekLast=ymd(weekEnd);
  $('adminMonthPeriod').textContent=`${year}년 ${month}월 · 시작 계획일`;
  $('adminWeekPeriod').textContent=`${weekFirst} ~ ${weekLast}`;
- $('adminTodayPeriod').textContent=`${today} · 시작 계획일`;
+ $('adminTodayPeriod').textContent=`${today} · 시작 또는 종료 계획일`;
  const errors=[];
  await Promise.allSettled([
   (async()=>{
@@ -2459,7 +2459,7 @@ async function loadAdminOverview(){
     const starts=active.filter(r=>!!adminOverviewDate(r.plan_start));
     adminOverviewSet('adminMonthPlanned',unique(starts.filter(r=>adminOverviewDate(r.plan_start).slice(0,7)===today.slice(0,7))));
     adminOverviewSet('adminWeekPlanned',unique(starts.filter(r=>{const v=adminOverviewDate(r.plan_start);return v>=weekFirst&&v<=weekLast})));
-    adminOverviewSet('adminTodayPlanned',unique(starts.filter(r=>adminOverviewDate(r.plan_start)===today)));
+    adminOverviewSet('adminTodayPlanned',unique(active.filter(r=>adminOverviewDate(r.plan_start)===today||adminOverviewDate(r.plan_end)===today)));
    }catch(e){if(live()){errors.push('점검: '+(e?.message||e));['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned'].forEach(id=>adminOverviewSet(id,null))}}
   })(),
   (async()=>{
@@ -3239,10 +3239,10 @@ async function loadAssignmentDashboard(){
   const eligible=sourceRows.filter(r=>hasAnyCount(r)&&!isNoInspectionValue(r.plan_status));
   const periodRows=eligible.filter(r=>{
    const planned=adminOverviewDate(r.plan_start);
+   if(mode==='today')return planned===today||adminOverviewDate(r.plan_end)===today;
    if(!planned)return false;
    if(mode==='month')return planned.slice(0,7)===today.slice(0,7);
    if(mode==='week')return planned>=weekFirst&&planned<=weekLast;
-   if(mode==='today')return planned===today;
    return false;
   });
   const missing=mode==='inspector'?eligible.filter(r=>!hasInspector(r)):
@@ -3261,10 +3261,10 @@ async function loadAssignmentDashboard(){
   const topTitle=$('assignmentListTitle'),groupTitle=$('assignmentInspectors')?.closest('.assignmentPanel')?.querySelector('.sectionHead h3');
   if(groupTitle)groupTitle.textContent=mode?`${modeTitle} · 담당자별 현황`:'점검원별 점검계획 미등록 현장';
   const help=$('assignmentInspectors')?.closest('.assignmentPanel')?.querySelector('.sectionHead small');
-  if(help)help.textContent=mode?(mode==='inspector'?'점검원이 미입력된 현장을 목록에서 수정하고 저장할 수 있습니다.':`${periodLabel} · 점검시작 계획일자 기준`):'전체 권한은 점검계획 미등록 또는 점검원 미입력 현장을 관리합니다. 점검원별 권한은 본인에게 배정된 미등록 계획만 관리합니다.';
+  if(help)help.textContent=mode?(mode==='inspector'?'점검원이 미입력된 현장을 목록에서 수정하고 저장할 수 있습니다.':`${periodLabel} · ${mode==='today'?'점검시작 또는 점검종료 계획일자 기준':'점검시작 계획일자 기준'}`):'전체 권한은 점검계획 미등록 또는 점검원 미입력 현장을 관리합니다. 점검원별 권한은 본인에게 배정된 미등록 계획만 관리합니다.';
 
   $('assignmentSummary').innerHTML=mode?
-   `<article class="assignmentMetric"><span>${esc(modeTitle)}</span><strong>${missing.length.toLocaleString()}<small>건</small></strong><small>${esc(mode==='inspector'?'점검원 미입력 현장':periodLabel+' · 계획 시작일 기준')}</small></article>`:
+   `<article class="assignmentMetric"><span>${esc(modeTitle)}</span><strong>${missing.length.toLocaleString()}<small>건</small></strong><small>${esc(mode==='inspector'?'점검원 미입력 현장':periodLabel+(mode==='today'?' · 계획 시작일 또는 종료일 기준':' · 계획 시작일 기준'))}</small></article>`:
    `<article class="assignmentMetric"><span>점검계획 미등록 · 점검원 미입력</span><strong>${missing.length.toLocaleString()}<small>건</small></strong><small>조회 범위 전체 현장 ${Number(payload.scope_total??sourceRows.length).toLocaleString()}건 중</small></article><article class="assignmentMetric"><span>시작일 미등록</span><strong>${missing.filter(r=>!r.plan_start&&!isHistoryComplete(r)).length.toLocaleString()}<small>건</small></strong><small>미등록 현장 중</small></article><article class="assignmentMetric"><span>종료일 미등록</span><strong>${missing.filter(r=>!r.plan_end&&!isHistoryComplete(r)).length.toLocaleString()}<small>건</small></strong><small>미등록 현장 중</small></article>`;
   const counts=new Map();for(const r of missing){const names=namesOf(r);for(const n of (names.length?names:['점검원 미입력']))counts.set(n,(counts.get(n)||0)+1)}
   const ordered=[...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ko'));
