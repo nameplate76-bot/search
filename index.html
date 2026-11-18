@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261119-v378';
+  const BUILD='20261119-v379';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V378</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V379</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -969,7 +969,7 @@ function open(ctx){
  const showPdfLoading=()=>{pdfLoadingStarted=Date.now();q('[data-pdf-loading]').classList.remove('hidden');q('[data-pdf-loading-elapsed]').textContent='경과 0초';clearInterval(pdfLoadingClock);pdfLoadingClock=setInterval(()=>{if(!closed)q('[data-pdf-loading-elapsed]').textContent=`경과 ${Math.floor((Date.now()-pdfLoadingStarted)/1000)}초`},1000)};
  const hidePdfLoading=()=>{q('[data-pdf-loading]').classList.add('hidden');clearInterval(pdfLoadingClock);pdfLoadingClock=null};
  const close=(notify=true)=>{closed=true;hidePdfLoading();requests.forEach(c=>c.abort());if(!ctx.container)dlg.close();dlg.remove();if(notify&&ctx.onClose)ctx.onClose()};if(ctx.onReady)ctx.onReady(close);q('[data-close]').onclick=close;dlg.oncancel=e=>{e.preventDefault();close()};
- let nas='';try{nas=nasWebUrl(ctx.config.reportNasWebUrl);if(nas){q('[data-nas]').href=nas;q('[data-nas]').hidden=false;q('[data-nas-guide]').hidden=false;q('[data-nas-guide]').innerHTML=`<p>ipDISK 창에서 로그인한 후 현장명 <b>${escape(ctx.row.site_name)}</b>으로 해당 폴더를 찾아 파일을 열람하거나 다운로드하세요. 포털 로그인과 NAS 로그인은 별개입니다.</p>${example?`<p>상록중학교 위치 확인: VOL1 → 유지관리 및 성능점검 → ② 학교 → 상록중학교 → 해당 계약 폴더 → 제본 PDF 저장 폴더 → 제출용. ${referenceLabel?'조회 중인 현장의 기준일 '+escape(referenceLabel)+'에 해당하는 보고서를 확인하세요.':'조회 중인 계약에 해당하는 보고서를 확인하세요.'} 폴더명이 바뀌면 연결 경로도 수정하세요.</p>`:''}<small>서버 화면의 파일 조회·다운로드 지원 여부는 실제 접속 확인이 필요합니다. 자동 현장 폴더 이동은 아직 연결되지 않았습니다.</small>`}}catch(e){status(e.message)}
+ let nas='';try{nas=nasWebUrl(ctx.config.reportNasWebUrl);if(nas&&ctx.admin){q('[data-nas]').href=nas;q('[data-nas]').hidden=false;q('[data-nas-guide]').hidden=false;q('[data-nas-guide]').innerHTML=`<p>ipDISK 창에서 로그인한 후 현장명 <b>${escape(ctx.row.site_name)}</b>으로 해당 폴더를 찾아 파일을 열람하거나 다운로드하세요. 포털 로그인과 NAS 로그인은 별개입니다.</p>${example?`<p>상록중학교 위치 확인: VOL1 → 유지관리 및 성능점검 → ② 학교 → 상록중학교 → 해당 계약 폴더 → 제본 PDF 저장 폴더 → 제출용. ${referenceLabel?'조회 중인 현장의 기준일 '+escape(referenceLabel)+'에 해당하는 보고서를 확인하세요.':'조회 중인 계약에 해당하는 보고서를 확인하세요.'} 폴더명이 바뀌면 연결 경로도 수정하세요.</p>`:''}<small>서버 화면의 파일 조회·다운로드 지원 여부는 실제 접속 확인이 필요합니다. 자동 현장 폴더 이동은 아직 연결되지 않았습니다.</small>`}}catch(e){status(e.message)}
  try{base=endpoint(override||ctx.config.reportApiUrl)}catch(e){status(e.message)}
  async function request(route,options={}){
   if(ctx.getApi)base=endpoint(await ctx.getApi());
@@ -1000,12 +1000,12 @@ function open(ctx){
   if(data.recovery_message&&ctx.admin&&!mappingDirty){
    try{const restored=await request('mapping');if(!closed&&!mappingDirty&&restored.mapping){const m=restored.mapping;q('[data-folder]').value=m.folder||'';q('[data-date]').value=m.reference_date||'';q('[data-preferred]').value=selectedFilesText(m);q('[data-save-status]').textContent='기존 보고서 경로를 확인하여 복구했습니다. 현재 표시된 값은 서버에 저장된 연결정보입니다.'}}catch(e){}
   }
-  if(!data.connected){status('이 현장에 보고서 폴더가 연결되지 않았습니다. 관리자에게 연결 설정을 요청하세요.');return}
-  if(!['R7','R8'].includes(data.bridge_version)){status('연결 PC의 report-bridge/server.py를 R8 버전으로 교체하고 연결 프로그램을 재시작하세요.');return}
-  const files=data.files||[];if(!files.length){status('지정된 보고서를 찾지 못했습니다. 관리자에게 조회할 파일명(확장자 포함), 폴더 위치와 선택한 파일 확인을 요청하세요. 허용할 파일을 선택하고 저장하지 않으면 목록을 표시하지 않습니다.');return}
+  if(!data.connected){status('이 현장의 보고서가 연결되지 않았습니다. 관리자에게 문의하세요.');return}
+  if(!['R7','R8'].includes(data.bridge_version)){status(ctx.admin?'연결 PC의 report-bridge/server.py를 R8 버전으로 교체하고 연결 프로그램을 재시작하세요.':'보고서 연결 프로그램을 확인할 수 없습니다. 관리자에게 문의하세요.');return}
+  const files=data.files||[];if(!files.length){status(ctx.admin?'지정된 보고서를 찾지 못했습니다. 조회할 파일명(확장자 포함), 폴더 위치와 선택한 파일을 확인하세요.':'조회할 보고서 파일이 없습니다. 관리자에게 문의하세요.');return}
   q('[data-list]').innerHTML=`<table><thead><tr><th>파일명</th><th>현장 폴더 안의 위치</th><th>수정일</th><th>크기</th><th>열람·다운로드</th></tr></thead><tbody>${files.map((f,i)=>`<tr><td>${escape(f.name)}</td><td>${escape(f.folder==='.'?'현장 폴더':f.folder)}</td><td>${escape(new Date(f.modified*1000).toLocaleString('ko-KR'))}</td><td>${(Number(f.size)/1024/1024).toFixed(2)} MB</td><td>${f.pdf?`<button type="button" data-file-id="${i}" data-view="1">PDF 열람</button>`:''}<button type="button" data-file-id="${i}">다운로드</button></td></tr>`).join('')}</tbody></table>`;
-  q('[data-list]').querySelectorAll('[data-file-id]').forEach(b=>b.onclick=()=>fileAction(files[Number(b.dataset.fileId)],b.dataset.view==='1'));status(`${data.recovery_message?data.recovery_message+' ':''}${files.length}개 파일을 찾았습니다. 관리자가 지정한 파일만 조회·열람·다운로드할 수 있습니다.`);
- }catch(e){if(!closed){if(e.httpStatus===404&&e.serverMessage.includes('연결한 현장 폴더가 없습니다')){await initialMapping.catch(()=>{});if(!closed){const folder=ctx.admin?q('[data-folder]').value:'';status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · '+(folder?'관리자 화면의 폴더 경로: '+folder+' · ':'')+'연결 프로그램 PC에서 NAS 기준 폴더와 실제 폴더명을 확인하세요. NAS 재연결 중인지도 확인한 후 다시 조회하세요. 기존 등록정보를 삭제하거나 전체 재등록하지 마세요. 연결 상태 확인에서 실제 NAS 기준 폴더·연결 DB·실행 버전을 먼저 확인하세요. R5는 확인 가능한 동일 현장 경로만 자동 복구합니다.')}}else if(e.httpStatus===404){status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · 이 응답만으로 NAS 폴더 문제라고 판단할 수 없습니다. 현장 조회 권한과 현재 HTTPS 연결 주소를 확인하세요.')}else status(e.message)}}finally{if(!closed)lock(false)}}
+  q('[data-list]').querySelectorAll('[data-file-id]').forEach(b=>b.onclick=()=>fileAction(files[Number(b.dataset.fileId)],b.dataset.view==='1'));status(`${ctx.admin&&data.recovery_message?data.recovery_message+' ':''}${files.length}개 보고서 파일을 찾았습니다.`);
+ }catch(e){if(!closed){if(!ctx.admin){status('보고서를 조회할 수 없습니다. 관리자에게 연결 상태와 보고서 등록 여부를 확인해 달라고 요청하세요.')}else if(e.httpStatus===404&&e.serverMessage.includes('연결한 현장 폴더가 없습니다')){await initialMapping.catch(()=>{});if(!closed){const folder=ctx.admin?q('[data-folder]').value:'';status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · '+(folder?'관리자 화면의 폴더 경로: '+folder+' · ':'')+'연결 프로그램 PC에서 NAS 기준 폴더와 실제 폴더명을 확인하세요. NAS 재연결 중인지도 확인한 후 다시 조회하세요. 기존 등록정보를 삭제하거나 전체 재등록하지 마세요. 연결 상태 확인에서 실제 NAS 기준 폴더·연결 DB·실행 버전을 먼저 확인하세요. R5는 확인 가능한 동일 현장 경로만 자동 복구합니다.')}}else if(e.httpStatus===404){status(e.message+' · 현장 ID '+Number(ctx.row.source_id)+' · 이 응답만으로 NAS 폴더 문제라고 판단할 수 없습니다. 현장 조회 권한과 현재 HTTPS 연결 주소를 확인하세요.')}else status(e.message)}}finally{if(!closed)lock(false)}}
  function startRefresh(){activeRefresh=refresh();return activeRefresh}
  q('[data-refresh]').onclick=startRefresh;
  if(ctx.admin)q('[data-diagnose]').onclick=async()=>{
@@ -1120,7 +1120,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V378';
+root.STAFF_SCHEDULE_VERSION='V379';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1353,7 +1353,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261119-v378"></script><script id="bundled-app-js" data-build="V378">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261119-v379"></script><script id="bundled-app-js" data-build="V379">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
