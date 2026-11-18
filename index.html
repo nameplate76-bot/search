@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261117-v372';
+  const BUILD='20261118-v373';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V372</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V373</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -647,6 +647,28 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 @media(max-width:1100px){.adminOverview{padding:0 28px}.adminOverviewGroups{grid-template-columns:1fr}.adminOverviewCards.report{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.adminOverview{padding:0 14px}.adminOverviewHead{align-items:flex-start}.adminOverviewHead h2{font-size:19px}.adminOverviewCards{grid-template-columns:repeat(2,minmax(0,1fr))}.adminOverviewGroup{padding:12px}.adminOverviewCard{padding:12px 10px}.adminOverviewCard strong{font-size:25px}}
 @media(max-width:360px){.adminOverviewCards,.adminOverviewCards.report{grid-template-columns:1fr}}
+
+/* V373 관리자 집계와 동일 자료로 열리는 상세 달력/미입력 목록 */
+.adminDrillDialog{border:0;border-radius:16px;padding:0;width:min(1220px,96vw);max-width:96vw;max-height:92vh;background:#fff;color:#183354;box-shadow:0 18px 65px #0f264b55}
+.adminDrillDialog::backdrop{background:rgba(9,25,51,.65)}
+.adminDrillHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f0f5fd;padding:17px 20px;border-bottom:1px solid #d5e2f2}
+.adminDrillHead h2{font-size:19px;margin:0;color:#163961}.adminDrillHead p{margin:4px 0 0;font-size:12px;color:#59718f}
+.adminDrillHead button{border:1px solid #a7c4f1;color:white;background:#2563eb;border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:700;flex-shrink:0}
+.adminDrillBody{padding:16px 18px;overflow:auto;max-height:calc(92vh - 92px)}
+.adminDrillSummary{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eef5ff;border:1px solid #d5e3f8;border-radius:10px;padding:11px 13px;margin-bottom:14px;color:#31557c;font-size:13px}
+.adminDrillSummary strong{font-size:17px;color:#1154ac}.adminDrillWeekNames,.adminDrillCalendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.adminDrillWeekNames span{text-align:center;background:#e7eefb;padding:9px 0;font-size:12px;font-weight:700;border-radius:6px;color:#32547b}
+.adminDrillDay{min-width:0;min-height:105px;border:1px solid #d9e5f3;border-radius:8px;background:#fff;padding:7px;display:flex;flex-direction:column;gap:5px}
+.adminDrillDay.isToday{border:2px solid #2563eb;background:#f0f6ff}.adminDrillDay.isOutside{background:#f5f7fa;min-height:0;border-style:dashed}
+.adminDrillDayHead{display:flex;align-items:center;justify-content:space-between;gap:2px;font-weight:800;font-size:12px;color:#24496f}
+.adminDrillDayHead small{font-size:10px;font-weight:700;color:#516d90}
+.adminDrillSite{width:100%;text-align:left;border:1px solid #bad0f7;border-radius:6px;background:#eaf2ff;color:#163f75;font-size:11px;line-height:1.4;padding:6px;cursor:pointer;overflow-wrap:anywhere}
+.adminDrillSite:hover{background:#d8e8ff;border-color:#639ef3}.adminDrillSite:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+.adminDrillInspectorList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.adminDrillInspectorList .adminDrillSite{padding:12px;font-size:13px}
+.adminDrillSite small{display:block;margin-top:3px;color:#587698;font-size:11px}
+.adminDrillEmpty{padding:35px 10px;text-align:center;color:#60758e}
+@media(max-width:740px){.adminDrillDialog{width:99vw;max-width:99vw;max-height:96vh}.adminDrillBody{padding:10px;max-height:calc(96vh - 88px)}.adminDrillWeekNames,.adminDrillCalendar{gap:2px}.adminDrillDay{padding:3px;min-height:80px}.adminDrillDayHead{font-size:10px}.adminDrillDayHead small{font-size:9px}.adminDrillSite{font-size:10px;padding:4px}.adminDrillSite small{font-size:9px}.adminDrillInspectorList{grid-template-columns:1fr}}
 </style>
 <section id="page-home" class="page homePage" aria-label="포털 메인 메뉴">
   <section class="homeHero">
@@ -661,10 +683,10 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
       <section class="adminOverviewGroup" aria-label="점검 현황"><div class="adminOverviewGroupTitle"><h3>점검</h3><small>계획 시작일 기준</small></div>
         <div class="adminOverviewCards">
           <button type="button" class="adminOverviewCard alert" data-admin-go="assignment"><span>점검계획 미등록</span><strong id="adminPlanMissing">—</strong><em>시작일 또는 종료일 미등록</em></button>
-          <button type="button" class="adminOverviewCard alert" data-admin-go="assignment"><span>점검원 미입력</span><strong id="adminInspectorMissing">—</strong><em>점검원 이름 미등록</em></button>
-          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>월간 점검 대상</span><strong id="adminMonthPlanned">—</strong><em id="adminMonthPeriod">이번 달 시작 예정</em></button>
-          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>주간 점검 대상</span><strong id="adminWeekPlanned">—</strong><em id="adminWeekPeriod">이번 주 시작 예정</em></button>
-          <button type="button" class="adminOverviewCard" data-admin-go="schedule"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard alert" data-admin-detail="inspector"><span>점검원 미입력</span><strong id="adminInspectorMissing">—</strong><em>점검원 이름 미등록</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-detail="month"><span>월간 점검 대상</span><strong id="adminMonthPlanned">—</strong><em id="adminMonthPeriod">이번 달 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-detail="week"><span>주간 점검 대상</span><strong id="adminWeekPlanned">—</strong><em id="adminWeekPeriod">이번 주 시작 예정</em></button>
+          <button type="button" class="adminOverviewCard" data-admin-detail="today"><span>오늘 점검 대상</span><strong id="adminTodayPlanned">—</strong><em id="adminTodayPeriod">오늘 시작 예정</em></button>
         </div>
       </section>
       <section class="adminOverviewGroup" aria-label="보고서 현황"><div class="adminOverviewGroupTitle"><h3>보고서</h3><small>기존 미작성 집계 기준</small></div>
@@ -1097,7 +1119,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V358';
+root.STAFF_SCHEDULE_VERSION='V373';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1330,7 +1352,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261117-v372"></script><script id="bundled-app-js" data-build="V372">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261118-v373"></script><script id="bundled-app-js" data-build="V373">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -2379,11 +2401,60 @@ function adminSeoulDay(date=new Date()){
 }
 function adminOverviewSet(id,value){const el=$(id);if(el)el.textContent=value===null?'조회 오류':`${Number(value).toLocaleString('ko-KR')}건`}
 function adminOverviewDate(value){if(!value||isNoInspectionValue(value))return '';const m=String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:''}
+
+let adminOverviewInspectionRows=null,adminOverviewInspectionAccount=null;
+function adminOverviewQualified(r){return [r.performance_contract,r.performance_plan_count,r.maintenance_contract,r.maintenance_plan_count].some(inspectionHasPlanCount)}
+function adminOverviewActiveRows(rows){return (rows||[]).filter(r=>adminOverviewQualified(r)&&!isNoInspectionValue(r.plan_status))}
+function adminOverviewUniqueRows(rows){const seen=new Set();return rows.filter(r=>{const id=String(r.source_id??'');if(!id||seen.has(id))return false;seen.add(id);return true})}
+function adminOverviewWeekBounds(today){const d=new Date(today+'T00:00:00Z'),mon=(d.getUTCDay()+6)%7,start=new Date(d);start.setUTCDate(start.getUTCDate()-mon);const end=new Date(start);end.setUTCDate(end.getUTCDate()+6);return [start.toISOString().slice(0,10),end.toISOString().slice(0,10)]}
+function adminOverviewDrillRows(kind,today){
+ const rows=adminOverviewActiveRows(adminOverviewInspectionRows),[first,last]=adminOverviewWeekBounds(today);
+ if(kind==='inspector')return adminOverviewUniqueRows(rows.filter(r=>!inspectionNames(r).length));
+ const starts=rows.filter(r=>adminOverviewDate(r.plan_start));
+ if(kind==='month')return adminOverviewUniqueRows(starts.filter(r=>adminOverviewDate(r.plan_start).slice(0,7)===today.slice(0,7)));
+ if(kind==='week')return adminOverviewUniqueRows(starts.filter(r=>{const d=adminOverviewDate(r.plan_start);return d>=first&&d<=last}));
+ return adminOverviewUniqueRows(starts.filter(r=>adminOverviewDate(r.plan_start)===today));
+}
+function adminDrillEscape(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function openAdminOverviewDetail(kind){
+ if(!isAdmin()||activePageName()!=='home')return;
+ if(!adminOverviewInspectionRows||adminOverviewInspectionAccount!==me?.id){alert('대시보드 점검 자료를 조회하는 중입니다. 새로고침 후 다시 선택해 주세요.');return}
+ const today=adminSeoulDay(),rows=adminOverviewDrillRows(kind,today),title={inspector:'점검원 미입력 현장',month:'월간 점검 대상',week:'주간 점검 대상',today:'오늘 점검 대상'}[kind];
+ if(!title)return;
+ const existing=document.querySelector('.adminDrillDialog');if(existing){existing.close();existing.remove()}
+ const dlg=document.createElement('dialog');dlg.className='adminDrillDialog';
+ const [weekFirst,weekLast]=adminOverviewWeekBounds(today),prefix=today.slice(0,7),[year,month]=today.split('-').map(Number);
+ const period=kind==='inspector'?'점검원 이름이 비어 있는 현장':kind==='month'?`${year}년 ${month}월 1일~${new Date(Date.UTC(year,month,0)).getUTCDate()}일`:kind==='week'?`${weekFirst} ~ ${weekLast}`:today;
+ const siteButton=r=>`<button type="button" class="adminDrillSite" data-admin-drill-id="${adminDrillEscape(r.source_id)}" title="현장 정보 수정 열기">${adminDrillEscape(r.site_name||'(현장명 없음)')}<small>${adminDrillEscape(r.inspectors||r.field_inspector||'점검원 미입력')}${kind==='inspector'?' · 계획 '+(adminDrillEscape(adminOverviewDate(r.plan_start)||'미등록')):''}</small></button>`;
+ let body='';
+ if(kind==='inspector')body=`<div class="adminDrillInspectorList">${rows.map(siteButton).join('')}</div>`;
+ else{
+  const dates=[];
+  if(kind==='today')dates.push(today);
+  else if(kind==='week'){for(let i=0;i<7;i++){const d=new Date(weekFirst+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+i);dates.push(d.toISOString().slice(0,10))}}
+  else{const days=new Date(Date.UTC(year,month,0)).getUTCDate(),offset=new Date(Date.UTC(year,month-1,1)).getUTCDay();for(let i=0;i<offset;i++)dates.push(null);for(let d=1;d<=days;d++)dates.push(`${prefix}-${String(d).padStart(2,'0')}`)}
+  const byDate=new Map();for(const r of rows){const date=adminOverviewDate(r.plan_start);if(!byDate.has(date))byDate.set(date,[]);byDate.get(date).push(r)}
+  const headers=['일','월','화','수','목','금','토'];const weekdayOrder=kind==='week'?['월','화','수','목','금','토','일']:headers;
+  const daily=date=>date?`<div class="adminDrillDay ${date===today?'isToday':''}"><div class="adminDrillDayHead"><span>${Number(date.slice(-2))}일${date===today?' · 오늘':''}</span><small>${(byDate.get(date)||[]).length}건</small></div>${(byDate.get(date)||[]).map(siteButton).join('')}</div>`:'<div class="adminDrillDay isOutside" aria-hidden="true"></div>';
+  body=kind==='today'?`<div class="adminDrillInspectorList">${rows.map(siteButton).join('')}</div>`:`<div class="adminDrillWeekNames">${weekdayOrder.map(d=>`<span>${d}</span>`).join('')}</div><div class="adminDrillCalendar">${dates.map(daily).join('')}</div>`;
+ }
+ if(!rows.length)body='<p class="adminDrillEmpty">해당 조건에 등록된 현장이 없습니다.</p>';
+ dlg.innerHTML=`<div class="adminDrillHead"><div><h2>${title}</h2><p>${adminDrillEscape(period)} · 점검시작 계획일 기준</p></div><button type="button" data-admin-drill-close>닫기</button></div><div class="adminDrillBody"><div class="adminDrillSummary"><strong>${rows.length.toLocaleString('ko-KR')}건</strong><span>대시보드와 동일한 대상 현장 · 현장명을 누르면 수정 화면이 열립니다.</span></div>${body}</div>`;
+ document.body.appendChild(dlg);dlg.addEventListener('close',()=>dlg.remove(),{once:true});
+ dlg.querySelector('[data-admin-drill-close]').onclick=()=>dlg.close();
+ dlg.querySelectorAll('[data-admin-drill-id]').forEach(btn=>btn.onclick=()=>{
+  const id=Number(btn.dataset.adminDrillId);if(!Number.isSafeInteger(id)||id<=0)return alert('현장 ID가 올바르지 않습니다.');
+  dlg.close();$('siteEditDlg')?.addEventListener('close',()=>{if(isAdmin()&&activePageName()==='home')loadAdminOverview()},{once:true});openSiteEditor(id);
+ });
+ dlg.showModal();
+}
+
 async function loadAdminOverview(){
  if(!isAdmin()||activePageName()!=='home')return;
  const seq=++adminOverviewSeq,account=me?.id,live=()=>seq===adminOverviewSeq&&account===me?.id&&isAdmin()&&activePageName()==='home';
  const ids=['adminPlanMissing','adminInspectorMissing','adminMonthPlanned','adminWeekPlanned','adminTodayPlanned','adminReportUnwritten','adminReportOver14'];
  ids.forEach(id=>$(id).textContent='…');$('adminOverviewStatus').textContent='점검·보고서 현황을 조회하고 있습니다.';
+ adminOverviewInspectionRows=null;adminOverviewInspectionAccount=null;
  adminOverviewStartLoading(seq);
  const today=adminSeoulDay(),[year,month,day]=today.split('-').map(Number);
  // 월요일~일요일, 서울의 달력 날짜를 사용합니다.
@@ -2402,6 +2473,7 @@ async function loadAdminOverview(){
     const rows=Array.isArray(data)?data:Array.isArray(data?.rows)?data.rows:[];
     if(!Array.isArray(data)&&data?.scope_all===false)throw new Error('관리자 전체 조회 권한이 확인되지 않았습니다.');
     if(!live())return;
+    adminOverviewInspectionRows=rows;adminOverviewInspectionAccount=account;
     // 점검배정과 같은 계약/계획 회차 존재 기준을 적용합니다. '완료', '미점검'은 미등록에서 제외합니다.
     const qualified=r=>[r.performance_contract,r.performance_plan_count,r.maintenance_contract,r.maintenance_plan_count].some(inspectionHasPlanCount);
     const eligible=rows.filter(qualified),unique=arr=>new Set(arr.map(r=>String(r.source_id))).size;
@@ -5561,7 +5633,7 @@ $('salesDashOwnerDetails').addEventListener('toggle',event=>{
  renderSalesDashboardOwnerList();
 });
 $('userPermissionRecoveryDownload').onclick=downloadUserPermissionRecovery;$('userPermissionRetry').onclick=retryUserPermissions;
-$('adminOverviewRefresh').onclick=()=>loadAdminOverview();document.querySelectorAll('#adminOverview [data-admin-go]').forEach(b=>b.onclick=()=>{if(!isAdmin())return;const target=b.dataset.adminGo;if(target==='unwritten'){setUnwrittenListFilter(b.dataset.adminReport==='over14'?'over14':'all','all')}showPage(target,true)});
+$('adminOverviewRefresh').onclick=()=>loadAdminOverview();document.querySelectorAll('#adminOverview [data-admin-go]').forEach(b=>b.onclick=()=>{if(!isAdmin())return;const target=b.dataset.adminGo;if(target==='unwritten'){setUnwrittenListFilter(b.dataset.adminReport==='over14'?'over14':'all','all')}showPage(target,true)});document.querySelectorAll('#adminOverview [data-admin-detail]').forEach(b=>b.onclick=()=>openAdminOverviewDetail(b.dataset.adminDetail));
 $('loginBtn').onclick=login;$('loginPw').onkeydown=e=>{if(e.key==='Enter')login()};$('myInfoBtn').onclick=()=>openUserInfo(me?.id);$('logoutBtn').onclick=async()=>{await flushUiPreferencesSave().catch(()=>{});invalidateDataCaches('all');await sb.auth.signOut();me=null;showLogin()};document.querySelectorAll('#mainNav button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page,true));document.querySelectorAll('.homeMenuCard[data-home-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.homePage,true));$('assignmentRefresh').onclick=()=>loadAssignmentDashboard();$('assignmentSaveChangesBtn').onclick=saveAssignmentDrafts;$('assignmentFieldsBtn').onclick=openAssignmentFields;document.querySelectorAll('#assignmentFieldsDlg [data-assignment-fields-close]').forEach(b=>b.onclick=()=>$('assignmentFieldsDlg').close());document.querySelectorAll('#assignmentFieldsDlg [data-assignment-tab]').forEach(b=>b.onclick=()=>setAssignmentDisplayTab(b.dataset.assignmentTab));$('assignmentFieldsDlg').querySelector('[data-assignment-fields-all]').onclick=()=>setAssignmentFieldChecks('all');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-default]').onclick=()=>setAssignmentFieldChecks('default');$('assignmentFieldsDlg').querySelector('[data-assignment-fields-none]').onclick=()=>setAssignmentFieldChecks('none');$('assignmentFieldsSave').onclick=saveAssignmentFieldSelection;$('searchBtn').onclick=()=>searchSites(true,true);$('siteQuery').onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();searchSites(true,true)}};$('fieldBtn').onclick=setupFields;$('fieldsSelectAll').onclick=()=>setFieldChecks('all');$('fieldsSelectDefault').onclick=()=>setFieldChecks('default');$('fieldsClearAll').onclick=()=>setFieldChecks('none');document.querySelectorAll('#fieldsDlg [data-display-tab]').forEach(b=>b.onclick=()=>activateDisplayFieldTab(b.dataset.displayTab));document.querySelectorAll('#fieldsDlg [data-equipment-select]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentSelect}\"]`).forEach(x=>x.checked=true);updateFieldSelectionCount()});document.querySelectorAll('#fieldsDlg [data-equipment-clear]').forEach(b=>b.onclick=()=>{document.querySelectorAll(`#fieldsDlg [data-field-group=\"${b.dataset.equipmentClear}\"]`).forEach(x=>x.checked=false);updateFieldSelectionCount()});$('fieldsSave').onclick=saveFields;$('detailClose').onclick=closeDetailPage;$('quantityPrintClose').onclick=()=>$('quantityPrintDlg').close();$('quantityPrintRun').onclick=runQuantityPrint;$('fieldsClose').onclick=()=>$('fieldsDlg').close();$('userClose').onclick=()=>$('userDlg').close();$('contactEditClose').onclick=()=>$('contactEditDlg').close();$('contactEditForm').onsubmit=saveContact;$('addressSearchBtn').onclick=searchAddress;$('addressQuery').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchAddress()}};$('manualAddressBtn').onclick=()=>setAddressMode('manual');$('searchAddressModeBtn').onclick=()=>setAddressMode('search');$('contactPhone').onblur=e=>{e.target.value=formatPhoneList(e.target.value)};$('routeClose').onclick=()=>$('routeDlg').close();document.querySelectorAll('[data-route-app]').forEach(b=>b.onclick=()=>launchRoute(b.dataset.routeApp));$('salesDashAnnual').onclick=()=>setSalesDashboardPeriod('annual');$('salesDashMonthly').onclick=()=>setSalesDashboardPeriod('monthly');$('salesDashSelectAll').onclick=()=>{salesDashboardOwners=new Set(salesDashboardOwnerNames());renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashClearAll').onclick=()=>{salesDashboardOwners.clear();renderSalesDashboardOwnerList();renderSalesDashboard()};$('salesDashOwnerClose').onclick=()=>{const d=$('salesDashOwnerDetails');if(d)d.open=false;updateSalesDashboardOwnerSummary();renderSalesDashboard()};$('salesDashYear').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesDashMonth').onchange=()=>{updateSalesTitleFromDashboard();renderSalesDashboard()};$('salesApplyDashboard').onclick=applyDashboardToSalesList;$('salesPanelToggle').onclick=()=>toggleSalesPanel();applySalesPanelCollapsed(readSalesPanelCollapsed());['salesYear','salesMonth','salesOwner'].forEach(id=>{const el=$(id);el.onchange=()=>{salesListDashboardFilter=null;updateSalesPageTitle();renderSales()};el.oninput=()=>updateSalesPageTitle()});if($('salesPrint'))$('salesPrint').onclick=printSalesReport;if($('salesExport'))$('salesExport').onclick=exportSales;if($('salesImport'))$('salesImport').onclick=()=>isAdmin()?$('salesFile')?.click():alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.');if($('salesFile'))$('salesFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!isAdmin()){e.target.value='';return alert('매출 엑셀 가져오기는 관리자만 사용할 수 있습니다.')}await importSalesExcel(f);e.target.value=''};$('allSitesExportBtn').onclick=exportAllSites;$('dbDeleteAllBtn').onclick=deleteAllSiteDb;$('dbImportBtn').onclick=()=>canImportSites()?$('dbFile').click():alert('엑셀 DB 등록 권한이 없습니다.');$('dbFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await importWorkbook(f)}catch(err){alert('전체 DB 엑셀 갱신 오류: '+err.message)}e.target.value=''};$('newUserBtn').onclick=()=>{if(!isAdmin())return alert('직원 신규등록은 관리자만 할 수 있습니다.');$('userDlg').showModal();syncRoleForm()};$('usersCurrentGroup').onclick=()=>setUserManagementGroup('current');$('usersRetiredGroup').onclick=()=>setUserManagementGroup('retired');$('usersSelectAllBtn').onclick=selectAllUsers;$('usersClearSelectionBtn').onclick=clearUserSelection;$('usersDeleteSelectedBtn').onclick=deleteSelectedUsers;$('userInfoClose').onclick=()=>$('userInfoDlg').close();$('empRole').onchange=syncRoleForm;$('userForm').onsubmit=createUser;
 
  $('inspectionDashboardRefresh').onclick=()=>loadInspectionDashboard(true);$('inspectionListTable').onclick=e=>{const b=e.target.closest('[data-inspection-sort-click]');if(!b||document.body.classList.contains('columnResizing'))return;const key=b.dataset.inspectionSortClick;inspectionListSort=inspectionListSort.key===key?{key,dir:inspectionListSort.dir==='asc'?'desc':'asc'}:{key,dir:'asc'};renderInspectionList()};bindInspectionListColumnMove($('inspectionListTable'));$('inspectionListFieldsBtn').onclick=setupFields;$('inspectionListSaveChanges').onclick=saveInspectionListDrafts;
