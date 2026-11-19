@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261119-v380';
+  const BUILD='20261119-v381';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V380</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V381</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1120,7 +1120,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V380';
+root.STAFF_SCHEDULE_VERSION='V381';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1353,7 +1353,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261119-v380"></script><script id="bundled-app-js" data-build="V380">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261119-v381"></script><script id="bundled-app-js" data-build="V381">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1538,12 +1538,12 @@ function inspectionListCell(row,column,editable){
   return `<input class="assignmentInlineInput" type="text" data-inspection-edit="${key}" value="${esc(value)}" placeholder="${key==='inspectors'?'점검원 입력':'YYYY-MM-DD'}" aria-label="${esc(row.site_name||'현장')} ${esc(label)} 입력" ${inspectionListSaving?'disabled':''}>`;
  }
  if(key==='site_name')return `<button type="button" class="assignmentSiteOpen" ${editable&&inspectionListSaving?'disabled':''}>${esc(row.site_name||'현장')}</button>`;
- return esc(inspectionListValue(row,key,column)||'-');
+ return esc(inspectionDateDisplay(inspectionListValue(row,key,column))||'-');
 }
 function renderInspectionList(){
  const {kind,year,month}=inspectionListSelection,rows=inspectionPeriodRows(kind,year,month),cols=inspectionListColumns(),order=ensureInspectionListColumnOrder(),byKey=new Map(cols.map(c=>[c.key,c])),editable=canEditInspectionList();
  if(!byKey.has(inspectionListSort.key))inspectionListSort={key:cols[0].key,dir:'asc'};
- const sortValue=(r,k)=>String((editable?inspectionListDrafts.get(String(r.source_id))?.[k]:undefined)??inspectionListValue(r,k,byKey.get(k))??'');
+ const sortValue=(r,k)=>String(inspectionDateDisplay((editable?inspectionListDrafts.get(String(r.source_id))?.[k]:undefined)??inspectionListValue(r,k,byKey.get(k))??''));
  rows.sort((a,b)=>{const av=sortValue(a,inspectionListSort.key).trim(),bv=sortValue(b,inspectionListSort.key).trim();if(!av&&!bv)return 0;if(!av)return 1;if(!bv)return -1;const cmp=av.localeCompare(bv,'ko',{numeric:true,sensitivity:'base'});return(inspectionListSort.dir==='desc'?-cmp:cmp)||String(a.site_name||'').localeCompare(String(b.site_name||''),'ko')});
  const title=kind==='missing'?'점검계획 미등록 현장':kind==='annual'?`${year}년 점검 현장`:`${year}년 ${month}월 점검 현장`;
  $('inspectionListTitle').textContent=title;$('inspectionListMeta').textContent=`${rows.length.toLocaleString()}건 · 제목 클릭 정렬 · 열 제목 드래그 이동 · 경계 드래그 폭 조정 · ${inspectionDashScope||'권한 범위'}`;
@@ -1858,7 +1858,11 @@ function formatSiteExportNumbers(ws,aoa){for(let r=1;r<aoa.length;r++)for(const 
 
 function normalizeCell(v,col){if(v===null||v===undefined)return'';if(SITE_NUMBER_COLS.has(Number(col))){const raw=siteNumericRaw(v);if(raw!==null)return raw}if(dateCols.has(col)&&typeof v==='number'&&v>20000&&v<80000)return excelDate(v);return v}
 function displayNumber(v,decimals=0){const raw=String(v??'').trim().replace(/,/g,'');if(!raw)return'';const n=Number(raw);if(!Number.isFinite(n))return String(v??'').trim();return n.toLocaleString('ko-KR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals})}
-function formatDisplayCell(v,col){const normalized=normalizeCell(v,col);if(Number(col)===6)return displayNumber(normalized,2);if(SITE_NUMBER_COLS.has(Number(col)))return siteNumericDisplay(normalized);return normalized}
+// V381: 점검 불필요 표시는 현장검색·상세조회·점검배정·기간별 목록에서 하나의 규칙을 사용합니다.
+// 원본 DB 값/계산용 날짜 값은 변경하지 않습니다.
+function inspectionDateDisplay(value){const text=String(value??'').trim();return text==='미점검'||text==='점검 불필요'?'점검 불필요':value}
+function inspectionColumnDisplay(value,col){return [28,29,30].includes(Number(col))?inspectionDateDisplay(value):value}
+function formatDisplayCell(v,col){const normalized=normalizeCell(v,col);if(Number(col)===6)return displayNumber(normalized,2);if(SITE_NUMBER_COLS.has(Number(col)))return siteNumericDisplay(normalized);return inspectionColumnDisplay(normalized,col)}
 function enterNavVisible(el){
  if(!el||el.disabled)return false;
  // Calendar picker overlays are deliberately removed from keyboard order (tabindex=-1).
@@ -2741,7 +2745,7 @@ function siteInspectionEnded(r){return [r?.field_plan_start,r?.field_plan_end,r?
 function siteListSortValue(r,key){
  if(key==='field_1')return r?.safe_values?.[0]??r?.sn??'';
  const c=siteListColumn(key);
- return c.prop?(canViewSchedule()?r[c.prop]||'':''):c.field?siteFieldDisplayValue(r,c.field):'';
+ return c.prop?(canViewSchedule()?inspectionDateDisplay(r[c.prop]||''):''):c.field?siteFieldDisplayValue(r,c.field):'';
 }
 function compareSiteListValues(a,b){
  const as=String(a??'').trim(),bs=String(b??'').trim();
@@ -2863,7 +2867,7 @@ function siteListCellHtml(r,key,index){
   const edit=canEditSite()?`<button class="primary smallBtn desktopEditBtn" data-site-edit="${r.source_id}">수정</button>`:'';
   return `<td class="center rowActions col-actions">${edit}<button class="smallBtn" data-report-files="${r.source_id}">보고서</button><button class="smallBtn" data-detail-btn="${r.source_id}">상세</button></td>`;
  }
- const c=siteListColumn(key),v=c.prop?(canViewSchedule()?r[c.prop]||'':''):c.field?siteFieldDisplayValue(r,c.field):'';
+ const c=siteListColumn(key),v=c.prop?(canViewSchedule()?inspectionDateDisplay(r[c.prop]||''):''):c.field?siteFieldDisplayValue(r,c.field):'';
  const isSite=c.field?.label==='현장명',centered=!SITE_LIST_ALIGNMENT_EXCEPTIONS.has(Number(c.field?.col)),ended=isSite&&siteInspectionEnded(r);
  return `<td class="col-dynamic ${centered?'siteBodyCentered':''} ${isSite?'siteNameCell':''} ${ended?'siteNameEnded':''}">${isSite?`<strong>${esc(v||'-')}</strong>`:esc(v||'-')}</td>`;
 }
@@ -2979,7 +2983,7 @@ function renderSites(){
  }
  const sortedMobile=sortedSiteRows(filtered),visible=siteResultsArePaged()?siteFilterPageRowsFor(sortedMobile):sortedMobile.slice(0,600);
  root.innerHTML=filterToolbar+siteSelectionBarHtml(visible)+(filtered.length?'':'<div class="siteCard">필터 조건에 맞는 현장이 없습니다. 필터를 변경하거나 해제하세요.</div>')+visible.map((r,i)=>{
-  const fieldsHtml=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.financial||canViewMoney())&&(!f.prop||canViewSchedule()))).map(meta=>{const v=meta.prop?r[meta.prop]||'':siteFieldDisplayValue(r,meta),ended=Number(meta.col)===4&&siteInspectionEnded(r);return `<div class="${ended?'siteNameEnded':''}"><span>${esc(siteCompactFieldLabel(meta,'search'))}</span><b>${esc(v||'-')}</b></div>`}).join('');
+  const fieldsHtml=orderDisplayDateFields(displayFields.map(displayFieldByLabel).filter(f=>f&&(!f.financial||canViewMoney())&&(!f.prop||canViewSchedule()))).map(meta=>{const v=meta.prop?inspectionDateDisplay(r[meta.prop]||''):siteFieldDisplayValue(r,meta),ended=Number(meta.col)===4&&siteInspectionEnded(r);return `<div class="${ended?'siteNameEnded':''}"><span>${esc(siteCompactFieldLabel(meta,'search'))}</span><b>${esc(v||'-')}</b></div>`}).join('');
   const manual=Number(r.excel_row)<0?'<span class="tag directTag">직접등록</span>':'';
   const edit=canEditSite()?`<button class="primary smallBtn" data-site-edit="${r.source_id}">수정</button>`:'';
   const select=isAdmin()?`<label class="mobileSiteSelect"><input type="checkbox" class="siteCardCheck" data-site-select="${r.source_id}"> 선택</label>`:'';
@@ -3021,7 +3025,7 @@ function refreshAssignmentColumnDefinitions(){
 }
 let assignmentActiveTab='basic';
 function assignmentColumnTab(key){if(key.startsWith('field_')){const c=Number(key.slice(6));if(c>=55&&c<=81)return'maintenance';if(c>=83&&c<=109)return'performance'}return'basic'}
-function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));if(col===49)return canViewMoney()?siteMoneyDisplay(row.safe_values?.[48]??'',49):'';if(col===53)return row.classification_number??row.safe_values?.[52]??'';if(col===44)return row.safe_values?.[43]??row.contract_start??'';if(col===45)return row.safe_values?.[44]??row.contract_end??'';return row.safe_values?.[col-1]??''}
+function assignmentCellValue(row,key){if(key==='site_name')return row.site_name||'';if(key==='sn')return row.sn||'';if(key==='inspectors')return String(row.inspectors||row.field_inspector||'').split(/[\s,/;·ㆍ、，()（）]+/u).filter(Boolean).join(', ');if(key==='plan_start')return row.plan_start||'';if(key==='plan_end')return row.plan_end||'';const col=Number(String(key).replace('field_',''));if(col===49)return canViewMoney()?siteMoneyDisplay(row.safe_values?.[48]??'',49):'';if(col===53)return row.classification_number??row.safe_values?.[52]??'';if(col===44)return row.safe_values?.[43]??row.contract_start??'';if(col===45)return row.safe_values?.[44]??row.contract_end??'';return formatDisplayCell(row.safe_values?.[col-1]??'',col)}
 const assignmentDefaultVisibleColumns=['site_name','sn','inspectors','plan_start','plan_end'];
 let assignmentVisibleColumns=[...assignmentDefaultVisibleColumns];
 const assignmentDrafts=new Map();
@@ -3031,7 +3035,7 @@ function displayInspectionValue(value){return isNoInspectionValue(value)?'점검
 function assignmentNormalizeDate(value){const raw=String(value||'').trim();if(!raw||isNoInspectionValue(raw))return raw;let m=raw.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);if(!m){const d=raw.replace(/\D/g,'');if(d.length!==8)return null;m=[null,d.slice(0,4),d.slice(4,6),d.slice(6,8)]}const iso=`${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`,dt=new Date(iso+'T00:00:00Z');return !Number.isNaN(dt.getTime())&&dt.toISOString().slice(0,10)===iso&&iso>='2000-01-01'&&iso<='2050-12-31'?iso:null}
 function updateAssignmentSaveButton(){const b=$('assignmentSaveChangesBtn');if(!b)return;b.hidden=!canViewAssignment();b.disabled=!assignmentDrafts.size;b.textContent=`변경사항 저장${assignmentDrafts.size?` (${assignmentDrafts.size}개 현장)`:''}`}
 function updateAssignmentDraftFromRow(tr){const id=String(tr?.dataset.assignmentRowId||'');if(!id)return;const values={inspectors:tr.dataset.assignmentBaseInspectors||'',plan_start:tr.dataset.assignmentBasePlanStart||'',plan_end:tr.dataset.assignmentBasePlanEnd||''};let changed=false;tr.querySelectorAll('[data-assignment-edit]').forEach(input=>{const key=input.dataset.assignmentEdit,raw=input.value,original=input.dataset.assignmentOriginal??'';values[key]=raw;if(raw.trim()!==original.trim())changed=true});if(changed)assignmentDrafts.set(id,values);else assignmentDrafts.delete(id);updateAssignmentSaveButton()}
-function assignmentPlanInputValue(value){return value==='미등록'||value==='점검원 미입력'?'':String(value??'')}
+function assignmentPlanInputValue(value){return value==='미등록'||value==='점검원 미입력'?'':String(inspectionDateDisplay(value)??'')}
 async function saveAssignmentPlan(id,values){
  const inspectors=String(values.inspectors??'').trim(),rawStart=String(values.plan_start??'').trim(),rawEnd=String(values.plan_end??'').trim();
  const uninspected=isNoInspectionValue(rawStart)||isNoInspectionValue(rawEnd),start=assignmentNormalizeDate(rawStart),end=assignmentNormalizeDate(rawEnd);
@@ -3292,7 +3296,7 @@ async function loadAssignmentDashboard(){
       const displayValue=assignmentPlanInputValue(value),originalValue=assignmentPlanInputValue(original);
       return `<td data-assignment-col="${key}"><input class="assignmentInlineInput" type="text" data-assignment-edit="${key}" data-assignment-original="${esc(originalValue)}" value="${esc(displayInspectionValue(displayValue))}" placeholder="${key==='inspectors'?'점검원 입력':'YYYY-MM-DD 또는 점검 불필요'}" aria-label="${esc(r.site_name||'현장')} ${esc(assignmentColumns.find(x=>x[0]===key)?.[1]||key)} 입력"></td>`;
      }
-     return `<td data-assignment-col="${key}">${key==='site_name'?`<button type="button" class="assignmentSiteOpen">${esc(r.site_name||'현장')}</button>`:esc(String(value??'').trim()===''?'-':value)}</td>`;
+     return `<td data-assignment-col="${key}">${key==='site_name'?`<button type="button" class="assignmentSiteOpen">${esc(r.site_name||'현장')}</button>`:esc(String(value??'').trim()===''?'-':inspectionDateDisplay(value))}</td>`;
     }).join('');
     const check=`<td class="siteSelectCol assignmentSelectCol">${listPrintCheckboxHtml(r)}</td>`;
     return `<tr class="assignmentClickableRow" data-assignment-row="${i}" data-assignment-row-id="${esc(r.source_id)}" data-assignment-base-inspectors="${esc(namesOf(r).join(', '))}" data-assignment-base-plan-start="${esc(r.plan_start||'')}" data-assignment-base-plan-end="${esc(r.plan_end||'')}" tabindex="0" aria-label="${esc(r.site_name||'현장')} 점검일정 상세·수정 열기">${check}${cells}</tr>`;
