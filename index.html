@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261119-v379';
+  const BUILD='20261119-v380';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -603,7 +603,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
     <div class="brandText">
       <strong>사내 현장정보 업무포털</strong>
       <small class="creator">Created by M.C.Kim</small>
-  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V379</small></div>
+  <div class="brandMeta"><small id="userBadge"></small><small class="buildBadge">V380</small></div>
     </div>
   </div>
   <div class="menuRow">
@@ -1120,7 +1120,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V379';
+root.STAFF_SCHEDULE_VERSION='V380';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1353,7 +1353,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261119-v379"></script><script id="bundled-app-js" data-build="V379">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261119-v380"></script><script id="bundled-app-js" data-build="V380">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3705,9 +3705,9 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
   body.classList.toggle('quantityGrid',quantityGroup);
   const fields=siteFieldsForGroup(g).filter(f=>!HIDDEN_UI_FIELD_COLS.has(Number(f.col))&&(!f.financial||canViewMoney())&&f.label!=='관리주체 연락처/이메일');
   body.innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?
-   `<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(r.schedule_plan_start||'-')}</b></div>
-    <div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(r.schedule_plan_end||'-')}</b></div>`:'')
-   +fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell(r.safe_values?.[f.col-1]??'-',f.col))}</b></div>`).join('');
+   `<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_start||'-'))}</b></div>
+    <div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_end||'-'))}</b></div>`:'')
+   +fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell((([28,29,30].includes(Number(f.col))||/^점검\s*(?:시작|종료)\s*(?:계획)?일자$/.test(String(f.label||'')))?displayInspectionValue(r.safe_values?.[f.col-1]??'-'):(r.safe_values?.[f.col-1]??'-')),f.col))}</b></div>`).join('');
   refreshQuantityHighlights(body);
   if(i===1)arrangeInspectionDateFields(body,'[data-detail-col]','detailCol');
   bindContactActions(r);
