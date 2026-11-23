@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261123-v387';
+  const BUILD='20261124-v388';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -81,6 +81,12 @@
 .schedulePlanForm .scheduleDatePickerOverlay:disabled{pointer-events:none}
 /* V386: 기본정보에 두 주소를 각각 표시하고 개별 길찾기 연결 */
 .siteAddressLinkItem{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0}.siteAddressLinkItem .contactLink{min-width:0;overflow-wrap:anywhere}.siteSecondAddressBox{margin-top:12px}.siteSecondAddressBox>strong{display:block;margin-bottom:8px}
+
+/* V388: notice print action within the notice detail header. */
+.boardNoticePrintHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.boardNoticePrintHeading h3{flex:1 1 350px;margin-top:0}
+.boardNoticePrintHeading .boardPrintNotice{flex-shrink:0;min-width:110px;white-space:nowrap}
+@media(max-width:650px){.boardNoticePrintHeading h3{flex-basis:100%}.boardNoticePrintHeading .boardPrintNotice{margin-left:auto}}
 </style><style id="bundled-schedule-contact-style">
 /* V155: 일정 상세의 연락처 조회 전용 영역 */
 .scheduleContactPanel{background:#f7faff;border:1px solid #d5e2f4;border-radius:10px;padding:12px;min-width:0}
@@ -1788,8 +1794,24 @@ function showBoardDetail(kind,row){
  const root=boardEditorHost(kind),modified=kind==='notice'?(row.updated_by_name?'최종 수정: '+new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})+' · 수정자: '+esc(row.updated_by_name):'수정 이력 없음'):'최근 수정: '+new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
  const attachmentName=kind==='notice'&&row.file_path?'<div class="boardAttachmentName">첨부파일: '+esc(row.file_name||'첨부 파일')+'</div>':'';
  const fileActions=row.file_path?(kind==='notice'?'<button type="button" class="primary boardOpenFile">열기</button><button type="button" class="ghost boardDownload">다운로드</button>':'<button type="button" class="primary boardDownload">↓ 파일 내려받기 · '+esc(row.file_name)+'</button>'):'';
- root.innerHTML='<article class="boardPanel"><h3>'+esc(row.title)+'</h3><div class="boardMeta">'+(kind==='resource'?'분류: '+esc(row.category)+' · ':'')+'게시일: '+esc(row.post_date)+' · 등록날짜: '+boardDay(row.created_at)+' · 등록자: '+esc(row.author_name)+'<br>'+modified+'</div><div class="boardBody">'+esc(row.body||'내용 없음')+'</div>'+attachmentName+'<div class="boardActions">'+fileActions+(boardCan(kind,'edit')?'<button type="button" class="primary boardEdit">수정</button>':'')+(boardCan(kind,'delete')?'<button type="button" class="danger boardDelete">삭제</button>':'')+'<button type="button" class="ghost boardBack">목록으로</button></div><p role="status" class="boardDetailMsg"></p></article>';
- root.querySelector('.boardBack').onclick=()=>loadBoard(kind);if(root.querySelector('.boardEdit'))root.querySelector('.boardEdit').onclick=()=>openBoardEditor(kind,row);if(root.querySelector('.boardDelete'))root.querySelector('.boardDelete').onclick=()=>deleteBoardPost(kind,row,root);if(root.querySelector('.boardOpenFile'))root.querySelector('.boardOpenFile').onclick=e=>openBoardFile(kind,row,e.currentTarget);if(root.querySelector('.boardDownload'))root.querySelector('.boardDownload').onclick=e=>downloadBoardFile(kind,row,e.currentTarget);
+ root.innerHTML='<article class="boardPanel"><div class="boardNoticePrintHeading"><h3>'+esc(row.title)+'</h3>'+(kind==='notice'?'<button type="button" class="primary boardPrintNotice">🖨 인쇄하기</button>':'')+'</div><div class="boardMeta">'+(kind==='resource'?'분류: '+esc(row.category)+' · ':'')+'게시일: '+esc(row.post_date)+' · 등록날짜: '+boardDay(row.created_at)+' · 등록자: '+esc(row.author_name)+'<br>'+modified+'</div><div class="boardBody">'+esc(row.body||'내용 없음')+'</div>'+attachmentName+'<div class="boardActions">'+fileActions+(boardCan(kind,'edit')?'<button type="button" class="primary boardEdit">수정</button>':'')+(boardCan(kind,'delete')?'<button type="button" class="danger boardDelete">삭제</button>':'')+'<button type="button" class="ghost boardBack">목록으로</button></div><p role="status" class="boardDetailMsg"></p></article>';
+ root.querySelector('.boardBack').onclick=()=>loadBoard(kind);if(root.querySelector('.boardPrintNotice'))root.querySelector('.boardPrintNotice').onclick=()=>printNoticePost(row);if(root.querySelector('.boardEdit'))root.querySelector('.boardEdit').onclick=()=>openBoardEditor(kind,row);if(root.querySelector('.boardDelete'))root.querySelector('.boardDelete').onclick=()=>deleteBoardPost(kind,row,root);if(root.querySelector('.boardOpenFile'))root.querySelector('.boardOpenFile').onclick=e=>openBoardFile(kind,row,e.currentTarget);if(root.querySelector('.boardDownload'))root.querySelector('.boardDownload').onclick=e=>downloadBoardFile(kind,row,e.currentTarget);
+}
+
+function printNoticePost(row){
+ if(!row||!boardCan('notice','view'))return;
+ // Print from a clean, isolated document: the portal header, menus and editing buttons are excluded.
+ const popup=window.open('','_blank');
+ if(!popup){alert('인쇄 창이 차단되었습니다. 브라우저에서 팝업을 허용한 뒤 다시 눌러주세요.');return;}
+ const updated=row.updated_by_name?`최종 수정: ${new Date(row.updated_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})} · 수정자: ${row.updated_by_name}`:'수정 이력 없음';
+ const safeTitle=esc(row.title||'공지사항'),safeBody=esc(row.body||'내용 없음');
+ const meta=`게시일: ${esc(row.post_date||'')} · 등록날짜: ${esc(boardDay(row.created_at))} · 등록자: ${esc(row.author_name||'')}<br>${esc(updated)}`;
+ const attachment=row.file_name?`<div class="file-note">첨부파일: ${esc(row.file_name)}</div>`:'';
+ popup.document.open();
+ popup.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} - 공지사항 인쇄</title><style>
+ @page{size:A4;margin:16mm 15mm}*{box-sizing:border-box}body{font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#14233a;background:#fff;margin:0;line-height:1.7;overflow-wrap:anywhere}.print-tools{display:flex;justify-content:flex-end;gap:10px;padding:12px 0;border-bottom:1px solid #d9e1ec;margin-bottom:24px}.print-tools button{border:1px solid #b9c8dc;border-radius:7px;padding:10px 15px;background:#fff;font:inherit;cursor:pointer}.print-tools .primary{color:#fff;background:#2563eb;border-color:#2563eb}h1{font-size:22px;line-height:1.4;margin:0 0 16px}.meta{font-size:12px;color:#485873;border-bottom:1px solid #d6deea;padding-bottom:14px;margin-bottom:22px}.body{white-space:pre-wrap;font-size:14px;line-height:1.9;min-height:100px}.file-note{margin-top:18px;padding:10px 0;border-top:1px solid #e0e6ee;font-size:12px;color:#485873}@media print{.print-tools{display:none}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}h1,.meta{break-after:avoid}.body{orphans:3;widows:3}}</style></head><body><div class="print-tools"><button class="primary" onclick="window.print()">인쇄하기 / PDF 저장</button><button onclick="window.close()">닫기</button></div><main><h1>${safeTitle}</h1><div class="meta">${meta}</div><div class="body">${safeBody}</div>${attachment}</main></body></html>`);
+ popup.document.close();
+ popup.focus();
 }
 
 function openBoardEditor(kind,row=null){
