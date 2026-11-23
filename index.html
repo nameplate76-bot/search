@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261123-v385';
+  const BUILD='20261123-v386';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -79,7 +79,7 @@
 .scheduleDateCalendarButton{position:absolute;right:0;top:0;display:grid;place-items:center;width:46px;height:100%;min-height:46px;padding:0;border:0;border-radius:0 9px 9px 0;background:transparent;color:#334155;cursor:pointer;z-index:2}.scheduleDateCalendarButton:hover{background:#eef4ff;color:#1d4ed8}.scheduleDateCalendarButton:focus-visible{outline:3px solid #2563eb;outline-offset:-3px}.scheduleDateCalendarButton svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .schedulePlanForm .scheduleDatePickerOverlay{position:absolute;left:50%;top:50%;width:1px;height:1px;min-height:1px;padding:0;opacity:.01;pointer-events:none}
 .schedulePlanForm .scheduleDatePickerOverlay:disabled{pointer-events:none}
-/* V385: 기본정보에 두 주소를 각각 표시하고 개별 길찾기 연결 */
+/* V386: 기본정보에 두 주소를 각각 표시하고 개별 길찾기 연결 */
 .siteAddressLinkItem{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0}.siteAddressLinkItem .contactLink{min-width:0;overflow-wrap:anywhere}.siteSecondAddressBox{margin-top:12px}.siteSecondAddressBox>strong{display:block;margin-bottom:8px}
 </style><style id="bundled-schedule-contact-style">
 /* V155: 일정 상세의 연락처 조회 전용 영역 */
@@ -1357,7 +1357,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261123-v385"></script><script id="bundled-app-js" data-build="V385">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261123-v386"></script><script id="bundled-app-js" data-build="V385">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3766,9 +3766,10 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
   body.innerHTML=(i===0||i===1?contactCards(r):'')+(i===1&&canViewSchedule()?
    `<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_start||'-'))}</b></div>
     <div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_end||'-'))}</b></div>`:'')
-   +fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell((([28,29,30].includes(Number(f.col))||/^점검\s*(?:시작|종료)\s*(?:계획)?일자$/.test(String(f.label||'')))?displayInspectionValue(r.safe_values?.[f.col-1]??'-'):(r.safe_values?.[f.col-1]??'-')),f.col))}</b></div>`).join('');
+   +fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell((([28,29,30].includes(Number(f.col))||/^점검\s*(?:시작|종료)\s*(?:계획)?일자$/.test(String(f.label||'')))?displayInspectionValue(r.safe_values?.[f.col-1]??'-'):(r.safe_values?.[f.col-1]??'-')),f.col))}</b></div>`).join('')
+   +(i===1?`<div class="detailItem financialDetailItem" data-detail-contract-memo-wrap="1"><span>계약관련 메모</span><b data-detail-contract-memo>-</b></div>`:'');
   refreshQuantityHighlights(body);
-  if(i===1)arrangeInspectionDateFields(body,'[data-detail-col]','detailCol');
+  if(i===1){arrangeInspectionDateFields(body,'[data-detail-col]','detailCol');fillSiteContractMemoDetail(body,r.source_id)}
   bindContactActions(r);
  };
  tabs.querySelectorAll('[data-g]').forEach(button=>button.onclick=()=>render(Number(button.dataset.g)));
@@ -3887,7 +3888,7 @@ function renderSiteMonthlyEditor(container){
  });
 }
 function siteScheduleDateField(id,label,value,enabled){const raw=String(value??'').trim(),parsed=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31'),iso=parsed||(isNoInspectionValue(raw)?'미점검':'');return `<label class="siteField"><span>${label}</span><span class="siteDateInputWrap"><input id="${id}" data-site-schedule-date="${id==='siteScheduleStart'?'start':'end'}" type="text" inputmode="text" autocomplete="off" placeholder="YYYY-MM-DD 또는 점검 불필요" value="${esc(displayInspectionValue(iso))}" ${enabled?'':'disabled'}><button type="button" class="siteDateCalendarButton" data-site-open-calendar aria-label="${label} 달력 열기" ${enabled?'':'disabled'}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M7.5 3v4M16.5 3v4M4 9h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01M16 17h.01"/></svg></button><input class="siteDatePickerOverlay" type="date" data-site-date-picker min="2000-01-01" max="2050-12-31" value="${esc(parsed||'')}" aria-label="${label} 달력 선택" tabindex="-1" ${enabled?'':'disabled'}></span></label>`}
-// V385: 계약관련 메모는 기존 137열 배열과 별도 테이블로 관리합니다.
+// V386: 계약관련 메모는 기존 137열 배열과 별도 테이블로 관리합니다.
 async function loadSiteContractMemo(sourceId){
  siteContractMemoRequestedId=Number(sourceId)||0;
  siteContractMemo='';siteContractMemoLoadError='';
@@ -3906,6 +3907,28 @@ async function saveSiteContractMemo(sourceId,value){
  const {error}=await sb.from('staff_site_contract_memos').upsert({source_id:Number(sourceId),memo},{onConflict:'source_id'});
  if(error)throw new Error('계약관련 메모 저장 실패: '+error.message+' (V385 SQL 또는 권한 확인)');
  siteContractMemo=memo;
+}
+async function loadSiteContractMemoForDetail(sourceId){
+ const targetId=Number(sourceId)||0;
+ if(!targetId)return '';
+ const {data,error}=await sb.from('staff_site_contract_memos').select('memo').eq('source_id',targetId).maybeSingle();
+ if(error)throw new Error('계약관련 메모 조회 실패: '+error.message);
+ return String(data?.memo??'').trim();
+}
+function fillSiteContractMemoDetail(container,sourceId){
+ const host=container?.querySelector('[data-detail-contract-memo]');
+ if(!host)return;
+ host.textContent='불러오는 중...';
+ loadSiteContractMemoForDetail(sourceId).then(memo=>{
+  if(!container.isConnected)return;
+  host.textContent=memo||'-';
+  host.classList.toggle('muted',!memo);
+ }).catch(err=>{
+  if(!container.isConnected)return;
+  host.textContent='조회 실패';
+  host.title=String(err?.message||err||'');
+  host.classList.add('muted');
+ });
 }
 function renderSiteContractMemoField(root){
  if(!isAdmin())return;
