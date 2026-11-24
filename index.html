@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261124-v388';
+  const BUILD='20261124-v389';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -591,7 +591,7 @@ main{max-width:1800px;margin:auto;padding:24px}.pageTitle{gap:24px;align-items:c
 }
 </style>
 <style id="v387-contract-memo-detail-style">
-/* 금액조회 가능 사용자에게만 표시되는 계약관련 메모: 기본정보/진행 탭 공통 */
+/* 금액조회 가능 사용자에게만 표시되는 계약관련 메모: 진행·담당·계약 탭 전용 */
 .siteContractMemoDetailCard{min-width:0}
 .siteContractMemoDetailCard b{display:block;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.55}
 </style>
@@ -1368,7 +1368,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261123-v387"></script><script id="bundled-app-js" data-build="V387">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261123-v387"></script><script id="bundled-app-js" data-build="V389">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -3794,10 +3794,10 @@ async function openDetail(id,{preserveReturn=false,group=0}={}){
    `<div class="detailItem" data-detail-col="138"><span>점검시작 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_start||'-'))}</b></div>
     <div class="detailItem" data-detail-col="139"><span>점검종료 계획일자</span><b>${esc(displayInspectionValue(r.schedule_plan_end||'-'))}</b></div>`:'')
    +fields.map(f=>`<div data-detail-col="${f.col}" class="detailItem ${f.financial?'financialDetailItem':''}"><span>${esc(siteDisplayFieldLabel(f))}</span><b>${esc(f.financial?siteMoneyDisplay(r.safe_values?.[f.col-1]??'',f.col):formatDisplayCell((([28,29,30].includes(Number(f.col))||/^점검\s*(?:시작|종료)\s*(?:계획)?일자$/.test(String(f.label||'')))?displayInspectionValue(r.safe_values?.[f.col-1]??'-'):(r.safe_values?.[f.col-1]??'-')),f.col))}</b></div>`).join('')
-   +((i===0||i===1)&&canViewMoney()?`<div class="detailItem financialDetailItem siteContractMemoDetailCard" data-detail-contract-memo-wrap="1"><span>계약관련 메모</span><b data-detail-contract-memo>-</b></div>`:'');
+   +(i===1&&canViewMoney()?`<div class="detailItem financialDetailItem siteContractMemoDetailCard" data-detail-contract-memo-wrap="1"><span>계약관련 메모</span><b data-detail-contract-memo>-</b></div>`:'');
   refreshQuantityHighlights(body);
   if(i===1)arrangeInspectionDateFields(body,'[data-detail-col]','detailCol');
-  if((i===0||i===1)&&canViewMoney())fillSiteContractMemoDetail(body,r.source_id);
+  if(i===1&&canViewMoney())fillSiteContractMemoDetail(body,r.source_id);
   bindContactActions(r);
  };
  tabs.querySelectorAll('[data-g]').forEach(button=>button.onclick=()=>render(Number(button.dataset.g)));
