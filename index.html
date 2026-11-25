@@ -4,7 +4,7 @@
 <title>사내 현장정보 업무포털</title><link rel="stylesheet" href="styles.css?v=20261113-v360">
 <script>
 (function(){
-  const BUILD='20261124-v389';
+  const BUILD='20261125-v390';
   try{
     localStorage.setItem('staffPortalBuild',BUILD);
     // 이전 공개형 PWA/Service Worker가 남아 있더라도 최신 사내포털을 사용하도록 정리합니다.
@@ -1135,7 +1135,7 @@ function dashboardCounts(rows,y,access){
  if(!access.all&&String(access.name||'').trim()&&!people.has(access.name.trim()))people.set(access.name.trim(),{name:access.name.trim(),annual:new Set(),months:Array.from({length:12},()=>new Set())});
  return {people:[...people.values()].sort((a,b)=>a.name.localeCompare(b.name,'ko')).map(p=>({name:p.name,annual:p.annual.size,months:p.months.map(m=>m.size)})),annual:annual.size,months:monthly.map(m=>m.size)};
 }
-root.STAFF_SCHEDULE_VERSION='V385';
+root.STAFF_SCHEDULE_VERSION='V390';
 const api={key,grid,onDay,stats,monthDays,compareSiteSn,dashboardCounts};root.STAFF_SCHEDULE_CORE=api;if(typeof module!=='undefined')module.exports=api;
 root.createStaffSchedule=function(deps){
  const $=deps.element||((id)=>document.getElementById(id));
@@ -1321,10 +1321,13 @@ root.createStaffSchedule=function(deps){
  function renderSiteOptions(){const sel=d.querySelector('#scheduleSiteSelect');if(!sel)return;const selected=sel.value;const sorted=[...foundSites].sort((a,b)=>compareSiteSn(a,b,sortMode));sel.innerHTML='<option value="">현장 선택</option>'+sorted.map(r=>`<option value="${r.source_id}" data-inspectors="${esc(r.inspectors||'')}">${esc(r.site_name)}</option>`).join('');if(sorted.some(r=>String(r.source_id)===selected))sel.value=selected;const b=d.querySelector('[data-sort-sites]');if(b){b.textContent=sortMode==='asc'?'오름차순 ↑':'내림차순 ↓';b.setAttribute('aria-label',sortMode==='asc'?'S/N 기준 현재 오름차순, 내림차순으로 변경':'S/N 기준 현재 내림차순, 오름차순으로 변경');b.title='S/N 기준 정렬 · 클릭하면 오름차순/내림차순 전환'}sel.onchange=()=>{form.elements.inspectors.value=sel.selectedOptions[0]?.dataset.inspectors||'';updatePlanSummary();loadContact(sel.value)}}
  d.querySelector('[data-sort-sites]')?.addEventListener('click',()=>{sortMode=sortMode==='desc'?'asc':'desc';renderSiteOptions()});
  if(!row){const search=async()=>{const q=d.querySelector('input').value.trim();if(!q){msg.textContent='검색어를 입력하세요.';return}msg.textContent='검색 중…';const request=++token;try{const sites=await deps.rpc('staff_schedule_sites',{p_query:q});if(!d.isConnected||request!==token||!deps.access().edit)return;foundSites=sites;renderSiteOptions();msg.textContent=sites.length?`${sites.length}건 · 현장을 선택하세요 (최대 100건)`:'일치하는 현장이 없습니다.';if(sites.length)msg.innerHTML=`<strong class="scheduleStatistic">${sites.length}건</strong> · 현장을 선택하세요 (최대 100건)`}catch(e){msg.textContent=e.message}};d.querySelector('[data-search]').onclick=search;d.querySelector('input').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();search()}}}
- form.onsubmit=async e=>{e.preventDefault();const a=deps.access();if(!(a.edit||(row?.assignmentUnscheduled&&a.assignmentEdit)))return;const rawStart=form.elements.start.value.trim(),rawEnd=form.elements.end.value.trim(),uninspected=isNoInspectionValue(rawStart)||isNoInspectionValue(rawEnd),start=parsePlanDate(rawStart),end=parsePlanDate(rawEnd),inspectors=form.elements.inspectors.value.trim(),assignmentOnly=!!row?.assignmentUnscheduled;if(!uninspected&&((start&&!end)||(!start&&end))){msg.textContent='점검 시작일과 종료일은 함께 입력하세요.';return}if(!uninspected&&start&&end&&start>end){msg.textContent='종료일은 시작일 이후 날짜로 선택하세요.';return}if(!uninspected&&!start&&!end&&!inspectors){msg.textContent='점검원 또는 점검계획을 입력하세요.';return}if(!uninspected&&((rawStart&&!start)||(rawEnd&&!end))){msg.textContent='날짜는 YYYY-MM-DD, YYYYMMDD 또는 점검 불필요로 입력하세요.';return}const id=row?.source_id||Number(d.querySelector('select').value);if(!id){msg.textContent='현장을 선택하세요.';return}const btn=form.querySelector('[type=submit]');btn.disabled=true;msg.textContent='저장 중…';try{
+ form.onsubmit=async e=>{e.preventDefault();const a=deps.access();if(!(a.edit||(row?.assignmentUnscheduled&&a.assignmentEdit)))return;const rawStart=form.elements.start.value.trim(),rawEnd=form.elements.end.value.trim(),uninspected=isNoInspectionValue(rawStart)||isNoInspectionValue(rawEnd),start=parsePlanDate(rawStart),end=parsePlanDate(rawEnd),inspectors=form.elements.inspectors.value.trim(),assignmentOnly=!!row?.assignmentUnscheduled;if(!uninspected&&((start&&!end)||(!start&&end))){msg.textContent='점검 시작일과 종료일은 함께 입력하세요.';return}if(!uninspected&&start&&end&&start>end){msg.textContent='종료일은 시작일 이후 날짜로 선택하세요.';return}if(!uninspected&&!start&&!end&&!row){msg.textContent='신규 일정은 계획일자를 입력하거나 점검 불필요를 선택해 주세요.';return}if(!uninspected&&((rawStart&&!start)||(rawEnd&&!end))){msg.textContent='날짜는 YYYY-MM-DD, YYYYMMDD 또는 점검 불필요로 입력하세요.';return}const id=row?.source_id||Number(d.querySelector('select').value);if(!id){msg.textContent='현장을 선택하세요.';return}const btn=form.querySelector('[type=submit]');btn.disabled=true;msg.textContent='저장 중…';try{
   let action='update',assignmentPlan;
   if(uninspected){
    assignmentPlan=await deps.rpc('staff_schedule_mark_uninspected',{p_source_id:id,p_inspectors:inspectors});action='delete';
+  }else if(!start&&!end&&row){
+   // V390: 두 계획일자를 비운 기존 일정은 '수정 안 함'이 아닌 명시적 삭제입니다.
+   await deps.rpc('staff_schedule_delete',{p_source_id:id});action='delete';
   }else if(assignmentOnly){
    assignmentPlan=await deps.rpc('staff_assignment_plan_save',{p_source_id:id,p_start:start||null,p_end:end||null,p_inspectors:inspectors});
   }else{
@@ -1333,6 +1336,16 @@ root.createStaffSchedule=function(deps){
   }
   if(assignmentOnly)root.STAFF_ASSIGNMENT_PLAN_SAVED?.(id,assignmentPlan);
   const synced=await syncRelated({source_id:id,action});
+  // V390: 저장 직후 공통 계획일자 조회와 달력 데이터의 정합성을 검사합니다.
+  if(!start&&!end&&!uninspected&&row){
+   try{
+    const verification=await deps.verifyPlanDates?.(id);
+    if(verification&&String(verification.plan_start||'').trim()||verification&&String(verification.plan_end||'').trim()){
+     msg.textContent='일정 삭제 후에도 현장정보 DB에 기존 계획일자가 남아 있습니다. 다른 화면과 값이 불일치하므로 관리자에게 DB 동기화 점검을 요청하세요.';
+     return;
+    }
+   }catch(error){msg.textContent='일정 삭제 후 공통 DB 재조회에 실패했습니다. 새로고침하여 날짜 삭제 결과를 확인하세요: '+error.message;return}
+  }
   d.close();if(start){year=Number(start.slice(0,4));month=Number(start.slice(5,7));mobileDay=start}
   if(!a.assignmentOnly)await load();
   if(!synced)message('일정은 저장되었습니다. 일부 관련 화면 갱신에 실패했습니다. 새로고침해 주세요.',true);
@@ -1368,7 +1381,7 @@ root.createStaffSchedule=function(deps){
  function move(delta){let y=year,m=month;if(mode==='annual'||(mode==='dashboard'&&dashboardPeriod==='annual'))y+=delta;else{m+=delta;if(m===0){m=12;y--}if(m===13){m=1;y++}}if(y<2000||y>2050)return;year=y;month=m;return load()}
  return {open,load,clear,refreshEmployeeDirectory(){employeeRecords=Array.isArray(deps.employeeOptions?.())?deps.employeeOptions():employeeRecords;if(initialized)render()},openRecord(row){if(!row||!deps.access().view)return;edit(row)}};
 };})(typeof window!=='undefined'?window:globalThis);
-</script><script src="monthly-inspection.js?v=20261123-v387"></script><script id="bundled-app-js" data-build="V389">(()=>{'use strict';
+</script><script src="monthly-inspection.js?v=20261123-v387"></script><script id="bundled-app-js" data-build="V390">(()=>{'use strict';
 const cfg=window.STAFF_APP_CONFIG, schema=window.STAFF_FIELD_SCHEMA;
 const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])), money=n=>(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -4015,7 +4028,7 @@ function renderSiteEditFields(){
  }).join('')||'<p class="hint">이 탭에서 입력할 수 있는 항목이 없습니다.</p>';
  if(g?.[0]==='진행·담당·계약')renderSiteContractMemoField(fieldsRoot);
  if(g?.[0]==='진행·담당·계약'&&canViewSchedule()){
- const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`${siteScheduleDateField('siteScheduleStart','점검시작 계획일자',siteScheduleDraft.start,canEditSchedule())}${siteScheduleDateField('siteScheduleEnd','점검종료 계획일자',siteScheduleDraft.end,canEditSchedule())}<small class="fieldHelp">계획 시작일을 입력하면 종료 계획일과 비어 있는 점검 시작·종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 따로 수정하거나 삭제할 수 있습니다. 점검일정 달력과 동일한 계획일자이며 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다.</small>`;fieldsRoot.prepend(block);
+ const block=document.createElement('div');block.className='siteSharedScheduleFields';block.innerHTML=`${siteScheduleDateField('siteScheduleStart','점검시작 계획일자',siteScheduleDraft.start,canEditSchedule())}${siteScheduleDateField('siteScheduleEnd','점검종료 계획일자',siteScheduleDraft.end,canEditSchedule())}<small class="fieldHelp">계획 시작일을 입력하면 종료 계획일과 비어 있는 점검 시작·종료일에 같은 날짜가 입력됩니다. 각 날짜는 이후 따로 수정하거나 삭제할 수 있습니다. 점검일정 달력과 동일한 계획일자이며 저장하면 양쪽 화면에 반영됩니다. 두 날짜를 모두 비우고 저장하면 일정을 삭제합니다. 점검 불필요는 빈 날짜와 다른 상태값입니다.</small>`;fieldsRoot.prepend(block);
  const first=block.querySelector('#siteScheduleStart').closest('label'),last=block.querySelector('#siteScheduleEnd').closest('label');first.dataset.planOrder='138';last.dataset.planOrder='139';
  const help=block.querySelector('small');block.before(first,last);block.remove();help.classList.add('siteScheduleInlineHelp');fieldsRoot.append(help);
  for(const [id,key] of [['siteScheduleStart','start'],['siteScheduleEnd','end']]){const input=$(id),picker=input.closest('.siteDateInputWrap').querySelector('[data-site-date-picker]'),button=input.closest('.siteDateInputWrap').querySelector('[data-site-open-calendar]');input.oninput=()=>{if(key==='end')siteScheduleDraft.endEdited=true;const raw=input.value.trim(),iso=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31');if(isNoInspectionValue(raw)){setSiteUninspectedDates();return}if(siteScheduleDraft.uninspected&&(iso||!raw))clearSiteUninspectedDates();input.setCustomValidity(raw&&!iso&&!isNoInspectionValue(raw)?'날짜는 YYYY-MM-DD, YYYYMMDD 또는 점검 불필요로 입력하세요. (2000~2050년)':'');if(isNoInspectionValue(raw)){siteScheduleDraft[key]='';siteScheduleDraft.uninspected=true}else if(iso){picker.value=iso;siteScheduleDraft[key]=iso;siteScheduleDraft.uninspected=false}else if(!raw){picker.value='';siteScheduleDraft[key]='';siteScheduleDraft.uninspected=false}siteScheduleDraft.changed=true;if(iso)fillCreateInspectionDates(iso,key)};input.onblur=()=>{const raw=input.value.trim();if(!raw){if(siteScheduleDraft.uninspected)clearSiteUninspectedDates();input.setCustomValidity('');return}if(isNoInspectionValue(raw)){setSiteUninspectedDates();return}const iso=parseSiteKeyboardDate(raw,'2000-01-01','2050-12-31');if(!iso){input.setCustomValidity('날짜는 YYYY-MM-DD, YYYYMMDD 또는 점검 불필요로 입력하세요. (2000~2050년)');return}input.value=iso;input.setCustomValidity('');picker.value=iso;siteScheduleDraft[key]=iso;siteScheduleDraft.uninspected=false;fillCreateInspectionDates(iso,key)};picker.onchange=()=>{input.value=picker.value;input.setCustomValidity('');input.dispatchEvent(new Event('input',{bubbles:true}))};button.onclick=()=>{try{if(typeof picker.showPicker==='function')picker.showPicker();else picker.click()}catch{try{picker.click()}catch{}}}}
@@ -5886,6 +5899,7 @@ function openSchedulePage(){
  }
 }
 window.STAFF_SCHEDULE_UI=window.createStaffSchedule({
+ verifyPlanDates:async id=>(await fetchSitePlanDates(Number(id)))[0]||{plan_start:'',plan_end:''},
  phoneNumbers:splitPhoneNumbers,cleanPhone,route:openRouteChooser,openSiteEditor:id=>{if(isAdmin())openSiteEditor(Number(id))},
  access:scheduleAccess,employeeOptions:()=>employeeDirectoryRows,loadEmployeeOptions:()=>loadEmployeeDirectory().catch(()=>[]),userId:()=>me?.id||null,dailyNoteGet:async(date)=>{if(!scheduleAccess().dailyLog)throw new Error('성능점검일지 조회 권한이 없습니다.');const{data,error}=await sb.from('staff_schedule_daily_notes').select('log_date,unassigned_vehicles,other_notes,vehicle_maintenance,vehicle_total,signature_image_data').eq('log_date',date).maybeSingle();if(error)throw error;return data||{}},dailyNoteSave:async(payload)=>{if(!scheduleAccess().dailyLog)throw new Error('성능점검일지 입력 권한이 없습니다.');const{error}=await sb.from('staff_schedule_daily_notes').upsert(payload,{onConflict:'log_date'});if(error)throw error},rpc:async(name,args)=>withPortalDataLoading('점검일정 자료',async()=>{if(name==='staff_schedule_list'){const scope=await sb.rpc('staff_schedule_scope');if(scope.error||scope.data?.scope_version!==195)throw new Error('본인 점검일정 조회 권한 SQL(V195)을 먼저 적용해야 합니다.');}const{data,error}=await sb.rpc(name,args);if(error)throw error;return data},activePageName()==='schedule'),
  changed:refreshScheduleRelated,
